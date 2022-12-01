@@ -1,4 +1,41 @@
 use std::str::FromStr;
-use ast;
+use crate::parser::ast::Stmt::{Move, Incr};
 
 grammar;
+
+
+//pub ParseTwoc : Vec<ast::Stmt> = {
+//    "twoc" "(" "string" ")" "{" <prog:ParseStmtList> "}" 
+//        => prog,
+//}
+
+//pub ParseStmtList : Vec<ast::Stmt> = {
+//    <mut stmts:(<ParseStmtList>)*> <stmt:ParseStmt?> 
+//        => match stmt {
+//            None => stmts,
+//            Some(s) => {
+//                stmts.push(s);
+//                stmts
+//            }
+//        }
+//}
+
+pub ParseStmt : ast::Stmt = {
+    "move(" <s:r"-?[0-9]+"> ");"
+        => ast::Move(i32::from_str(s).unwrap()),
+
+    "c" "+=" <s:r"-?[0-9]+"> ";"
+        => ast::Incr(i32::from_str(s).unwrap()), 
+
+    "c" "-=" <s:r"-?[0-9]+"> ";" 
+        => ast::Incr(-1 * i32::from_str(s).unwrap()),
+
+    //"if" "(" <cond:ParseCond> ")" "{" <ifBody:ParseStmtList> "}" 
+    //    => ast::If(cond, ifBody, Vec::new()),
+
+    //"if" "(" <cond:ParseCond> ")" "{" <ifBody:ParseStmtList> "}" "else" "{" <elseBody:ParseStmtList> "}"
+    //    => ast::If(cond, ifBody, elseBody),
+
+    //"while" "(" <cond:ParseCond> ")" "{" <whileBody:ParseStmtList> "}"
+    //    => ast::While(cond, whileBody),
+}

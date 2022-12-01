@@ -1,33 +1,39 @@
 // AST nodes for statements
-pub enum Stmt {
-    // move(i)
-    Move(i32),
 
-    // c += j
-    Incr(i32), 
+pub mod ast {
 
-    // if-else
-    If(Cond, Vec<Stmt>, Vec<Stmt>),
+    #[derive(Debug)]
+    pub enum Stmt {
+        // move(i)
+        Move(i32),
 
-    // while
-    While(Cond, Vec<Stmt>),
+        // c += j
+        Incr(i32), 
 
-    // branch
-    Branch(Vec<Vec<Stmt>>),
+        // if-else
+        If(Cond, Vec<Stmt>, Vec<Stmt>),
+
+        // while
+        While(Cond, Vec<Stmt>),
+
+        // branch
+        Branch(Vec<Vec<Stmt>>),
+    }
+
+    // AST nodes for conditions
+    #[derive(Debug)]
+    pub enum Cond {
+        Read(char),
+
+        CheckZero(),
+
+        CheckNotZero(),
+
+        And(Box<Cond>, Box<Cond>),
+
+        Or(Box<Cond>, Box<Cond>),
+
+        Not(Box<Cond>),
+    }
+
 }
-
-// AST nodes for conditions
-pub enum Cond {
-    Read(char),
-
-    CheckZero(),
-
-    CheckNotZero(),
-
-    And(Cond, Cond),
-
-    Or(Cond, Cond),
-
-    Not(Cond),
-}
-
