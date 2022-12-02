@@ -19,6 +19,12 @@ pub StmtList : Vec<ast::Stmt> = {
 
 // Rule to parse statements
 pub Stmt : ast::Stmt = {
+    "accept" ";"
+        => ast::Stmt::Accept(),
+
+    "reject" ";"
+        => ast::Stmt::Reject(),
+
     "move(" <s:r"-?[0-9]+"> ")" ";"
         => ast::Stmt::Move(i32::from_str(s).unwrap()),
 
