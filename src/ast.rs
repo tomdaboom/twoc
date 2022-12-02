@@ -28,6 +28,8 @@ pub enum Stmt {
 pub enum Cond {
     Read(char),
 
+    NotRead(char),
+
     CheckZero(),
 
     CheckNotZero(),

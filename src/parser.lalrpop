@@ -4,17 +4,15 @@ use crate::ast;
 grammar;
 
 // Top-level rule of the grammar
-// TODO: add syntactic sugar
+// TODO: add actual arguments
 pub Twoc : Vec<ast::Stmt> = {
-    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
-        => prog,
+    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" => prog,
 }
 
 // Rule to parse lists of statements
 // StmtList ::= Stmt ";" StmtList? | epsilon
 pub StmtList : Vec<ast::Stmt> = {
-    <stmts:Stmt*> 
-        => stmts
+    <stmts:Stmt*> => stmts
 }
 
 // Rule to parse statements
@@ -53,8 +51,43 @@ pub ElseBody : Vec<ast::Stmt> = {
         => else_body,
 }
 
-// Rule to parse logical 
-// TODO: actually do this
+// Rule to parse logical expressions
+// Or binds the least tightly
 pub Cond : ast::Cond = {
-    "cond" => ast::Cond::CheckZero(),
+    <cond:AndCond> => cond,
+    
+    <cond:AndCond> "||" <conds:Cond>
+        => ast::Cond::Or(Box::new(cond), Box::new(conds)),
 }
+
+// And binds tighter
+pub AndCond : ast::Cond = {
+    <cond:BaseCond> => cond,
+
+    <cond:BaseCond> "&&" <conds:AndCond>
+        => ast::Cond::And(Box::new(cond), Box::new(conds)),
+}
+
+
+// Base conditionals
+pub BaseCond : ast::Cond = {
+    "c" "==" "0"
+        => ast::Cond::CheckZero(),
+
+    "c" "!=" "0"
+        => ast::Cond::CheckNotZero(),
+
+    "read" "==" <read_char:r"'[a-zA-Z0-9]'">
+        => ast::Cond::Read(read_char.chars().nth(1).unwrap()),
+
+    "read" "!=" <read_char:r"'[a-zA-Z0-9]'">
+        => ast::Cond::NotRead(read_char.chars().nth(1).unwrap()),
+
+    "!" <cond:BaseCond> 
+        => ast::Cond::Not(Box::new(cond)),
+
+    "(" <cond:Cond> ")"
+        => cond,
+}
+
+
