@@ -25,7 +25,7 @@ pub Stmt : ast::Stmt = {
     "reject" ";"
         => ast::Stmt::Reject(),
 
-    "move(" <s:r"-?[0-9]+"> ")" ";"
+    "move" "(" <s:r"-?[0-9]+"> ")" ";"
         => ast::Stmt::Move(i32::from_str(s).unwrap()),
 
     "c" "+=" <s:r"-?[0-9]+"> ";"
