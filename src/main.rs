@@ -1,13 +1,15 @@
-pub mod parser;
-
-#[macro_use] extern crate lalrpop_util;
-
+// IMPORTS
 use std::env;
 use std::fs;
 
+// Import grammar
+#[macro_use] extern crate lalrpop_util;
+lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
+
+// Import parser methods and types
+pub mod parser;
 use parser::ast;
 
-lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 fn main() {
     // Declare parser for StmtList rule
