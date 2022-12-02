@@ -88,7 +88,7 @@ impl Stmt {
 
             // Print if statement
             Stmt::If(cond, if_body, else_body) => {
-                // Print if
+                // Print if (condition printing just uses the debug trait for now)
                 out.push_str(&buffer);
                 out.push_str(&format!("if ({:?})\n", cond));
 
