@@ -42,6 +42,12 @@ pub Stmt : ast::Stmt = {
 
     "while" "(" <cond:Cond> ")" "{" <while_body:StmtList> "}"
         => ast::Stmt::While(cond, while_body),
+
+    "branch" "{" <branch_body:StmtList> "}" <mut alsos:AlsoBody+>
+        => {
+            alsos.insert(0, branch_body);
+            ast::Stmt::Branch(alsos)
+        }
 }
 
 // Rule to parse else statements
@@ -51,6 +57,12 @@ pub ElseBody : Vec<ast::Stmt> = {
         => else_body,
 }
 
+// Rule to parse also statements
+pub AlsoBody : Vec<ast::Stmt> = {
+    "also" "{" <also_body:StmtList> "}"
+        => also_body,
+}
+ 
 // Rule to parse logical expressions
 // Or binds the least tightly
 pub Cond : ast::Cond = {
