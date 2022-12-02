@@ -1,0 +1,1 @@
+//fn report_err<L, T, E>(error : ParseError<L, T, E>) {}

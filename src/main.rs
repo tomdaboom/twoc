@@ -2,25 +2,34 @@ pub mod parser;
 
 #[macro_use] extern crate lalrpop_util;
 
+use std::env;
+use std::fs;
+
 use parser::ast;
 
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 fn main() {
-    // Declare Stmt parser
+    // Declare parser for StmtList rule
     let stmt_list_parser = grammar_rules::StmtListParser::new();
 
-    // Declare test string
-    let test_prog = "while ( read == 'C' || read == 'C' && !(c == 0) ) { c -= 12; }";
+    // Get name of file from command line args
+    let args: Vec<String> = env::args().collect();
+    let file_path = &args[1];
+    println!("Parsing {:?}", file_path);
 
-    // Parse test string
-    let test = stmt_list_parser.parse(test_prog);
+    // Load file
+    let test_prog = fs::read_to_string(file_path).expect("File not found");
 
+    // Parse string
+    let test = stmt_list_parser.parse(&test_prog);
+
+    // Output result of parse
     match test {
         Ok(ref ast) => 
             println!("AST:\n{:?}", ast),
 
-        Err(_) => 
-            println!("Parse erorr detected!"),
+        Err(ref err) => 
+            println!("Parse Error:\n{:?}", err),
     }
 }
