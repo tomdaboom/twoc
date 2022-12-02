@@ -5,7 +5,12 @@ pub mod ast;
 lalrpop_mod!(pub parser);
 
 fn main() {
-    let test1 = parser::ParseStmt::new().parse("move(6);");
+    // Declare Stmt parser
+    let stmt_parser = parser::StmtParser::new();
 
-    //println!("{:?}", test1);
+    let test1 = stmt_parser.parse("move(6);").unwrap();
+
+    let expected1 = ast::Stmt::Move(6);
+
+    println!("{:?} = {:?}", test1, expected1);
 }

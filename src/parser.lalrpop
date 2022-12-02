@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use crate::parser::ast::Stmt::{Move, Incr};
+use crate::ast;
 
 grammar;
 
@@ -20,15 +20,15 @@ grammar;
 //        }
 //}
 
-pub ParseStmt : ast::Stmt = {
+pub Stmt : ast::Stmt = {
     "move(" <s:r"-?[0-9]+"> ");"
-        => ast::Move(i32::from_str(s).unwrap()),
+        => ast::Stmt::Move(i32::from_str(s).unwrap()),
 
     "c" "+=" <s:r"-?[0-9]+"> ";"
-        => ast::Incr(i32::from_str(s).unwrap()), 
+        => ast::Stmt::Incr(i32::from_str(s).unwrap()), 
 
     "c" "-=" <s:r"-?[0-9]+"> ";" 
-        => ast::Incr(-1 * i32::from_str(s).unwrap()),
+        => ast::Stmt::Incr(-1 * i32::from_str(s).unwrap()),
 
     //"if" "(" <cond:ParseCond> ")" "{" <ifBody:ParseStmtList> "}" 
     //    => ast::If(cond, ifBody, Vec::new()),
