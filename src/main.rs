@@ -6,11 +6,9 @@ lalrpop_mod!(pub parser);
 
 fn main() {
     // Declare Stmt parser
-    let stmt_parser = parser::StmtParser::new();
+    let stmt_list_parser = parser::StmtListParser::new();
 
-    let test1 = stmt_parser.parse("move(6);").unwrap();
+    let test1 = stmt_list_parser.parse("while (cond) { c += 2; move(-6); }").unwrap();
 
-    let expected1 = ast::Stmt::Move(6);
-
-    println!("{:?} = {:?}", test1, expected1);
+    println!("AST:\n{:?}", test1);
 }

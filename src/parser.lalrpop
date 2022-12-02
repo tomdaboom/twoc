@@ -3,39 +3,52 @@ use crate::ast;
 
 grammar;
 
+// Top-level rule of the grammar
+// TODO: add syntactic sugar
+pub Twoc : Vec<ast::Stmt> = {
+    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
+        => prog,
+}
 
-//pub ParseTwoc : Vec<ast::Stmt> = {
-//    "twoc" "(" "string" ")" "{" <prog:ParseStmtList> "}" 
-//        => prog,
-//}
+// Rule to parse lists of statements
+// StmtList ::= Stmt ";" StmtList? | epsilon
+pub StmtList : Vec<ast::Stmt> = {
+    <stmts:Stmt*> 
+        => stmts
+}
 
-//pub ParseStmtList : Vec<ast::Stmt> = {
-//    <mut stmts:(<ParseStmtList>)*> <stmt:ParseStmt?> 
-//        => match stmt {
-//            None => stmts,
-//            Some(s) => {
-//                stmts.push(s);
-//                stmts
-//            }
-//        }
-//}
-
+// Rule to parse statements
 pub Stmt : ast::Stmt = {
-    "move(" <s:r"-?[0-9]+"> ");"
+    "move(" <s:r"-?[0-9]+"> ")" ";"
         => ast::Stmt::Move(i32::from_str(s).unwrap()),
 
     "c" "+=" <s:r"-?[0-9]+"> ";"
         => ast::Stmt::Incr(i32::from_str(s).unwrap()), 
 
-    "c" "-=" <s:r"-?[0-9]+"> ";" 
+    "c" "-=" <s:r"-?[0-9]+"> ";"
         => ast::Stmt::Incr(-1 * i32::from_str(s).unwrap()),
 
-    //"if" "(" <cond:ParseCond> ")" "{" <ifBody:ParseStmtList> "}" 
-    //    => ast::If(cond, ifBody, Vec::new()),
+    "if" "(" <cond:Cond> ")" "{" <if_body:StmtList> "}" <else_body:ElseBody?>
+        => match else_body {
+            None => 
+                ast::Stmt::If(cond, if_body, Vec::new()),
+            Some(else_block) => 
+                ast::Stmt::If(cond, if_body, else_block),
+        },
 
-    //"if" "(" <cond:ParseCond> ")" "{" <ifBody:ParseStmtList> "}" "else" "{" <elseBody:ParseStmtList> "}"
-    //    => ast::If(cond, ifBody, elseBody),
+    "while" "(" <cond:Cond> ")" "{" <while_body:StmtList> "}"
+        => ast::Stmt::While(cond, while_body),
+}
 
-    //"while" "(" <cond:ParseCond> ")" "{" <whileBody:ParseStmtList> "}"
-    //    => ast::While(cond, whileBody),
+// Rule to parse else statements
+// TODO: extend for else-if statements
+pub ElseBody : Vec<ast::Stmt> = {
+    "else" "{" <else_body:StmtList> "}" 
+        => else_body,
+}
+
+// Rule to parse logical 
+// TODO: actually do this
+pub Cond : ast::Cond = {
+    "cond" => ast::Cond::CheckZero(),
 }

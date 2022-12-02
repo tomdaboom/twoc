@@ -1,9 +1,12 @@
-// AST nodes for statements
-
-
 // AST nodes for statements 
 #[derive(Debug)]
 pub enum Stmt {
+    // accept;
+    Accept(),
+
+    // reject;
+    Reject(),
+
     // move(i)
     Move(i32),
 
