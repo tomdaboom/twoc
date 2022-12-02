@@ -11,18 +11,18 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 fn main() {
     // Declare parser for StmtList rule
-    let stmt_list_parser = grammar_rules::StmtListParser::new();
+    let parser = grammar_rules::TwocParser::new();
 
     // Get name of file from command line args
     let args: Vec<String> = env::args().collect();
     let file_path = &args[1];
-    println!("Parsing {:?}", file_path);
+    println!("Parsing {:?}\n", file_path);
 
     // Load file
     let test_prog = fs::read_to_string(file_path).expect("File not found");
 
     // Parse string
-    let test = stmt_list_parser.parse(&test_prog);
+    let test = parser.parse(&test_prog);
 
     // Output result of parse
     match test {
