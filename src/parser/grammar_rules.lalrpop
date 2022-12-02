@@ -90,16 +90,39 @@ pub BaseCond : ast::Cond = {
         => ast::Cond::CheckNotZero(),
 
     "read" "==" <read_char:r"'[a-zA-Z0-9]'">
-        => ast::Cond::Read(read_char.chars().nth(1).unwrap()),
+        => {
+            let read = ast::Readable::Char(read_char.chars().nth(1).unwrap());
+            ast::Cond::Read(read)
+        },
 
     "read" "!=" <read_char:r"'[a-zA-Z0-9]'">
-        => ast::Cond::NotRead(read_char.chars().nth(1).unwrap()),
+        => {
+            let read = ast::Readable::Char(read_char.chars().nth(1).unwrap());
+            ast::Cond::NotRead(read)
+        },
 
-    "!" <cond:BaseCond> 
-        => ast::Cond::Not(Box::new(cond)),
+    "read" "==" <endmarker:r"(lend|rend)"> 
+        => match endmarker {
+            "lend" => ast::Cond::Read(ast::Readable::LEnd()),
 
-    "(" <cond:Cond> ")"
-        => cond,
+            "rend" => ast::Cond::Read(ast::Readable::REnd()),
+
+            _      => ast::Cond::Read(ast::Readable::LEnd()),
+        }, 
+
+    "read" "!=" <endmarker:r"(lend|rend)"> 
+        => match endmarker {
+            "lend" => ast::Cond::NotRead(ast::Readable::LEnd()),
+
+            "rend" => ast::Cond::NotRead(ast::Readable::REnd()),
+
+            _      => ast::Cond::NotRead(ast::Readable::LEnd()),
+        }, 
+
+    // ! binds tightest
+    "!" <cond:BaseCond> => ast::Cond::Not(Box::new(cond)),
+
+    "(" <cond:Cond> ")" => cond,
 }
 
 

@@ -28,8 +28,12 @@ fn main() {
 
     // Output result of parse
     match test {
-        Ok(ref ast) => 
-            println!("AST:\n{:?}", ast),
+        Ok(ref ast) => {
+            println!("AST:");
+            for stmt in ast {
+                println!("{}", stmt.print(2));
+            }
+        }
 
         Err(ref err) => 
             println!("Parse Error:\n{:?}", err),
