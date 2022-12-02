@@ -124,5 +124,3 @@ pub BaseCond : ast::Cond = {
 
     "(" <cond:Cond> ")" => cond,
 }
-
-

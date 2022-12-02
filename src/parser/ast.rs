@@ -48,7 +48,7 @@ pub enum Cond {
     Not(Box<Cond>),
 }
 
-// Enum for things on the rhs of a read== condition (either a character or lend/rend)
+// Enum for things on the rhs of a read condition (either a character or lend/rend)
 #[derive(Debug)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
