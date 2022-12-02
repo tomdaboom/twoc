@@ -8,9 +8,12 @@ fn main() {
     // Declare Stmt parser
     let stmt_list_parser = parser::StmtListParser::new();
 
+    // Declare test string
     let test_prog = "while ( read == 'C' || read == 'C' && !(c == 0) ) { }";
 
-    let test1 = stmt_list_parser.parse(test_prog).unwrap();
+    // Parse test string
+    let test = stmt_list_parser.parse(test_prog).unwrap();
 
-    println!("AST:\n{:?}", test1);
+    // Print test ast
+    println!("AST:\n{:?}", test);
 }
