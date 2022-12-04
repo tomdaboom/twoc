@@ -8,7 +8,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 // Import parser methods and types
 pub mod parser;
-use parser::ast;
+use parser::{ast, contract};
 
 
 fn main() {
@@ -29,9 +29,19 @@ fn main() {
     // Output result of parse
     match test {
         Ok(ref ast) => {
+            // Print AST
             println!("AST:");
             for stmt in ast {
-                println!("{}", stmt.print(2));
+                print!("{}", stmt.print(2));
+            }
+
+            // Contract AST
+            let contracted = contract::contract(ast);
+
+            // Print contracted AST
+            println!("\nContracted AST:");
+            for stmt in contracted {
+                print!("{}", stmt.print(2));
             }
         }
 

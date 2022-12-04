@@ -1,5 +1,5 @@
 // AST nodes for statements 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Stmt {
     // accept
     Accept(),
@@ -24,7 +24,7 @@ pub enum Stmt {
 }
 
 // AST nodes for conditions
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Cond {
     // read == X
     Read(Readable),
@@ -49,7 +49,7 @@ pub enum Cond {
 }
 
 // Enum for things on the rhs of a read condition (either a character or lend/rend)
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
 impl Stmt {
@@ -145,3 +145,5 @@ impl Stmt {
         out
     }
 }
+
+
