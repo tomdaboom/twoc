@@ -11,7 +11,7 @@ use parser::{ast, contract};
 
 
 fn main() {
-    // Declare parser for StmtList rule
+    // Declare parser for Twoc rule
     let parser = grammar_rules::TwocParser::new();
 
     // Get name of file from command line args
