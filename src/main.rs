@@ -9,6 +9,8 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 pub mod parser;
 use parser::{ast, contract, program};
 
+// Import automaton methods and types
+pub mod automaton;
 
 fn main() {
     // Declare parser for Twoc rule
