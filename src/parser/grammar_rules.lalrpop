@@ -7,8 +7,8 @@ grammar;
 // Top-level rule of the grammar
 // TODO: add actual arguments
 // TODO: return a program::Program
-pub Twoc : Vec<ast::Stmt> = {
-    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" => prog,
+pub Twoc : program::Program = {
+    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" => program::Program::new(prog),
 }
 
 // Rule to parse lists of statements

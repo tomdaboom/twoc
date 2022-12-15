@@ -7,7 +7,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 // Import parser methods and types
 pub mod parser;
-use parser::{ast, contract};
+use parser::{ast, contract, program};
 
 
 fn main() {
@@ -23,25 +23,21 @@ fn main() {
     let test_prog = fs::read_to_string(file_path).expect("File not found");
 
     // Parse string
-    let test = parser.parse(&test_prog);
+    let mut test = parser.parse(&test_prog);
 
     // Output result of parse
     match test {
-        Ok(ref ast) => {
+        Ok(ref mut prog) => {
             // Print AST
             println!("AST:");
-            for stmt in ast {
-                print!("{}", stmt.print(2));
-            }
+            prog.print();
 
             // Contract AST
-            let contracted = contract::contract(ast);
+            prog.contract();
 
             // Print contracted AST
             println!("\nContracted AST:");
-            for stmt in contracted {
-                print!("{}", stmt.print(2));
-            }
+            prog.print()
         }
 
         Err(ref err) => 
