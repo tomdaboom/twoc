@@ -1,5 +1,5 @@
 use crate::ast;
-use crate::contract;
+use crate::contract::contract;
 
 pub struct Program {
     pub stmts : Vec<ast::Stmt>,
@@ -11,7 +11,7 @@ impl Program {
     }
 
     pub fn contract(&mut self) {
-        self.stmts = contract::contract(&self.stmts);
+        self.stmts = contract(&self.stmts);
     } 
 
     pub fn print(&self) {
