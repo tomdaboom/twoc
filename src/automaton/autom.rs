@@ -21,16 +21,33 @@ pub struct Transition {
 }
 
 impl Transition {
+    pub fn new_basic_block_trans(next_state : State, mv : i32, ic : i32) -> Self {
+        Self {
+            goto : next_state,
+            
+            move_by : mv,
+            incr_by : ic,
+            
+            test_counter_zero : None,
+            read_char : None,
+        }
+    }
 
 }
 
 // Automatons are represented as adjacency lists
 pub struct Autom {
     // Adjacency list of states to transitions off of that state
-    state_map   : HashMap<State, Vec<Transition>>,
+    state_map : HashMap<State, Vec<Transition>>,
 
     // Counter to keep track of the number of states in the automaton
     state_total : State,
+
+    // Vector to keep track of accepting states
+    accepting : Vec<State>,
+
+    // Vector to keep track of rejecting states
+    rejecting : Vec<State>,
 }
 
 
@@ -38,7 +55,9 @@ impl Autom {
     pub fn new() -> Self {
         Self { 
             state_map : HashMap::new(), 
-            state_total : 0 
+            state_total : 0,
+            accepting : Vec::new(),
+            rejecting : Vec::new(), 
         }
     }
 
@@ -63,5 +82,12 @@ impl Autom {
         }
     }
 
+    pub fn make_accept_state(&mut self, state : State) {
+        self.accepting.push(state);
+    }
+
+    pub fn make_reject_state(&mut self, state : State) {
+        self.rejecting.push(state);
+    }
 
 }

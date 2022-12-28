@@ -6,7 +6,6 @@ grammar;
 
 // Top-level rule of the grammar
 // TODO: add actual arguments
-// TODO: return a program::Program
 pub Twoc : program::Program = {
     "twoc" "(" "string" ")" "{" <prog:StmtList> "}" => program::Program::new(prog),
 }

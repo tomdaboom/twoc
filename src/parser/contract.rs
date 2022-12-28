@@ -96,6 +96,9 @@ pub fn contract(program : &Vec<ast::Stmt>) -> Vec<ast::Stmt> {
                 // Clear basic block
                 basic_block = Vec::new();
             }
+
+            // Panic if you see a basic block
+            ast::Stmt::BasicBlock(_ , _) => panic!("Basic block in uncontracted ast!"),
         }
     }
 
@@ -125,8 +128,10 @@ fn contract_basic_block(basic_block : &Vec<ast::Stmt>) -> Vec<ast::Stmt> {
     }
 
     // TODO: see if it makes sense to wrap ifs around this
-    contracted.push(ast::Stmt::Move(total_move));
-    contracted.push(ast::Stmt::Incr(total_incr));
+    //contracted.push(ast::Stmt::Move(total_move));
+    //contracted.push(ast::Stmt::Incr(total_incr));
+
+    contracted.push(ast::Stmt::BasicBlock(total_move, total_incr));
 
     // Return
     contracted

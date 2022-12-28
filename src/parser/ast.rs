@@ -13,6 +13,9 @@ pub enum Stmt {
     // c += j
     Incr(i32), 
 
+    // (move(i), c += j), only present after contraction
+    BasicBlock(i32, i32),
+
     // if-else
     If(Cond, Vec<Stmt>, Vec<Stmt>),
 
@@ -82,6 +85,15 @@ impl Stmt {
 
             // Print increment/decrement statement
             Stmt::Incr(incr_by) => {
+                out.push_str(&buffer);
+                out.push_str(&format!("c += {:?}\n", incr_by));
+            },
+
+            // Print basic block
+            Stmt::BasicBlock(move_by, incr_by) => {
+                out.push_str(&buffer);
+                out.push_str(&format!("move({:?})\n", move_by));
+                
                 out.push_str(&buffer);
                 out.push_str(&format!("c += {:?}\n", incr_by));
             },
