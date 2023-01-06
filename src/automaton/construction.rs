@@ -48,9 +48,41 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         },
 
         ast::Stmt::Branch(branches) => {
+            for branch in branches {
+                // Introduce a new state for each of the branches
+                let new_state = autom.introduce();
+
+                // Add an epsilon transition from state to new_state
+                let transition = Transition::new_epsilon_trans(new_state);
+                autom.add_transition(*state, transition);
+
+                // Construct each of the branches off of new_state
+                for branch_stmt in branch {
+                    let mut start_state = new_state;
+                    construct_stmt(autom, &mut start_state, branch_stmt);
+                }
+            }
 
         },
 
         _ => panic!("Can't construct this type of statement yet!"),
+    }
+}
+
+fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, conditional : ast::Cond) {
+    match conditional {
+        ast::Cond::Read(char) => {},
+
+        ast::Cond::NotRead(char) => {},
+
+        ast::Cond::CheckZero() => {},
+
+        ast::Cond::CheckNotZero() => {},
+
+        ast::Cond::And(left, right) => {},
+
+        ast::Cond::Or(left, right) => {},
+
+        ast::Cond::Not(stmt) => {},
     }
 }

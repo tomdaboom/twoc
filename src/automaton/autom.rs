@@ -33,6 +33,18 @@ impl Transition {
         }
     }
 
+    pub fn new_epsilon_trans(next_state : State) -> Self {
+        Self {
+            goto : next_state,
+
+            move_by : 0,
+            incr_by : 0,
+
+            test_counter_zero : None,
+            read_char : None,
+        }
+    }
+
 }
 
 // Automatons are represented as adjacency lists
