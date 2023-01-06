@@ -48,21 +48,30 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         },
 
         ast::Stmt::Branch(branches) => {
+            // Introduce a common final state for each of the branches
+            let final_state = autom.introduce();
+
             for branch in branches {
-                // Introduce a new state for each of the branches
+                // Introduce a new start state for each of the branches
                 let new_state = autom.introduce();
 
-                // Add an epsilon transition from state to new_state
-                let transition = Transition::new_epsilon_trans(new_state);
-                autom.add_transition(*state, transition);
+                // Add an epsilon transition from current state to new start state
+                let start_transition = Transition::new_epsilon_trans(new_state);
+                autom.add_transition(*state, start_transition);
 
-                // Construct each of the branches off of new_state
+                // Construct each of the statements in the branch
+                let mut branch_state = new_state;
                 for branch_stmt in branch {
-                    let mut start_state = new_state;
-                    construct_stmt(autom, &mut start_state, branch_stmt);
+                    construct_stmt(autom, &mut branch_state, branch_stmt);
                 }
+
+                // Construct an epsilon transition from the final state of this branch to the common final state
+                let end_transition = Transition::new_epsilon_trans(final_state);
+                autom.add_transition(branch_state, end_transition);
             }
 
+            // Update the current state to the common final state
+            *state = final_state;
         },
 
         _ => panic!("Can't construct this type of statement yet!"),
@@ -71,18 +80,32 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
 fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, conditional : ast::Cond) {
     match conditional {
-        ast::Cond::Read(char) => {},
+        ast::Cond::Read(char) => {
 
-        ast::Cond::NotRead(char) => {},
+        },
 
-        ast::Cond::CheckZero() => {},
+        ast::Cond::NotRead(char) => {
 
-        ast::Cond::CheckNotZero() => {},
+        },
 
-        ast::Cond::And(left, right) => {},
+        ast::Cond::CheckZero() => {
 
-        ast::Cond::Or(left, right) => {},
+        },
 
-        ast::Cond::Not(stmt) => {},
+        ast::Cond::CheckNotZero() => {
+
+        },
+
+        ast::Cond::And(left, right) => {
+
+        },
+
+        ast::Cond::Or(left, right) => {
+
+        },
+
+        ast::Cond::Not(stmt) => {
+
+        },
     }
 }
