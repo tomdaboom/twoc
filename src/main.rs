@@ -52,5 +52,6 @@ fn main() {
 
     // Print the automaton (TODO: make this look nicer)
     println!("\nAutomaton:");
-    println!("{:?}", autom);
+    autom.print();
+    //println!("{:?}", autom);
 }

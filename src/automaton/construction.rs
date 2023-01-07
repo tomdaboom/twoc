@@ -4,7 +4,7 @@ use super::autom::{Autom, State, Transition};
 
 pub fn construct_from_prog(prog : Program) -> Autom {
     // Initialise the automaton
-    let mut autom = Autom::new();
+    let mut autom = Autom::new(prog.alpha);
 
     // Introduce a start state and record it
     let mut state = autom.introduce();
@@ -151,9 +151,53 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             *state = new_state;
         },
 
-        // TODO: This once the language has a specific alphabet
         ast::Cond::NotRead(char) => {
-            panic!("Constructing conditionals of the form read != 'x' hasn't been implemented yet!");
+            // Introduce a new state
+            let new_state = autom.introduce();
+
+            // Create and store transitions for all of the characters not being read
+            let mut transes : Vec<Transition> = Vec::new();
+
+            for other_char in autom.alpha.iter() {
+                // Convert the alphabet character to a Readable
+                let readable_char = ast::Readable::Char(*other_char);
+
+                // Skip recording this transition if it's the character we don't want to read
+                if readable_char == char { continue; }
+                
+                // Store this transition
+                transes.push(Transition::new_read_trans(
+                    new_state, 
+                    readable_char)
+                );
+            }
+
+            // Add new transitions to the automaton
+            for transition in transes {
+                autom.add_transition(*state, transition);
+            }
+
+            // Add transitions to check for the end markers
+
+            if char != ast::Readable::LEnd() {
+                let transition = Transition::new_read_trans(
+                    new_state,
+                    ast::Readable::LEnd()
+                );
+                
+                autom.add_transition(*state, transition);
+            }
+
+            if char != ast::Readable::REnd() {
+                let transition = Transition::new_read_trans(
+                    new_state,
+                    ast::Readable::LEnd()
+                );
+                
+                autom.add_transition(*state, transition);
+            }
+
+            *state = new_state;
         },
 
         ast::Cond::CheckZero() => {

@@ -52,7 +52,7 @@ pub enum Cond {
 }
 
 // Enum for things on the rhs of a read condition (either a character or lend/rend)
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
 impl Stmt {

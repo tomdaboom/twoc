@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::parser::ast::Readable;
 
@@ -8,19 +8,19 @@ pub type State = u8;
 #[derive(Debug, Clone, Copy)]
 pub struct Transition {
     // The state we transition to
-    goto : State,
+    pub goto : State,
     
     // Increment by
-    incr_by : i32,
+    pub incr_by : i32,
 
     // Move by
-    move_by : i32,
+    pub move_by : i32,
     
     // Some(true) if we check c=0, Some(false) if we check c!=0, None if we don't care about the counter
-    test_counter_zero : Option<bool>,
+    pub test_counter_zero : Option<bool>,
 
     // Some(char) if we read some character from the tape, None if we don't care about the tape
-    read_char : Option<Readable>,
+    pub read_char : Option<Readable>,
 }
 
 // These implementations are constructors for specific kinds of transitions
@@ -92,33 +92,37 @@ pub struct Autom {
 
     // Vector to keep track of rejecting states
     rejecting : Vec<State>,
+
+    // The tape alphabet (excluding the endmarkers)
+    pub alpha : HashSet<char>,
 }
 
 
 impl Autom {
     // Create a new empty automaton
-    pub fn new() -> Self {
+    pub fn new(char_set : HashSet<char>) -> Self {
         Self { 
             state_map : HashMap::new(), 
             state_total : 0,
             accepting : Vec::new(),
             rejecting : Vec::new(), 
+            alpha : char_set,
         }
     }
 
     // Introduce a new state to the automaton
     pub fn introduce(&mut self) -> State {
-        // Increment the total number of states
-        self.state_total += 1;
-
         // Add a new state to the adjacency list
         self.state_map.insert(
             self.state_total,
             Vec::new(),
         );
 
+        // Increment the total number of states
+        self.state_total += 1;
+
         // Return the new state
-        self.state_total
+        self.state_total-1
     }
 
     // Add a new transition to the automaton
@@ -142,6 +146,23 @@ impl Autom {
     // Turn a given state into a reject state
     pub fn make_reject_state(&mut self, state : State) {
         self.rejecting.push(state);
+    }
+
+    // Display the automaton
+    pub fn print(&self) {
+        // Display the states
+        println!("States: 0-{:?}", self.state_total-1);
+
+        // Display each of the transitions off of each state
+        for state in 0..self.state_total {
+            print!("From {:?}: ", state);
+
+            for trans in self.state_map.get(&state).unwrap() {
+                print!("{:?}, ", trans.goto);
+            }
+
+            println!();
+        }
     }
 
 }

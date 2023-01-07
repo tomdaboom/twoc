@@ -7,7 +7,23 @@ grammar;
 // Top-level rule of the grammar
 // TODO: add actual arguments
 pub Twoc : program::Program = {
-    "twoc" "(" "string" ")" "{" <prog:StmtList> "}" => program::Program::new(prog),
+    <alpha:AlphabetDef> "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
+        => program::Program::new(prog, alpha),
+}
+
+// Rule to parse alphabet definition
+pub AlphabetDef : Vec<char> = {
+    "alphabet" "=" "[" <cs:Letters> "]" ";" => cs,
+}
+
+// Rule to parse comma-separated list of letters
+pub Letters : Vec<char> = {
+    <c:r"'[a-zA-Z0-9]'"> => vec![c.chars().nth(1).unwrap()],
+
+    <c:r"'[a-zA-Z0-9]'"> "," <mut cs:Letters> => {
+        cs.push(c.chars().nth(1).unwrap());
+        cs
+    },
 }
 
 // Rule to parse lists of statements
