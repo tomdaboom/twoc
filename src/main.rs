@@ -49,7 +49,7 @@ fn main() {
     // Construct the automaton from the program
     let autom = construction::construct_from_prog(prog);
 
-    // Print the automaton (TODO: finish autom.print())
+    // Print the automaton
     println!("\nAutomaton:");
     autom.print();
 }
