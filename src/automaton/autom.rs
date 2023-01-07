@@ -105,7 +105,7 @@ impl Transition {
         if let Some(read) = self.read_char {
             print!(" read==");
             match read {
-                Readable::Char(c) => print!("'{:?}'", c),
+                Readable::Char(c) => print!("{:?}", c),
 
                 Readable::LEnd() => print!("lend"),
 
@@ -203,16 +203,24 @@ impl Autom {
         }
         println!();
 
-        // Display the accepting and rejecting states
-
+        // Display the accepting states
         println!("Accepting:");
         for state in &self.accepting {
             println!("  {:?}", *state);
         }
 
+        // Display the rejecting states
         println!("Rejecting:");
         for state in &self.rejecting {
             println!("  {:?}", *state);
+        }
+    }
+
+    // Get rid of all transitions coming from rejecting states
+    pub fn clean_reject_states(&mut self) {
+        for state in &self.rejecting {
+            let transitions = self.state_map.get_mut(state).unwrap();
+            *transitions = Vec::new();
         }
     }
 

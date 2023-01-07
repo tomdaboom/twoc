@@ -15,6 +15,9 @@ pub fn construct_from_prog(prog : Program) -> Autom {
         construct_stmt(&mut autom, &mut state, stmt);
     }
 
+    // Remove transitions from reject states
+    autom.clean_reject_states();
+
     // Return the constructed automaton
     autom
 }
@@ -199,7 +202,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             if char != ast::Readable::REnd() {
                 let transition = Transition::new_read_trans(
                     new_state,
-                    ast::Readable::LEnd()
+                    ast::Readable::REnd()
                 );
                 
                 autom.add_transition(*state, transition);
