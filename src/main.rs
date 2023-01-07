@@ -11,14 +11,14 @@ use parser::{ast, contract, program};
 
 // Import automaton methods and types
 pub mod automaton;
-use automaton::{autom, construction};
+use automaton::construction;
 
 fn main() {
     // Declare parser for Twoc rule
     let parser = grammar_rules::TwocParser::new();
 
     // Get name of file from command line args
-    let args: Vec<String> = env::args().collect();
+    let args : Vec<String> = env::args().collect();
     let file_path = &args[1];
     println!("Parsing {:?}\n", file_path);
 
@@ -50,8 +50,8 @@ fn main() {
     // Construct the automaton from the program
     let autom = construction::construct_from_prog(prog);
 
-    // Print the automaton (TODO: make this look nicer)
+    // Print the automaton (TODO: finish autom.print())
     println!("\nAutomaton:");
-    autom.print();
-    //println!("{:?}", autom);
+    //autom.print();
+    println!("{:?}", autom);
 }
