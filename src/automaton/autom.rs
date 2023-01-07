@@ -76,6 +76,43 @@ impl Transition {
             read_char : None
         }
     }
+
+    // Display the transition
+    pub fn print(&self) {
+        // Print the state to move to
+        print!("goto {:?}", self.goto);
+
+        // Print the move
+        if self.move_by != 0 {
+            print!(" move({:?})", self.move_by);
+        }
+
+        // Print the increment
+        if self.incr_by != 0 {
+            print!(" c+={:?}", self.incr_by);
+        }
+
+        // Print the counter check
+        if let Some(is_zero) = self.test_counter_zero {
+            if is_zero {
+                print!(" c==0");
+            } else {
+                print!(" c!=0");
+            }
+        }
+
+        // Print the readhead check
+        if let Some(read) = self.read_char {
+            print!(" read==");
+            match read {
+                Readable::Char(c) => print!("'{:?}'", c),
+
+                Readable::LEnd() => print!("lend"),
+
+                Readable::REnd() => print!("rend"),
+            }
+        }
+    }
 }
 
 // Automatons are represented as adjacency lists
@@ -151,17 +188,31 @@ impl Autom {
     // Display the automaton
     pub fn print(&self) {
         // Display the states
-        println!("States: 0-{:?}", self.state_total-1);
+        print!("States: 0-{:?}\n\n", self.state_total-1);
 
         // Display each of the transitions off of each state
+        println!("Transitions:");
         for state in 0..self.state_total {
-            print!("From {:?}: ", state);
+            print!("  From {:?}:\n", state);
 
             for trans in self.state_map.get(&state).unwrap() {
-                print!("{:?}, ", trans.goto);
+                print!("    ");
+                trans.print();
+                println!();
             }
+        }
+        println!();
 
-            println!();
+        // Display the accepting and rejecting states
+
+        println!("Accepting:");
+        for state in &self.accepting {
+            println!("  {:?}", *state);
+        }
+
+        println!("Rejecting:");
+        for state in &self.rejecting {
+            println!("  {:?}", *state);
         }
     }
 
