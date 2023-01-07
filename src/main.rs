@@ -33,7 +33,6 @@ fn main() {
         panic!("Parse Error:\n{:?}", err);
     }
 
-    // Output result of parse
     let mut prog = test.unwrap();
 
     // Print AST
