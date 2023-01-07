@@ -2,6 +2,7 @@ use crate::parser::{program::Program, ast};
 
 use super::autom::{Autom, State, Transition};
 
+// Turn a program into an automaton
 pub fn construct_from_prog(prog : Program) -> Autom {
     // Initialise the automaton
     let mut autom = Autom::new(prog.alpha);
@@ -18,6 +19,7 @@ pub fn construct_from_prog(prog : Program) -> Autom {
     autom
 }
 
+// Introduce the neccesary states and transitions to represent a single statement
 fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
     match stmt {
         // Turn the current state into an accept/reject state
@@ -43,6 +45,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = new_state;
         },
 
+        // Recursively construct an if statement 
         ast::Stmt::If(cond, if_body, else_body) => {
             // Variables to keep track of current states for true and false branches
             let mut true_state  = *state;
@@ -79,6 +82,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = final_state;
         },
 
+        // Recursively construct a while statement
         ast::Stmt::While(cond, while_body) => {
             // Variables to keep track of state in the while block and after breaking out
             let mut while_state = *state;
@@ -106,6 +110,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = break_state;  
         },
 
+        // Recursively construct a branch statement
         ast::Stmt::Branch(branches) => {
             // Introduce a common final state for each of the branches
             let final_state = autom.introduce();
@@ -137,8 +142,10 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
     }
 }
 
+// Introduce the neccesary transitions to represent a conditional check
 fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, conditional : ast::Cond) {
     match conditional {
+        // Add transitions to check that a character is on the tape
         ast::Cond::Read(char) => {
             // Introduce a new state
             let new_state = autom.introduce();
@@ -151,6 +158,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             *state = new_state;
         },
 
+        // Add transitions to check that a character is not on the tape
         ast::Cond::NotRead(char) => {
             // Introduce a new state
             let new_state = autom.introduce();
@@ -197,9 +205,11 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                 autom.add_transition(*state, transition);
             }
 
+            // Update the current state to the new state
             *state = new_state;
         },
 
+        // Add transition to check that the counter is zero
         ast::Cond::CheckZero() => {
             // Introduce a new state
             let new_state = autom.introduce();
@@ -212,6 +222,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             *state = new_state;
         },
 
+        // Add transition to check that the counter is not zero
         ast::Cond::CheckNotZero() => {
             // Introduce a new state
             let new_state = autom.introduce();
@@ -224,6 +235,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             *state = new_state;
         },
 
+        // Add transitions to check the conjunction of two conditions
         ast::Cond::And(left, right) => {
             // Construct transitions for left
             construct_conditional_transitions(autom, state, *left); 
@@ -232,6 +244,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             construct_conditional_transitions(autom, state, *right);
         },
 
+        // Add transitions to check the disjunction of two conditions
         ast::Cond::Or(left, right) => {
             // Introduce new states to track where each of the transitions for left and right end up
             let mut left_final_state = *state;
@@ -249,21 +262,29 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
             autom.add_transition(left_final_state, transition);
             autom.add_transition(right_final_state, transition);
 
+            // Update the current state to the common final state
+            *state = final_state;
         },
 
+        // Deal with nots
         ast::Cond::Not(stmt) => match *stmt {
+            // ! (read == 'x') => read != 'x'
             ast::Cond::Read(char) 
                 => construct_conditional_transitions(autom, state, ast::Cond::NotRead(char)),
 
+            // ! (read != 'x') => read == 'x'
             ast::Cond::NotRead(char) 
                 => construct_conditional_transitions(autom, state, ast::Cond::Read(char)),
 
+            // ! (c == 0) => c != 0
             ast::Cond::CheckZero() 
                 => construct_conditional_transitions(autom, state, ast::Cond::CheckNotZero()),
 
+            // ! (c != 0) => c == 0
             ast::Cond::CheckNotZero() 
                 => construct_conditional_transitions(autom, state, ast::Cond::CheckZero()),
 
+            // !(left && right) => !left || !right (de Morgan's law)
             ast::Cond::And(left, right) => {
                 // Make boxes with !left and !right in them
                 let not_left = Box::new(ast::Cond::Not(left));
@@ -276,6 +297,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                 construct_conditional_transitions(autom, state, new_conditional);
             },
 
+            // !(left || right) => !left && !right (de Morgan's law)
             ast::Cond::Or(left, right) => {
                 // Make boxes with !left and !right in them
                 let not_left = Box::new(ast::Cond::Not(left));
@@ -288,6 +310,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                 construct_conditional_transitions(autom, state, new_conditional);
             },
 
+            // !!x => x
             ast::Cond::Not(inner_stmt) 
                 => construct_conditional_transitions(autom, state, *inner_stmt),
         },
