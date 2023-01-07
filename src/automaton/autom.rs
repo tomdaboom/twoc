@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
+use crate::parser::ast::Readable;
+
 // A state is represented as an integer
 pub type State = u8;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Transition {
     // The state we transition to
     goto : State,
@@ -17,10 +20,12 @@ pub struct Transition {
     test_counter_zero : Option<bool>,
 
     // Some(char) if we read some character from the tape, None if we don't care about the tape
-    read_char : Option<char>,
+    read_char : Option<Readable>,
 }
 
+// These implementations are constructors for specific kinds of transitions
 impl Transition {
+    // Construct a new transition that corresponds to a basic block
     pub fn new_basic_block_trans(next_state : State, mv : i32, ic : i32) -> Self {
         Self {
             goto : next_state,
@@ -33,6 +38,7 @@ impl Transition {
         }
     }
 
+    // Construct an epsilon transition
     pub fn new_epsilon_trans(next_state : State) -> Self {
         Self {
             goto : next_state,
@@ -45,9 +51,35 @@ impl Transition {
         }
     }
 
+    // Construct a transition that reads a character or an endmarker from the tape
+    pub fn new_read_trans(next_state : State, read : Readable) -> Self {
+        Self {
+            goto : next_state,
+
+            move_by : 0,
+            incr_by : 0,
+
+            test_counter_zero : None,
+            read_char : Some(read),
+        }
+    }
+
+    // Construct a transition that checks if the counter is zero or not
+    pub fn new_checkzero_trans(next_state : State, counter_is_zero : bool) -> Self {
+        Self {
+            goto : next_state,
+
+            move_by : 0,
+            incr_by : 0,
+
+            test_counter_zero : Some(counter_is_zero),
+            read_char : None
+        }
+    }
 }
 
 // Automatons are represented as adjacency lists
+#[derive(Debug)]
 pub struct Autom {
     // Adjacency list of states to transitions off of that state
     state_map : HashMap<State, Vec<Transition>>,
@@ -64,6 +96,7 @@ pub struct Autom {
 
 
 impl Autom {
+    // Create a new empty automaton
     pub fn new() -> Self {
         Self { 
             state_map : HashMap::new(), 
@@ -73,20 +106,27 @@ impl Autom {
         }
     }
 
+    // Introduce a new state to the automaton
     pub fn introduce(&mut self) -> State {
+        // Increment the total number of states
         self.state_total += 1;
 
+        // Add a new state to the adjacency list
         self.state_map.insert(
             self.state_total,
             Vec::new(),
         );
 
+        // Return the new state
         self.state_total
     }
 
+    // Add a new transition to the automaton
     pub fn add_transition(&mut self, source : State, trans : Transition) {
+        // Find the state in the adjacency list
         let search_map = self.state_map.get_mut(&source);
         
+        // Push the transition to the adjacency list or panic
         match search_map {
             Some(trans_vec) => trans_vec.push(trans),
 
@@ -94,10 +134,12 @@ impl Autom {
         }
     }
 
+    // Turn a given state into an accept state
     pub fn make_accept_state(&mut self, state : State) {
         self.accepting.push(state);
     }
 
+    // Turn a given state into a reject state
     pub fn make_reject_state(&mut self, state : State) {
         self.rejecting.push(state);
     }

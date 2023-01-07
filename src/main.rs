@@ -11,6 +11,7 @@ use parser::{ast, contract, program};
 
 // Import automaton methods and types
 pub mod automaton;
+use automaton::{autom, construction};
 
 fn main() {
     // Declare parser for Twoc rule
@@ -25,24 +26,31 @@ fn main() {
     let test_prog = fs::read_to_string(file_path).expect("File not found");
 
     // Parse string
-    let mut test = parser.parse(&test_prog);
+    let test = parser.parse(&test_prog);
+
+    // Output any parse errors
+    if let Err(ref err) = test {
+        panic!("Parse Error:\n{:?}", err);
+    }
 
     // Output result of parse
-    match test {
-        Ok(ref mut prog) => {
-            // Print AST
-            println!("AST:");
-            prog.print();
+    let mut prog = test.unwrap();
 
-            // Contract AST
-            prog.contract();
+    // Print AST
+    println!("AST:");
+    prog.print();
 
-            // Print contracted AST
-            println!("\nContracted AST:");
-            prog.print()
-        }
+    // Contract AST
+    prog.contract();
 
-        Err(ref err) => 
-            println!("Parse Error:\n{:?}", err),
-    }
+    // Print contracted AST
+    println!("\nContracted AST:");
+    prog.print();
+
+    // Construct the automaton from the program
+    let autom = construction::construct_from_prog(prog);
+
+    // Print the automaton (TODO: make this look nicer)
+    println!("\nAutomaton:");
+    println!("{:?}", autom);
 }
