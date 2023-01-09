@@ -55,6 +55,8 @@ pub enum Cond {
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
+pub type Input = Vec<Readable>;
+
 impl Readable {
     pub fn from_input_str(input : &str) -> Vec<Self> {
         let mut out_vector = Vec::new();
