@@ -224,4 +224,13 @@ impl Autom {
         }
     }
 
+    // Get all the transitions off of a state
+    pub fn get_transitions(&self, state : State) -> Vec<Transition> {
+        match self.state_map.get(&state) {
+            None => panic!("State doesn't exist in automaton!"),
+
+            Some(transitions) => transitions.to_vec(),
+        }
+    }
+
 }

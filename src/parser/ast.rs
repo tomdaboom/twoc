@@ -55,6 +55,20 @@ pub enum Cond {
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
+impl Readable {
+    pub fn from_input_str(input : &str) -> Vec<Self> {
+        let mut out_vector = Vec::new();
+
+        out_vector.push(Self::LEnd());
+        for c in input.chars() {
+            out_vector.push(Self::Char(c));
+        }
+        out_vector.push(Self::REnd());
+
+        out_vector
+    }
+}
+
 impl Stmt {
     // AST Printer method
     pub fn print(&self, offset : usize) -> String {
