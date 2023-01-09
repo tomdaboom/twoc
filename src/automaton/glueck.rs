@@ -87,6 +87,7 @@ impl GlueckSimulator {
     }
 }
 
+// TODO: Fix eq, hash etc to make it only care about if counter == 0 or not
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Config {
     // The state the automaton is in
