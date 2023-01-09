@@ -13,7 +13,7 @@ pub Twoc : program::Program = {
 
 // Rule to parse alphabet definition
 pub AlphabetDef : Vec<char> = {
-    "alphabet" "=" "[" <cs:Letters> "]" ";" => cs,
+    "alphabet" "=" "[" <cs:Letters> "]" => cs,
 }
 
 // Rule to parse comma-separated list of letters
