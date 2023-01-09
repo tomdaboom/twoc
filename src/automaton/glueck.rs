@@ -46,6 +46,11 @@ impl GlueckSimulator {
     }
 
     pub fn simulate(&mut self, config : Config) -> Config {
+        // Check if the config has been memoized
+        if let Some(next_config) = self.config_table.get(&config) {
+            return *next_config;
+        }
+
         // Check if the config is halting
         if let Some(_) = self.autom.check_if_halting(config.state) {
             self.config_table.insert(config, config);
@@ -66,30 +71,15 @@ impl GlueckSimulator {
             Some(t) => trans = t,
         }
 
-        let new_config;
+        // Find the next config
+        let next_config = next(
+            config, 
+            trans, 
+            self.input.clone()
+        );
 
-        // If the transition corresponds to a 'push' operation
-        if trans.incr_by > 0 {
-            
-        }
-
-        // If the transition corresponds to a 'pop' operation
-        else if trans.incr_by < 0 {
-            new_config = config;
-        }
-
-        // If the transition corresponds to an 'op' operation
-        else {
-            // Find the next config
-            let next_config = next(
-                config, 
-                trans, 
-                self.input.clone()
-            );
-
-            // Simulate from the next config
-            new_config = self.simulate(next_config);
-        }
+        // Simulate from the next config
+        let new_config = self.simulate(next_config);
 
         // Memoise and return the new config
         self.config_table.insert(config, new_config);
