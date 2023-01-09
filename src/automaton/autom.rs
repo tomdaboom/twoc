@@ -116,7 +116,7 @@ impl Transition {
 }
 
 // Automatons are represented as adjacency lists
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Autom {
     // Adjacency list of states to transitions off of that state
     state_map : HashMap<State, Vec<Transition>>,
@@ -230,6 +230,18 @@ impl Autom {
             None => panic!("State doesn't exist in automaton!"),
 
             Some(transitions) => transitions.to_vec(),
+        }
+    }
+    
+    // Find out if a state is accepting or rejecting
+    // Some(true) if accepting, Some(false) if rejecting
+    pub fn check_if_halting(&self, state : State) -> Option<bool> {
+        if self.accepting.contains(&state) {
+            Some(true)
+        } else if self.rejecting.contains(&state) {
+            Some(false)
+        } else {
+            None
         }
     }
 
