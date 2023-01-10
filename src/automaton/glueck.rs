@@ -21,13 +21,13 @@ pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
     // Return based on the final config
     match autom.check_if_halting(final_config.state) {
         None => false,
-        Some(acc) => acc,
+        Some(accept) => accept,
     }
 }
 
 struct GlueckSimulator {
     // Table that stores the previously computed config terminators
-    config_table : HashMap<Config, Config>,
+    config_table : HashMap<StrippedConfig, DeltaConfig>,
 
     // Automaton being simulated
     autom : Autom,
@@ -47,29 +47,41 @@ impl GlueckSimulator {
 
     pub fn simulate(&mut self, config : Config) -> Config {
         // Check if the config has been memoized
-        if let Some(next_config) = self.config_table.get(&config) {
-            return *next_config;
+        if let Some(delta_config) = self.config_table.get(&strip_config(config)) {
+            // Calculate the new config
+            let new_config = Config {
+                state : delta_config.state,
+                read : delta_config.read,
+                counter : config.counter + delta_config.counter,
+            };
+
+            return new_config;
         }
 
         // Check if the config is halting
         if let Some(_) = self.autom.check_if_halting(config.state) {
-            self.config_table.insert(config, config);
+            // Construct DeltaConfig that gets mapped to
+            let map_config = make_delta_config(config, config);
+
+            // Memoize and return
+            self.config_table.insert(strip_config(config), map_config);
             return config; 
         }
 
         // Find out which transition the automaton can take from this config
         let trans_box = get_transition(self.autom.clone(), config, self.input.clone());
-        let trans;
 
-        // If no such transition exists, then the automaton halts and rejects on this config
-        match trans_box {
+        let trans = match trans_box {
+            // If no such transition exists, then the automaton halts and rejects on this config
             None => {
-                self.config_table.insert(config, config);
+                let map_config = make_delta_config(config, config);
+                self.config_table.insert(strip_config(config), map_config);
                 return config;
             },
 
-            Some(t) => trans = t,
-        }
+            // If such a transition exists, save it in trans
+            Some(t) => t,
+        };
 
         // Find the next config
         let next_config = next(
@@ -81,13 +93,15 @@ impl GlueckSimulator {
         // Simulate from the next config
         let new_config = self.simulate(next_config);
 
+        // Make delta config for memoization
+        let map_config = make_delta_config(config, new_config);
+
         // Memoise and return the new config
-        self.config_table.insert(config, new_config);
+        self.config_table.insert(strip_config(config), map_config);
         new_config
     }
 }
 
-// TODO: Fix eq, hash etc to make it only care about if counter == 0 or not
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Config {
     // The state the automaton is in
@@ -96,8 +110,28 @@ pub struct Config {
     // The index of the read head
     pub read : i32,
 
-    // The current value of the counter
+    // The value of the counter
     pub counter : i32,
+}
+
+// Type alias for configs where counter stores a change in the counter value
+pub type DeltaConfig = Config;
+
+// Type alias for configs that have a bool tracking c==0 instead of c
+pub type StrippedConfig = (State, i32, bool);
+
+// Function to turn a config into a stripped config
+pub fn strip_config(config : Config) -> StrippedConfig {
+    (config.state, config.read, config.counter == 0)
+}
+
+// Construct a delta config from two other configs
+pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
+    DeltaConfig {
+        state : to.state,
+        read : to.read,
+        counter : to.counter - from.counter,
+    }
 }
 
 // Get the transition that the automaton can take from the given configuration, if one exists
@@ -149,6 +183,9 @@ pub fn next(config : Config, transition : Transition, input : Input) -> Config {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len().try_into().unwrap());
+
+    // Find the new counter value
+
 
     // Return new config
     Config {

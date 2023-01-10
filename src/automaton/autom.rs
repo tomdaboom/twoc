@@ -16,7 +16,7 @@ pub struct Transition {
     // Move by
     pub move_by : i32,
     
-    // Some(true) if we check c=0, Some(false) if we check c!=0, None if we don't care about the counter
+    // Some(true) if we check c==0, Some(false) if we check c!=0, None if we don't care about the counter
     pub test_counter_zero : Option<bool>,
 
     // Some(char) if we read some character from the tape, None if we don't care about the tape
@@ -221,6 +221,18 @@ impl Autom {
         for state in &self.rejecting {
             let transitions = self.state_map.get_mut(state).unwrap();
             *transitions = Vec::new();
+        }
+    }
+
+    // Add a transition to empty the counter for all accepting states
+    pub fn empty_accept_states(&mut self) {
+        for state in &self.accepting {
+            // Create a transition that decrements the counter by 1
+            let decr_trans = Transition::new_basic_block_trans(*state, 0, -1);
+
+            // Add that transition to the state
+            let transitions = self.state_map.get_mut(state).unwrap();
+            transitions.push(decr_trans);
         }
     }
 

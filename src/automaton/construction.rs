@@ -18,6 +18,9 @@ pub fn construct_from_prog(prog : Program) -> Autom {
     // Remove transitions from reject states
     autom.clean_reject_states();
 
+    // Add counter-emptying transitions to the automaton
+    autom.empty_accept_states();
+
     // Return the constructed automaton
     autom
 }
