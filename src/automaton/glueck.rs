@@ -184,8 +184,8 @@ pub fn next(config : Config, transition : Transition, input : Input) -> Config {
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len().try_into().unwrap());
 
+    // TODO : empty counter checking here
     // Find the new counter value
-
 
     // Return new config
     Config {
