@@ -4,6 +4,9 @@ use crate::automaton::autom::{Autom, State};
 use crate::parser::ast::{Readable, Input};
 use super::autom::Transition;
 
+// Check if a string is accepted by a deterministic automaton using the glueck procedure
+// This should run in time O(|input|)
+// See https://arxiv.org/pdf/1309.5142.pdf for more info
 pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
     // Convert the input into a list of Readables
     let readable_input = Readable::from_input_str(input);
@@ -25,6 +28,7 @@ pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
     }
 }
 
+// Struct to hold variables for the Glueck procedure
 struct GlueckSimulator {
     // Table that stores the previously computed config terminators
     config_table : HashMap<StrippedConfig, DeltaConfig>,
@@ -37,6 +41,7 @@ struct GlueckSimulator {
 }
 
 impl GlueckSimulator {
+    // Constructor
     pub fn new(autom : Autom, input : Input) -> Self {
         Self { 
             config_table : HashMap::new(), 
@@ -45,6 +50,7 @@ impl GlueckSimulator {
         }
     }
 
+    // Find the terminator of a given configuration
     pub fn simulate(&mut self, config : Config) -> Config {
         // Check if the config has been memoized
         if let Some(delta_config) = self.config_table.get(&strip_config(config)) {
@@ -102,7 +108,8 @@ impl GlueckSimulator {
     }
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+// Configuration of a 2dc (i.e. all the information required to keep track of a computation)
+#[derive(Clone, Copy)]
 pub struct Config {
     // The state the automaton is in
     pub state : State,
@@ -179,6 +186,7 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
     }
 }
 
+// Given a config a transition off of it and an input string, find the next config
 pub fn next(config : Config, transition : Transition, input : Input) -> Config {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
