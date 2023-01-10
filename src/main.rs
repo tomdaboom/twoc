@@ -11,7 +11,7 @@ use parser::{ast, contract, program};
 
 // Import automaton methods and types
 pub mod automaton;
-use automaton::construction;
+use automaton::{construction, glueck};
 
 fn main() {
     // Declare parser for Twoc rule
@@ -52,4 +52,15 @@ fn main() {
     // Print the automaton
     println!("\nAutomaton:");
     autom.print();
+
+    // Test that the automaton accepts an example word via the glueck procedure
+    let test_word = "11000";
+    let accepting = glueck::glueck_procedure(autom, test_word);
+
+    if accepting {
+        print!("\nYay!");
+    } else {
+        print!("\nYayn't!");
+    }
+    
 }
