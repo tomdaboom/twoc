@@ -12,12 +12,12 @@ pub Twoc : program::Program = {
 }
 
 // Rule to parse alphabet definition
-pub AlphabetDef : Vec<char> = {
+AlphabetDef : Vec<char> = {
     "alphabet" "=" "[" <cs:Letters> "]" => cs,
 }
 
 // Rule to parse comma-separated list of letters
-pub Letters : Vec<char> = {
+Letters : Vec<char> = {
     <c:r"'[a-zA-Z0-9]'"> => vec![c.chars().nth(1).unwrap()],
 
     <c:r"'[a-zA-Z0-9]'"> "," <mut cs:Letters> => {
@@ -28,13 +28,13 @@ pub Letters : Vec<char> = {
 
 // Rule to parse lists of statements
 // StmtList ::= Stmt*
-pub StmtList : Vec<ast::Stmt> = {
+StmtList : Vec<ast::Stmt> = {
     <stmts:Stmt*> => stmts,
 }
 
 // Rule to parse single statements
 // TODO: add syntactic sugar macros (assignments, regex, etc.)
-pub Stmt : ast::Stmt = {
+Stmt : ast::Stmt = {
     // accept and reject
     "accept" ";" => ast::Stmt::Accept(),
     "reject" ";" => ast::Stmt::Reject(),
@@ -75,18 +75,18 @@ pub Stmt : ast::Stmt = {
 
 // Rule to parse else statements
 // TODO: extend for else-if statements
-pub ElseBody : Vec<ast::Stmt> = {
+ElseBody : Vec<ast::Stmt> = {
     "else" "{" <else_body:StmtList> "}" => else_body,
 }
 
 // Rule to parse also statements
-pub AlsoBody : Vec<ast::Stmt> = {
+AlsoBody : Vec<ast::Stmt> = {
     "also" "{" <also_body:StmtList> "}" => also_body,
 }
  
 // Rule to parse logical expressions
 // Logical or binds the least tightly
-pub Cond : ast::Cond = {
+Cond : ast::Cond = {
     <cond:AndCond> => cond,
     
     <cond:AndCond> "||" <conds:Cond>
@@ -94,7 +94,7 @@ pub Cond : ast::Cond = {
 }
 
 // Logical and binds tighter
-pub AndCond : ast::Cond = {
+AndCond : ast::Cond = {
     <cond:BaseCond> => cond,
 
     <cond:BaseCond> "&&" <conds:AndCond>
@@ -103,7 +103,7 @@ pub AndCond : ast::Cond = {
 
 
 // Base conditionals
-pub BaseCond : ast::Cond = {
+BaseCond : ast::Cond = {
     // Check the counter
     "c" "==" "0" => ast::Cond::CheckZero(),
     "c" "!=" "0" => ast::Cond::CheckNotZero(),
