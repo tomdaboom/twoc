@@ -178,6 +178,7 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
 
     // Check that all the potentially conflicting transitions do the same thing
     // If this isn't the case, then the automaton is non-deterministic
+    // TODO: Fix this check to deal with or conditions that are subtly deterministic
     if legal_transitions.len() > 1 {
         // Get a tuple of actions executed by the first transition
         let first_actions = (
