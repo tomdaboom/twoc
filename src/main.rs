@@ -53,13 +53,13 @@ fn main() {
     autom.print();
 
     // Test that the automaton accepts an example word via the glueck procedure
-    let test_word = "10011010";
+    let test_word = "00001111";
     let accepting = glueck::glueck_procedure(autom, test_word);
 
     if accepting {
-        print!("\nYay!");
+        print!("\n{:?} is accepted", test_word);
     } else {
-        print!("\nYayn't!");
+        print!("\n{:?} isn't accepted", test_word);
     }
     
 }
