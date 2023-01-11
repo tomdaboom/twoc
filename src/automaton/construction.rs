@@ -182,8 +182,8 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                 // Store this transition
                 transes.push(Transition::new_read_trans(
                     new_state, 
-                    readable_char)
-                );
+                    readable_char
+                ));
             }
 
             // Add new transitions to the automaton
