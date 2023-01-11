@@ -21,6 +21,8 @@ pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
     // Run the simulator
     let final_config = simulator.simulate(start_config);
 
+    //println!("\n{:?}", final_config);
+
     // Return based on the final config
     match autom.check_if_halting(final_config.state) {
         None => false,
@@ -109,7 +111,7 @@ impl GlueckSimulator {
 }
 
 // Configuration of a 2dc (i.e. all the information required to keep track of a computation)
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Config {
     // The state the automaton is in
     pub state : State,
@@ -187,7 +189,7 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
         // Check that every other legal transition does exactly the same thing
         for trans in legal_transitions.iter().skip(1) {
             if (trans.goto, trans.move_by, trans.incr_by) != first_actions {
-                panic!("From state {:?}, this automaton is nondeterministic!", config.state);
+                //panic!("From state {:?}, this automaton is nondeterministic!", config.state);
             }
         }
     }

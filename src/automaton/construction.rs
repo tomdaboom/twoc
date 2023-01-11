@@ -15,8 +15,8 @@ pub fn construct_from_prog(prog : Program) -> Autom {
         construct_stmt(&mut autom, &mut state, stmt);
     }
 
-    // Remove transitions from reject states
-    autom.clean_reject_states();
+    // Remove transitions from all halting states
+    autom.clean_halting_states();
 
     // Add counter-emptying transitions to the automaton
     autom.empty_accept_states();

@@ -216,8 +216,13 @@ impl Autom {
         }
     }
 
-    // Get rid of all transitions coming from rejecting states
-    pub fn clean_reject_states(&mut self) {
+    // Get rid of all transitions coming from halting states
+    pub fn clean_halting_states(&mut self) {
+        for state in &self.accepting {
+            let transitions = self.state_map.get_mut(state).unwrap();
+            *transitions = Vec::new();
+        }
+
         for state in &self.rejecting {
             let transitions = self.state_map.get_mut(state).unwrap();
             *transitions = Vec::new();
