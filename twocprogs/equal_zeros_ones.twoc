@@ -1,0 +1,21 @@
+alphabet = [ '0', '1' ]
+
+twoc (string) {
+    move(1);
+    while (read != rend) {
+        if (read == '0') { c++; }
+        move(1);
+    }
+
+    move(-1);
+    while (read != lend) {
+        if (read == '1') {
+            if (c == 0) { reject; }
+            c--;
+        }
+        move(-1);
+    }
+
+    if (c == 0) { accept; } 
+    else        { reject; }
+}
