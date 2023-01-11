@@ -7,11 +7,10 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 // Import parser methods and types
 pub mod parser;
-use parser::{ast, program};
 
 // Import automaton methods and types
 pub mod automaton;
-use automaton::{construction, glueck};
+use twoc::automaton::{construction, glueck};
 
 fn main() {
     // Declare parser for Twoc rule
