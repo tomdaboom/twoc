@@ -204,15 +204,19 @@ impl Autom {
         println!();
 
         // Display the accepting states
-        println!("Accepting:");
-        for state in &self.accepting {
-            println!("  {:?}", *state);
+        if self.accepting.len() > 0 {
+            println!("Accepting:");
+            for state in &self.accepting {
+                println!("  {:?}", *state);
+            }
         }
 
         // Display the rejecting states
-        println!("Rejecting:");
-        for state in &self.rejecting {
-            println!("  {:?}", *state);
+        if self.rejecting.len() > 0 {
+            println!("Rejecting:");
+            for state in &self.rejecting {
+                println!("  {:?}", *state);
+            }
         }
     }
 
