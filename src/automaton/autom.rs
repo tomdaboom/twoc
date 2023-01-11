@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::parser::ast::Readable;
 
 // A state is represented as an integer
-pub type State = u8;
+pub type State = u16;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Transition {
