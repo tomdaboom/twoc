@@ -1,4 +1,4 @@
-use crate::ast;
+use crate::parser::ast;
 
 // Function to contract sequences of moves and increments in a sequence of statements
 pub fn contract(program : &Vec<ast::Stmt>) -> Vec<ast::Stmt> {

@@ -1,7 +1,6 @@
 use std::collections::HashSet;
 
-use crate::ast;
-use crate::contract::contract;
+use crate::parser::{ast, contract::contract};
 
 pub struct Program {
     pub stmts : Vec<ast::Stmt>,

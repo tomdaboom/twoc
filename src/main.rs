@@ -7,7 +7,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 // Import parser methods and types
 pub mod parser;
-use parser::{ast, contract, program};
+use parser::{ast, program};
 
 // Import automaton methods and types
 pub mod automaton;
