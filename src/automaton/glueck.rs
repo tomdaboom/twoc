@@ -174,9 +174,22 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
         }
     }
 
-    // Check for non-determinism
+    // Check that all the potentially conflicting transitions do the same thing
+    // If this isn't the case, then the automaton is non-deterministic
     if legal_transitions.len() > 1 {
-        panic!("This automaton is non-deterministic!");
+        // Get a tuple of actions executed by the first transition
+        let first_actions = (
+            legal_transitions[0].goto, 
+            legal_transitions[0].move_by, 
+            legal_transitions[0].incr_by
+        );
+
+        // Check that every other legal transition does exactly the same thing
+        for trans in legal_transitions.iter().skip(1) {
+            if (trans.goto, trans.move_by, trans.incr_by) != first_actions {
+                panic!("From state {:?}, this automaton is nondeterministic!", config.state);
+            }
+        }
     }
 
     // Return based on number of legal transitions 
