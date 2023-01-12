@@ -39,7 +39,6 @@ mod determ_tests {
 
     #[test]
     pub fn equal_zeros_ones() {
-        // Some test examples
         let test_words = [
             ("0011", true), 
             ("11001", false),
@@ -52,7 +51,6 @@ mod determ_tests {
 
     #[test]
     pub fn zeros_then_ones() {
-        // Some test examples
         let test_words = [
             ("00000000001111111111", true), 
             ("00001111", true),
@@ -63,5 +61,17 @@ mod determ_tests {
         ];
 
         generic_test("./twocprogs/zeros_then_ones.twoc", &test_words);
+    }
+
+    #[test]
+    pub fn x_plus_y_is_z() {
+        let test_words = [
+            ("xxxyyyyyzzzzzzzz", true),
+            ("xzyxzzyyzxzyzxzyzzyxzyzxzz", true), 
+            ("xyyzzzz", false),
+            ("xyxyxyxyxyzzzzzzzz", false),
+        ];
+
+        generic_test("./twocprogs/x_plus_y_is_z.twoc", &test_words);
     }
 }
