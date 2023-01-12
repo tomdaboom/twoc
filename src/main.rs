@@ -19,6 +19,7 @@ fn main() {
     // Get name of file from command line args
     let args : Vec<String> = env::args().collect();
     let file_path = &args[1];
+    let test_word = &args[2];
     println!("Parsing {:?}\n", file_path);
 
     // Load file
@@ -53,7 +54,6 @@ fn main() {
     autom.print();
 
     // Test that the automaton accepts an example word via the glueck procedure
-    let test_word = "0000011111";
     let accepting = glueck::glueck_procedure(autom, test_word);
 
     if accepting {
