@@ -11,7 +11,7 @@ mod determ_tests {
     use std::fs;
 
     // Import automaton construction and glueck procedure
-    use twoc::automaton::{construction, glueck::glueck_procedure};
+    use twoc::automaton::{determ_construction, glueck::glueck_procedure};
 
     #[test]
     pub fn equal_zeros_ones() {
@@ -33,7 +33,7 @@ mod determ_tests {
         prog.contract();
 
         // Construct the automaton from the program
-        let autom = construction::construct_from_prog(prog);
+        let autom = determ_construction::construct_from_prog(prog);
 
         // Some test examples
         let test_words = [

@@ -10,7 +10,7 @@ pub mod parser;
 
 // Import automaton methods and types
 pub mod automaton;
-use twoc::automaton::{construction, glueck};
+use twoc::automaton::{determ_construction, glueck};
 
 fn main() {
     // Declare parser for Twoc rule
@@ -46,7 +46,7 @@ fn main() {
     prog.print();
 
     // Construct the automaton from the program
-    let autom = construction::construct_from_prog(prog);
+    let autom = determ_construction::construct_from_prog(prog);
 
     // Print the automaton
     println!("\nAutomaton:");

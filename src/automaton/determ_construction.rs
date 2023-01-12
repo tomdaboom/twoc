@@ -93,7 +93,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         ast::Stmt::While(cond, while_body) => {
             // Variables to keep track of state in the while block and after breaking out
             let mut while_state = autom.introduce();
-            let break_state = autom.introduce();
+            let     break_state = autom.introduce();
 
             // Construct the negation of cond
             let neg_cond = ast::Cond::Not(Box::new(cond.clone()));
@@ -109,7 +109,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
             // Add an epsilon transition back to the start state
             let restart_transition = Transition::new_epsilon_trans(*state);
-            autom.add_transition(*state, restart_transition);
+            autom.add_transition(while_state, restart_transition);
 
             // Construct transitions to check whether or not to break out of the while block 
             let break_trans = Transition::new_cond_trans(break_state, neg_cond);

@@ -151,27 +151,16 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
     let mut legal_transitions = Vec::new();
 
     for trans in transitions {
-        // If the current transition is an epsilon transition, include it
-        if trans.test_counter_zero == None && trans.read_char == None {
-            legal_transitions.push(trans);
-            continue;
-        }
+        match trans.condition {
+            Some(ref cond) => {
+                let read_char = input[config.read as usize];
+                
+                if cond.check(read_char, config.counter) {
+                    legal_transitions.push(trans);
+                }
+            },
 
-        // Check that a zero test passes if it exists
-        let mut zero_check_passes = true;
-        if let Some(check_zero) = trans.test_counter_zero {
-            zero_check_passes = (config.counter == 0) == check_zero;
-        } 
-
-        // Check that a read check passes if it exists
-        let mut read_check_passes = true;
-        if let Some(symbol) = trans.read_char {
-            read_check_passes = input[config.read as usize] == symbol;
-        }
-
-        // Include the transition if the zero check and the read check both passed
-        if zero_check_passes && read_check_passes {
-            legal_transitions.push(trans);
+            None => legal_transitions.push(trans), 
         }
     }
 
@@ -186,10 +175,10 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
             legal_transitions[0].incr_by
         );
 
-        // Check that every other legal transition does exactly the same thing
+        // Panic if any other legal transition doesn't do exactly the same thing
         for trans in legal_transitions.iter().skip(1) {
             if (trans.goto, trans.move_by, trans.incr_by) != first_actions {
-                //panic!("From state {:?}, this automaton is nondeterministic!", config.state);
+                panic!("From state {:?}, this automaton is nondeterministic!", config.state);
             }
         }
     }
@@ -197,7 +186,7 @@ pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<T
     // Return based on number of legal transitions 
     match legal_transitions.len() {
         0 => None,
-        _ => Some(legal_transitions[0]),
+        _ => Some(legal_transitions[0].clone()),
     }
 }
 
