@@ -1,0 +1,21 @@
+alphabet = ['x', 'y', 'z']
+
+twoc (string) {
+    move(1);
+
+    while (read != rend) {
+        if (read == 'x' || read == 'y') { c++; }
+        move(1);
+    }
+
+    move(-1);
+    while (read != lend) {
+        if (read == 'z') {
+            if (c == 0) { reject; }
+            c--;
+        }
+        move(-1);
+    }
+
+    if (c == 0) { accept; } 
+}
