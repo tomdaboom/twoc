@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
-use crate::automaton::autom::{Autom, State};
+use crate::automaton::autom::{Autom, State, Transition};
 use crate::parser::ast::{Readable, Input};
-use super::autom::Transition;
 
 // Check if a string is accepted by a deterministic automaton using the glueck procedure
 // This should run in time O(|input|)
