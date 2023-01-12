@@ -4,22 +4,17 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 #[cfg(test)]
 mod determ_tests {
-    // Import grammar
-    use crate::grammar_rules;
-
-    // Import file system
     use std::fs;
-
-    // Import automaton construction and glueck procedure
+    use crate::grammar_rules::TwocParser;
     use twoc::automaton::{determ_construction, glueck::glueck_procedure};
 
-    #[test]
-    pub fn equal_zeros_ones() {
+    // Generic test function that runs a program on a list of examples and compares the outputs
+    fn generic_test(filename : &str, examples : &[(&str, bool)]) {
         // Declare parser for Twoc rule
-        let parser = grammar_rules::TwocParser::new();
+        let parser = TwocParser::new();
 
         // Load file
-        let test_prog = fs::read_to_string("./twocprogs/equal_zeros_ones.twoc").expect("File not found");
+        let test_prog = fs::read_to_string(filename).expect("File not found");
 
         // Parse the file
         let test = parser.parse(&test_prog);
@@ -35,6 +30,15 @@ mod determ_tests {
         // Construct the automaton from the program
         let autom = determ_construction::construct_from_prog(prog);
 
+        // Check that each of the words gives the correct answer
+        for (word, expected) in examples {
+            let glueck_output = glueck_procedure(autom.clone(), word);
+            assert_eq!(glueck_output, *expected);
+        }
+    }
+
+    #[test]
+    pub fn equal_zeros_ones() {
         // Some test examples
         let test_words = [
             ("0011", true), 
@@ -43,36 +47,11 @@ mod determ_tests {
             ("11110101101110011110011111111111", false),
         ];
 
-        // Check that each of the words gives the correct answer
-        for (word, expected) in test_words {
-            let glueck_output = glueck_procedure(autom.clone(), word);
-            assert_eq!(glueck_output, expected);
-        }
-
+        generic_test("./twocprogs/equal_zeros_ones.twoc", &test_words);
     }
 
     #[test]
     pub fn zeros_then_ones() {
-        // Declare parser for Twoc rule
-        let parser = grammar_rules::TwocParser::new();
-
-        // Load file
-        let test_prog = fs::read_to_string("./twocprogs/zeros_then_ones.twoc").expect("File not found");
-
-        // Parse the file
-        let test = parser.parse(&test_prog);
-        let mut prog = match test {
-            // Output any parse errors
-            Err(ref err) => panic!("Parse Error:\n{:?}", err),
-            Ok(prog) => prog,
-        };
-
-        // Contract the AST
-        prog.contract();
-
-        // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
-
         // Some test examples
         let test_words = [
             ("00000000001111111111", true), 
@@ -83,10 +62,6 @@ mod determ_tests {
             ("1001010101101010111111010101", false),
         ];
 
-        // Check that each of the words gives the correct answer
-        for (word, expected) in test_words {
-            let glueck_output = glueck_procedure(autom.clone(), word);
-            assert_eq!(glueck_output, expected);
-        }
+        generic_test("./twocprogs/zeros_then_ones.twoc", &test_words);
     }
 }
