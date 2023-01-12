@@ -51,6 +51,30 @@ pub enum Cond {
     Not(Box<Cond>),
 }
 
+impl Cond {
+    // Check that a condition is true given a certain character at the readhead and a certain counter value 
+    pub fn check(&self, read : Readable, counter : i32) -> bool {
+        match self {
+            // Compare the character at the readhead to the character in the condition
+            Cond::Read(char) => read == *char,
+            Cond::NotRead(char) => read != *char,
+
+            // Check the value of the counter
+            Cond::CheckZero() => counter == 0,
+            Cond::CheckNotZero() => counter != 0,
+
+            // Recurse on and statements
+            Cond::And(left, right) => left.check(read, counter) && right.check(read, counter),
+
+            // Recurse on or statements
+            Cond::Or(left, right) => left.check(read, counter) || right.check(read, counter),
+
+            // Recurse on not statements
+            Cond::Not(inner) => !inner.check(read, counter),
+        }
+    }
+}
+
 // Enum for things on the rhs of a read condition (either a character or lend/rend)
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
