@@ -75,13 +75,7 @@ impl TransitionTrait for Transition {
         // Print the readhead check
         if let Some(read) = self.read_char {
             print!(" read==");
-            match read {
-                Readable::Char(c) => print!("{:?}", c),
-
-                Readable::LEnd() => print!("lend"),
-
-                Readable::REnd() => print!("rend"),
-            }
+            read.print();
         }
     }
 }

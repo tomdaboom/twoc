@@ -60,7 +60,8 @@ impl TransitionTrait for Transition {
 
         // Print the condition
         if let Some(cond) = &self.condition {
-            print!(" {:?}", *cond);
+            print!(" if ");
+            cond.print();
         };
     }
 }

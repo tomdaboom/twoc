@@ -73,15 +73,74 @@ impl Cond {
             Cond::Not(inner) => !inner.check(read, counter),
         }
     }
+
+    // Print the condition to the terminal
+    pub fn print(&self) {
+        match self {
+            // Print read conditions
+
+            Cond::Read(char) => {
+                print!("read == ");
+                char.print();
+            },
+
+            Cond::NotRead(char) => {
+                print!("read != ");
+                char.print();
+            },
+
+            // Print counter conditions
+            Cond::CheckZero() => print!("c == 0"),
+            Cond::CheckNotZero() => print!("c != 0"),
+
+            // Recurse on and statements
+            Cond::And(left, right) => {
+                print!("(");
+                left.print();
+                print!(") && (");
+                right.print();
+                print!(")");
+            },
+
+            // Recurse on or statements
+            Cond::Or(left, right) => {
+                print!("(");
+                left.print();
+                print!(") || (");
+                right.print();
+                print!(")");
+            },
+
+            // Recurse on not statements
+            Cond::Not(inner) => {
+                print!("!(");
+                inner.print();
+                print!(")");
+            }
+        }
+    }
 }
 
 // Enum for things on the rhs of a read condition (either a character or lend/rend)
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Readable { Char(char), LEnd(), REnd(), }
 
+impl Readable {
+    // Simple printer method
+    pub fn print(&self) {
+        match self {
+            Readable::LEnd() => print!("lend"),
+            Readable::REnd() => print!("rend"),
+            Readable::Char(char) => print!("{:?}", char),
+        }
+    }
+}
+
+// Type alias for automata inputs
 pub type Input = Vec<Readable>;
 
 impl Readable {
+    // Constructor to turn a string into a correctly formatted Input
     pub fn from_input_str(input : &str) -> Vec<Self> {
         let mut out_vector = Vec::new();
 
