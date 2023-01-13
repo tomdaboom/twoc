@@ -67,6 +67,17 @@ impl Program {
             }
         }
 
+        // Return true if no branch statements were found
+        true
+    }
+
+    // Check if every character in a given input string is also in the program's alphabet
+    pub fn check_if_input_in_alphabet(&self, input_string : &str) -> bool {
+        for char in input_string.chars() {
+            if !self.alpha.contains(&char) {
+                return false;
+            }
+        }
         true
     }
 }

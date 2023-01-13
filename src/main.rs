@@ -25,15 +25,18 @@ fn main() {
     // Load file
     let test_prog = fs::read_to_string(file_path).expect("File not found");
 
-    // Parse string
+    // Parse the file
     let test = parser.parse(&test_prog);
+    let mut prog = match test {
+        // Output any parse errors
+        Err(ref err) => panic!("Parse Error:\n{:?}", err),
+        Ok(prog) => prog,
+    };
 
-    // Output any parse errors
-    if let Err(ref err) = test {
-        panic!("Parse Error:\n{:?}", err);
+    // Panic if the input string isn't consistent with the parsed alphabet
+    if !prog.check_if_input_in_alphabet(&test_word) {
+        panic!("{:?} contains characters that aren't in the program's alphabet!", test_word);
     }
-
-    let mut prog = test.unwrap();
 
     // Print AST
     println!("AST:");
