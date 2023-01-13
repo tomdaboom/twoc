@@ -32,7 +32,7 @@ mod determ_tests {
 
         // Check that each of the words gives the correct answer
         for (word, expected) in examples {
-            let glueck_output = glueck_procedure(autom.clone(), word);
+            let glueck_output = glueck_procedure(&autom, word);
             assert_eq!(glueck_output, *expected);
         }
     }

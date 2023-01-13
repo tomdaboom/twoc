@@ -1,6 +1,7 @@
 use crate::parser::{program::Program, ast};
 
-use super::autom::{Autom, State, Transition};
+use crate::automaton::autom::{Autom, Transition};
+use crate::automaton::generic_autom::{State, TransitionTrait};
 
 // Turn a program into an automaton
 pub fn construct_from_prog(prog : Program) -> Autom {

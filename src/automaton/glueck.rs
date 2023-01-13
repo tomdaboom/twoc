@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
-use crate::automaton::determ_autom::{Autom, State, Transition};
+use crate::automaton::determ_autom::{Autom, Transition};
+use crate::automaton::generic_autom::State;
 use crate::parser::ast::{Readable, Input};
 
 // Check if a string is accepted by a deterministic automaton using the glueck procedure
 // This should run in time O(|input|)
 // See https://arxiv.org/pdf/1309.5142.pdf for more info
-pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
+pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Convert the input into a list of Readables
     let readable_input = Readable::from_input_str(input);
 
@@ -15,7 +16,7 @@ pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
     let start_config = Config { state : 0, read : 0, counter : 0 };
     
     // Declare the GlueckSimulator object
-    let mut simulator = GlueckSimulator::new(autom.clone(), readable_input);
+    let mut simulator = GlueckSimulator::new(autom, readable_input);
 
     // Run the simulator
     let final_config = simulator.simulate(start_config);
@@ -30,24 +31,24 @@ pub fn glueck_procedure(autom : Autom, input : &str) -> bool {
 }
 
 // Struct to hold variables for the Glueck procedure
-struct GlueckSimulator {
+struct GlueckSimulator<'a> {
     // Table that stores the previously computed config terminators
     config_table : HashMap<StrippedConfig, DeltaConfig>,
 
     // Automaton being simulated
-    autom : Autom,
+    autom : &'a Autom,
 
     // Input being simulated on
     input : Input,
 }
 
-impl GlueckSimulator {
+impl<'a> GlueckSimulator<'a> {
     // Constructor
-    pub fn new(autom : Autom, input : Input) -> Self {
+    pub fn new(autom : &'a Autom, input : Input) -> Self {
         Self { 
             config_table : HashMap::new(), 
-            autom : autom,
-            input : input,
+            autom,
+            input,
         }
     }
 
@@ -76,7 +77,7 @@ impl GlueckSimulator {
         }
 
         // Find out which transition the automaton can take from this config
-        let trans_box = get_transition(self.autom.clone(), config, self.input.clone());
+        let trans_box = get_transition(self.autom, config, self.input.clone());
 
         let trans = match trans_box {
             // If no such transition exists, then the automaton halts and rejects on this config
@@ -143,7 +144,7 @@ pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
 }
 
 // Get the transition that the automaton can take from the given configuration, if one exists
-pub fn get_transition(autom : Autom, config : Config, input : Input) -> Option<Transition> {
+pub fn get_transition(autom : &Autom, config : Config, input : Input) -> Option<Transition> {
     // Get transitions from the automaton
     let transitions = autom.get_transitions(config.state);
 
