@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+// States in the automaton are integers
 pub type State = u16;
 
 // Trait for functions that both kinds of transition must have in common
