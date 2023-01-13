@@ -77,7 +77,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             let false_trans = Transition::new_cond_trans(false_state, neg_cond);
             autom.add_transition(*state, false_trans);
 
-            // Construct the statements in the true branch
+            // Construct the statements in the else branch
             for false_stmt in else_body {
                 construct_stmt(autom, &mut false_state, false_stmt);
             }
