@@ -1,6 +1,7 @@
 use crate::parser::ast::Cond;
 use crate::automaton::generic_autom::{State, TransitionTrait, GenericAutom};
 
+// Deterministic transitions (conditions are contained as part of these transitions)
 #[derive(Debug, Clone)]
 pub struct Transition {
     // The state we transition to
@@ -15,6 +16,7 @@ pub struct Transition {
     // Any conditionals required to take this transition if they exist
     pub condition : Option<Cond>,
 }
+
 
 impl TransitionTrait for Transition {
     // Construct a new transition that corresponds to a basic block
@@ -63,7 +65,6 @@ impl TransitionTrait for Transition {
     }
 }
 
-// These implementations are constructors for specific kinds of transitions
 impl Transition {
     // Construct a transition that checks a condition
     pub fn new_cond_trans(next_state : State, cond : Cond) -> Self {
@@ -78,4 +79,5 @@ impl Transition {
     }
 }
 
+// A deterministic automaton is a generic automaton with deterministic transitions
 pub type Autom = GenericAutom<Transition>;

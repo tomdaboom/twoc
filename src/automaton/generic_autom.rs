@@ -2,14 +2,19 @@ use std::collections::{HashMap, HashSet};
 
 pub type State = u16;
 
+// Trait for functions that both kinds of transition must have in common
 pub trait TransitionTrait {
+    // Print a transition to the terminal
     fn print(&self);
 
+    // Create a new transition that executes a basic block
     fn new_basic_block_trans(next_state : State, mv : i32, ic : i32) -> Self;
 
+    // Create a new epsilon transition
     fn new_epsilon_trans(next_state : State) -> Self;
 }
 
+// Generic automaton class parameterised across an arbitrary Transition type
 pub struct GenericAutom<Transition> {
     // Adjacency list of states to transitions off of that state
     state_map : HashMap<State, Vec<Transition>>,
@@ -27,6 +32,8 @@ pub struct GenericAutom<Transition> {
     pub alpha : HashSet<char>,
 }
 
+// Implementation for above struct
+// Transitions must be cloneable and implement the TransitionTrait
 impl<Transition : std::clone::Clone + TransitionTrait> GenericAutom<Transition> {
     // Create a new empty automaton
     pub fn new(char_set : HashSet<char>) -> Self {

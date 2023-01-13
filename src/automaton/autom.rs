@@ -1,6 +1,7 @@
 use crate::parser::ast::Readable;
 use crate::automaton::generic_autom::{State, TransitionTrait, GenericAutom};
 
+// Potentially nondeterministic transitions
 #[derive(Debug, Clone, Copy)]
 pub struct Transition {
     // The state we transition to
@@ -19,7 +20,7 @@ pub struct Transition {
     pub read_char : Option<Readable>,
 }
 
-// These implementations are constructors for specific kinds of transitions
+
 impl TransitionTrait for Transition {
     // Construct a new transition that corresponds to a basic block
     fn new_basic_block_trans(next_state : State, mv : i32, ic : i32) -> Self {
@@ -47,7 +48,6 @@ impl TransitionTrait for Transition {
         }
     }
 
-    
     // Display the transition
     fn print(&self) {
         // Print the state to move to
@@ -114,4 +114,5 @@ impl Transition {
     }
 }
 
+// A nondeterministic automaton is an automaton with potentially nondeterministic transitions
 pub type Autom = GenericAutom<Transition>;
