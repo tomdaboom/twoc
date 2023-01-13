@@ -38,6 +38,15 @@ fn main() {
         panic!("{:?} contains characters that aren't in the program's alphabet!", test_word);
     }
 
+    // Output if the program is deterministic or not
+    if prog.deterministic() {
+        print!("Deterministic");        
+    } else {
+        print!("Nondeterministic");
+    }
+
+    println!(" program detected\n");
+
     // Print AST
     println!("AST:");
     prog.print();
