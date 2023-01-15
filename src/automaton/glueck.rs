@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::automaton::determ_autom::{Autom, Transition};
-use crate::automaton::generic_autom::State;
+use crate::automaton::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config};
 use crate::parser::ast::{Readable, Input};
 
 // Check if a string is accepted by a deterministic automaton using the glueck procedure
@@ -76,10 +76,7 @@ impl<'a> GlueckSimulator<'a> {
             return config; 
         }
 
-        // Find out which transition the automaton can take from this config
-        let trans_box = get_transition(self.autom, config, self.input.clone());
-
-        let trans = match trans_box {
+        let trans = match get_transition(self.autom, config, self.input.clone()) {
             // If no such transition exists, then the automaton halts and rejects on this config
             None => {
                 let map_config = make_delta_config(config, config);
@@ -107,39 +104,6 @@ impl<'a> GlueckSimulator<'a> {
         // Memoise and return the new config
         self.config_table.insert(strip_config(config), map_config);
         new_config
-    }
-}
-
-// Configuration of a 2dc (i.e. all the information required to keep track of a computation)
-#[derive(Debug, Clone, Copy)]
-pub struct Config {
-    // The state the automaton is in
-    pub state : State,
-
-    // The index of the read head
-    pub read : i32,
-
-    // The value of the counter
-    pub counter : i32,
-}
-
-// Type alias for configs where counter stores a change in the counter value
-pub type DeltaConfig = Config;
-
-// Type alias for configs that have a bool tracking c==0 instead of c
-pub type StrippedConfig = (State, i32, bool);
-
-// Function to turn a config into a stripped config
-pub fn strip_config(config : Config) -> StrippedConfig {
-    (config.state, config.read, config.counter == 0)
-}
-
-// Construct a delta config from two other configs
-pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
-    DeltaConfig {
-        state : to.state,
-        read : to.read,
-        counter : to.counter - from.counter,
     }
 }
 

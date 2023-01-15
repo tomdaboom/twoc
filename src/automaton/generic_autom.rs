@@ -21,7 +21,7 @@ pub struct GenericAutom<Transition> {
     state_map : HashMap<State, Vec<Transition>>,
 
     // Counter to keep track of the number of states in the automaton
-    state_total : State,
+    pub state_total : State,
 
     // Vector to keep track of accepting states
     accepting : Vec<State>,
