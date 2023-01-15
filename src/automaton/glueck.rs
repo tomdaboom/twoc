@@ -161,13 +161,14 @@ pub fn next(config : Config, transition : Transition, input : Input) -> Config {
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len().try_into().unwrap());
 
-    // TODO : empty counter checking here
     // Find the new counter value
+    let mut new_counter = config.counter + transition.incr_by;
+    new_counter = new_counter.max(0);
 
     // Return new config
     Config {
         state   : transition.goto,
         read    : new_read,
-        counter : config.counter + transition.incr_by,
+        counter : new_counter,
     }
 }
