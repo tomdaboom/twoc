@@ -1,4 +1,4 @@
-alphabet = [ '0' ];
+alphabet = [ '0' ]
 
 twoc (string) {
     while (read == lend) {
