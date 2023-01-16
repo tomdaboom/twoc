@@ -74,4 +74,13 @@ mod determ_tests {
 
         generic_test("./twocprogs/x_plus_y_is_z.twoc", &test_words);
     }
+
+    #[test]
+    pub fn loops_forever() {
+        let test_words = [
+            ("0", false),
+        ];
+
+        generic_test("./twocprogs/loops_forever.twoc", &test_words);
+    }
 }
