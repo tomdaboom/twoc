@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::automaton::determ_autom::{Autom, Transition};
 use crate::automaton::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config};
@@ -40,6 +40,9 @@ struct GlueckSimulator<'a> {
 
     // Input being simulated on
     input : Input,
+
+    // Vector to store configs already entered
+    past_configs : HashSet<StrippedConfig>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -49,13 +52,27 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
+            past_configs : HashSet::new(),
         }
     }
 
     // Find the terminator of a given configuration
     pub fn simulate(&mut self, config : Config) -> Config {
+        // Record the stripped config for later use
+        let stripped_config = strip_config(config);
+
+        // Check if the config has been seen before. If it has then we're in an infinite loop.
+        if self.past_configs.contains(&stripped_config) {
+            return config;
+        }
+
+        // Insert this config into set of seen configs
+        self.past_configs.insert(stripped_config);
+
         // Check if the config has been memoized
-        if let Some(delta_config) = self.config_table.get(&strip_config(config)) {
+        if let Some(delta_config) = self.config_table.get(&stripped_config) {
+            println!("config skipped with memoization");
+
             // Calculate the new config
             let new_config = Config {
                 state : delta_config.state,
@@ -72,7 +89,7 @@ impl<'a> GlueckSimulator<'a> {
             let map_config = make_delta_config(config, config);
 
             // Memoize and return
-            self.config_table.insert(strip_config(config), map_config);
+            self.config_table.insert(stripped_config, map_config);
             return config; 
         }
 
@@ -80,7 +97,7 @@ impl<'a> GlueckSimulator<'a> {
             // If no such transition exists, then the automaton halts and rejects on this config
             None => {
                 let map_config = make_delta_config(config, config);
-                self.config_table.insert(strip_config(config), map_config);
+                self.config_table.insert(stripped_config, map_config);
                 return config;
             },
 
@@ -102,7 +119,7 @@ impl<'a> GlueckSimulator<'a> {
         let map_config = make_delta_config(config, new_config);
 
         // Memoise and return the new config
-        self.config_table.insert(strip_config(config), map_config);
+        self.config_table.insert(stripped_config, map_config);
         new_config
     }
 }
