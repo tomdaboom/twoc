@@ -1,0 +1,7 @@
+alphabet = [ '0' ];
+
+twoc (string) {
+    while (read == lend) {
+        c++;
+    }
+}
