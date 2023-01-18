@@ -83,11 +83,6 @@ impl<'a> GlueckSimulator<'a> {
 
         // Check if the config is halting
         if let Some(_) = self.autom.check_if_halting(config.state) {
-            // Construct DeltaConfig that gets mapped to
-            let map_config = make_delta_config(config, config);
-
-            // Memoize and return
-            self.config_table.insert(stripped_config, map_config);
             return config; 
         }
 
