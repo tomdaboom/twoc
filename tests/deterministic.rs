@@ -6,7 +6,8 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 mod determ_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
-    use twoc::automaton::{determ_construction, glueck::glueck_procedure};
+    use twoc::automaton::determ_construction; 
+    use twoc::simulation::glueck::glueck_procedure;
 
     // Generic test function that runs a program on a list of examples and compares the outputs
     fn generic_test(filename : &str, examples : &[(&str, bool)]) {

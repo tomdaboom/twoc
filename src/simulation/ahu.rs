@@ -2,7 +2,7 @@ use std::collections::{HashSet, HashMap};
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
-use crate::automaton::config::Config;
+use crate::simulation::config::Config;
 use crate::parser::ast::{Readable, Input};
 
 pub type StrIndex = i32;

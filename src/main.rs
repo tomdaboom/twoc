@@ -10,7 +10,8 @@ pub mod parser;
 
 // Import automaton methods and types
 pub mod automaton;
-use twoc::automaton::{determ_construction, glueck};
+use twoc::automaton::determ_construction;
+use twoc::simulation::glueck;
 
 fn main() {
     // Declare parser for Twoc rule
