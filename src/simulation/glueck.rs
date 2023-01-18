@@ -71,8 +71,6 @@ impl<'a> GlueckSimulator<'a> {
 
         // Check if the config has been memoized
         if let Some(delta_config) = self.config_table.get(&stripped_config) {
-            println!("config skipped with memoization");
-
             // Calculate the new config
             let new_config = Config {
                 state : delta_config.state,
