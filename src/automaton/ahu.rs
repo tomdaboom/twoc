@@ -5,25 +5,13 @@ use crate::automaton::generic_autom::State;
 use crate::automaton::config::Config;
 use crate::parser::ast::{Readable, Input};
 
-pub type StrIndex = usize;
+pub type StrIndex = i32;
 
 pub type StateCounterState = (State, i32, State);
 
 pub fn ahu_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Convert the input into a list of Readables
     let readable_input = Readable::from_input_str(input);
-    let n = readable_input.len();
-
-    // Initialise the dynamic programming matrix
-    let mut matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>> = HashMap::new();
-    for i in 0..n {
-        for j in 0..n {
-            matrix.insert((i, j), HashSet::new());
-        }
-    }
-
-    // Initialise the stack
-    let mut stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
 
     false
 }
@@ -32,6 +20,8 @@ struct AhuSimulator<'a> {
     autom : &'a Autom,
 
     input : Input,
+
+    n : StrIndex,
 
     matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>>,
 
@@ -44,32 +34,81 @@ impl<'a> AhuSimulator<'a> {
         let mut matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>> = HashMap::new();
         for i in 0..input.len() {
             for j in 0..input.len() {
-                matrix.insert((i, j), HashSet::new());
+                matrix.insert((i as StrIndex, j as StrIndex), HashSet::new());
             }
         }
+
+        let n = input.len() as StrIndex;
 
         // Initialise the stack
         let stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
 
-        Self {
-            autom,
-            input,
-            matrix,
-            stack,
-        }
+        Self { autom, input, n, matrix, stack, }
     }
 
     pub fn delta_pop(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
+        // Output vector containing triples of states, counter symbols, and other states
+        let mut out  = Vec::new();
+
         for state in 0..self.autom.state_total {
             for counter in [0, 1] {
+                // Construct the appropriate config
                 let config = Config { state, read : i as i32, counter };
 
-                let transitions = get_transitions(self.autom, config, self.input);
+                // Find the transitions that can be taken from this config
+                let transitions = get_transitions(self.autom, config, self.input.clone());
+
+                for trans in transitions {
+                    // Check if the transition decrements the counter
+                    let decrementing = trans.incr_by < 0;
+                    
+                    // Check if the counter moves from index i to index j
+                    let new_index = (i + trans.move_by).max(0).min(self.n);
+                    let moves_to_j = new_index == j;
+
+                     if decrementing && moves_to_j  {
+                        out.push((state, trans.incr_by, trans.goto));
+                    }
+                }
             }
         }
 
-        vec![(0, 0, 0)]
+        // Return
+        out
     }
+
+    pub fn delta_push(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
+        // Output vector containing triples of states, counter symbols, and other states
+        let mut out  = Vec::new();
+
+        for state in 0..self.autom.state_total {
+            for counter in [0, 1] {
+                // Construct the appropriate config
+                let config = Config { state, read : i as i32, counter };
+
+                // Find the transitions that can be taken from this config
+                let transitions = get_transitions(self.autom, config, self.input.clone());
+
+                for trans in transitions {
+                    // Check if the transition increments the counter
+                    let incrementing = trans.incr_by > 0;
+                    
+                    // Check if the counter moves from index i to index j
+                    let new_index = (i + trans.move_by).max(0).min(self.n);
+                    let moves_to_j = new_index == j;
+
+                     if incrementing && moves_to_j  {
+                        out.push((state, trans.incr_by, trans.goto));
+                    }
+                }
+            }
+        }
+
+        // Return
+        out
+    }
+
+    
 }
 
 pub fn get_transitions(autom : &Autom, config : Config, input : Input) -> Vec<Transition> {
