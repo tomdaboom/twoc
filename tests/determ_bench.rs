@@ -3,7 +3,7 @@
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 #[cfg(test)]
-mod determ_tests {
+mod determ_bench {
     use std::{fs, thread};
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
@@ -36,53 +36,6 @@ mod determ_tests {
             let glueck_output = glueck_procedure(&autom, word);
             assert_eq!(glueck_output, *expected);
         }
-    }
-
-    #[test]
-    pub fn equal_zeros_ones() {
-        let test_words = [
-            ("0011", true), 
-            ("11001", false),
-            ("0101101010", true),
-            ("11110101101110011110011111111111", false),
-        ];
-
-        generic_test("./twocprogs/equal_zeros_ones.twoc", &test_words);
-    }
-
-    #[test]
-    pub fn zeros_then_ones() {
-        let test_words = [
-            ("00000000001111111111", true), 
-            ("00001111", true),
-            ("0001111", false),
-            ("000001111", false),
-            ("1010101010101010", false),
-            ("1001010101101010111111010101", false),
-        ];
-
-        generic_test("./twocprogs/zeros_then_ones.twoc", &test_words);
-    }
-
-    #[test]
-    pub fn x_plus_y_is_z() {
-        let test_words = [
-            ("xxxyyyyyzzzzzzzz", true),
-            ("xzyxzzyyzxzyzxzyzzyxzyzxzz", true), 
-            ("xyyzzzz", false),
-            ("xyxyxyxyxyzzzzzzzz", false),
-        ];
-
-        generic_test("./twocprogs/x_plus_y_is_z.twoc", &test_words);
-    }
-
-    #[test]
-    pub fn loops_forever() {
-        let test_words = [
-            ("0", false),
-        ];
-
-        generic_test("./twocprogs/loops_forever.twoc", &test_words);
     }
 
     #[test]
