@@ -1,6 +1,8 @@
 // IMPORTS
 use std::{env, fs};
 
+extern crate hashbrown;
+
 // Import grammar
 #[macro_use] extern crate lalrpop_util;
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
