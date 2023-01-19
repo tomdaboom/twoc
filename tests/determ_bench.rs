@@ -41,8 +41,8 @@ mod determ_bench {
     #[test]
     pub fn string_length_performance_test() {
         let start = 1000;
-        let step = 500;
-        let tests = 10;
+        let step = 50;
+        let tests = 100;
 
         for n in (start..(start + step*tests)).step_by(step) {
             // Generate a string of n 0s and n 1s
