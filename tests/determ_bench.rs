@@ -4,6 +4,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 #[cfg(test)]
 mod determ_bench {
+    use std::io::Write;
     use std::{fs, thread};
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
@@ -40,37 +41,54 @@ mod determ_bench {
 
     #[test]
     pub fn string_length_performance_test() {
+        // Loop params
         let start = 1000;
         let step = 100;
         let tests = 100;
 
+        // Initialise last
         let mut last = 0.0f32;
+
+        // Initialise vector of output results
+        let mut out_results = Vec::new();
 
         for n in (start..(start + step*tests)).step_by(step) {
             // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n) + &"1".repeat(n);
 
+            // Declare a thread to run the test with a stack that's way bigger than neccesary
+            let thread_builder = thread::Builder::new().stack_size(0xFFFF * n);
+
             // Start timing
             let now = Instant::now();
 
-            // Declare a caller thread to run the test with a stack that's way bigger than neccesary
-            let caller = thread::Builder::new()
-                .stack_size(0xFFFF * n)
-                .spawn(move || 
-                    generic_test(
-                        "./twocprogs/zeros_then_ones.twoc", 
-                        (test_word.as_str(), true),
-                    )
-                ).unwrap();
+            // Run test
+            let caller_thread = thread_builder.spawn(move || 
+                generic_test(
+                    "./twocprogs/zeros_then_ones.twoc", 
+                    (test_word.as_str(), true),
+                )
+            ).unwrap();
 
-            caller.join().unwrap();
+            caller_thread.join().unwrap();
 
-            // Stop timing
+            // Stop timing and record delta t
             let time_taken = now.elapsed().as_secs_f32();
+            let delta_t = time_taken - last;
 
-            // Output time taken and difference between last time and this time
-            println!("n = {:?}, t = {:?}, Δt = {:?}", n, now.elapsed().as_secs_f32(), time_taken - last);
+            // Output and save time taken and difference between last time and this time
+            println!("n = {:?}, t = {:?}, Δt = {:?}", n, time_taken, delta_t);
+            out_results.push((n, time_taken, delta_t));
+
             last = time_taken;
+        }
+
+        // Write results to a .txt
+        let path = "./tests/bench_results/string_length_performance_test.txt";
+        let mut file = fs::File::create(path).expect("File creation failed");
+        for (n, t, dt) in out_results {
+            let out = format!("{:?},{:?},{:?}\n", n, t, dt);
+            file.write_all(out.as_bytes()).expect("File write failed");
         }
     }
 }
