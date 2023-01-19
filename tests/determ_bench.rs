@@ -41,8 +41,10 @@ mod determ_bench {
     #[test]
     pub fn string_length_performance_test() {
         let start = 1000;
-        let step = 50;
+        let step = 100;
         let tests = 100;
+
+        let mut last = 0.0f32;
 
         for n in (start..(start + step*tests)).step_by(step) {
             // Generate a string of n 0s and n 1s
@@ -53,7 +55,7 @@ mod determ_bench {
 
             // Declare a caller thread to run the test with a stack that's way bigger than neccesary
             let caller = thread::Builder::new()
-                .stack_size(100 * n * 0xFF)
+                .stack_size(0xFFFF * n)
                 .spawn(move || 
                     generic_test(
                         "./twocprogs/zeros_then_ones.twoc", 
@@ -63,8 +65,12 @@ mod determ_bench {
 
             caller.join().unwrap();
 
-            // Output time taken
-            println!("n = {:?}, t = {:?}", n, now.elapsed().as_secs_f32());
+            // Stop timing
+            let time_taken = now.elapsed().as_secs_f32();
+
+            // Output time taken and difference between last time and this time
+            println!("n = {:?}, t = {:?}, Δt = {:?}", n, now.elapsed().as_secs_f32(), time_taken - last);
+            last = time_taken;
         }
     }
 }
