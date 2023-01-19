@@ -40,7 +40,11 @@ mod determ_bench {
 
     #[test]
     pub fn string_length_performance_test() {
-        for n in (10000..60000).step_by(10000) {
+        let start = 1000;
+        let step = 500;
+        let tests = 10;
+
+        for n in (start..(start + step*tests)).step_by(step) {
             // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n) + &"1".repeat(n);
 
@@ -60,7 +64,7 @@ mod determ_bench {
             caller.join().unwrap();
 
             // Output time taken
-            println!("n = {:?}, t = {:?}", n, now.elapsed().as_secs());
+            println!("n = {:?}, t = {:?}", n, now.elapsed().as_secs_f32());
         }
     }
 }
