@@ -9,7 +9,7 @@ mod determ_tests {
     use twoc::automaton::determ_construction; 
     use twoc::simulation::glueck::glueck_procedure;
 
-    // Generic test function that runs a program on a list of examples and compares the outputs
+    // Generic test function that runs a program on a single word and compares the outputs
     fn generic_test(filename : &str, examples : &[(&str, bool)]) {
         // Declare parser for Twoc rule
         let parser = TwocParser::new();

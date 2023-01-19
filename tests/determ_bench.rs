@@ -8,9 +8,10 @@ mod determ_bench {
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
     use twoc::simulation::glueck::glueck_procedure;
+    use std::time::Instant;
 
     // Generic test function that runs a program on a list of examples and compares the outputs
-    fn generic_test(filename : &str, examples : &[(&str, bool)]) {
+    fn generic_test(filename : &str, example : (&str, bool)) {
         // Declare parser for Twoc rule
         let parser = TwocParser::new();
 
@@ -31,29 +32,35 @@ mod determ_bench {
         // Construct the automaton from the program
         let autom = determ_construction::construct_from_prog(prog);
 
-        // Check that each of the words gives the correct answer
-        for (word, expected) in examples {
-            let glueck_output = glueck_procedure(&autom, word);
-            assert_eq!(glueck_output, *expected);
-        }
+        // Check that the word gives the correct answer
+        let (word, expected) = example;
+        let glueck_output = glueck_procedure(&autom, word);
+        assert_eq!(glueck_output, expected);
     }
 
     #[test]
     pub fn string_length_performance_test() {
-        // Generate a string of n 0s and n 1s
-        let n = 20000;
-        let test_word = "0".repeat(n) + &"1".repeat(n);
+        for n in (10000..60000).step_by(10000) {
+            // Generate a string of n 0s and n 1s
+            let test_word = "0".repeat(n) + &"1".repeat(n);
 
-        // Declare a caller thread to run the test with a stack that's way bigger than neccesary
-        let caller = thread::Builder::new()
-            .stack_size(100 * n * 0xFF)
-            .spawn(move || 
-                generic_test(
-                    "./twocprogs/zeros_then_ones.twoc", 
-                    &[(test_word.as_str(), true),
-                ])
-            ).unwrap();
+            // Start timing
+            let now = Instant::now();
 
-        caller.join().unwrap();
+            // Declare a caller thread to run the test with a stack that's way bigger than neccesary
+            let caller = thread::Builder::new()
+                .stack_size(100 * n * 0xFF)
+                .spawn(move || 
+                    generic_test(
+                        "./twocprogs/zeros_then_ones.twoc", 
+                        (test_word.as_str(), true),
+                    )
+                ).unwrap();
+
+            caller.join().unwrap();
+
+            // Output time taken
+            println!("n = {:?}, t = {:?}", n, now.elapsed().as_secs());
+        }
     }
 }
