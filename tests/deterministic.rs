@@ -84,4 +84,17 @@ mod determ_tests {
 
         generic_test("./twocprogs/loops_forever.twoc", &test_words);
     }
+
+    #[test]
+    pub fn string_length_performance_test() {
+        // Generate a string of n 0s and n 1s
+        let n = 100000;
+        let test_word = "0".repeat(n) + &"1".repeat(n);
+
+        let test_words = [
+            (test_word.as_str(), true),
+        ];
+
+        generic_test("./twocprogs/zeros_then_ones.twoc", &test_words);
+    }
 }
