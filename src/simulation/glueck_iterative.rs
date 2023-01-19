@@ -66,57 +66,9 @@ impl<'a> GlueckSimulator<'a> {
         self.stack.push(in_config);
 
         loop {
-            // Get current config from stack
-            let config = *self.stack.last().unwrap();
-
-            // Record the stripped config for later use
-            let stripped_config = strip_config(config);
-
-            // Check if the config has been seen before. If it has then we're in an infinite loop.
-            if self.past_configs.contains(&stripped_config) {
-                return config;
-            }
-
-            // Insert this config into set of seen configs
-            self.past_configs.insert(stripped_config);
-
-            // Check if the config has been memoized. If so, we don't need to compute it
-            if let Some(delta_config) = self.config_table.get(&stripped_config) {
-                self.config_table.insert(strip_config(self.stack[0]), *delta_config);
-                break;
-            }
-
-            // Check if the config is halting
-            if let Some(_) = self.autom.check_if_halting(config.state) {
-                return config; 
-            }
-
-            let trans = match get_transition(self.autom, config, self.input.clone()) {
-                // If no such transition exists, then the automaton halts and rejects on this config
-                None => return config,
-    
-                // If such a transition exists, save it in trans
-                Some(t) => t,
-            };
-    
-            // Find the next config
-            let next_config = next(
-                config, 
-                trans, 
-                self.input.clone()
-            );
-
-            // Push the next config to the stack
-            self.stack.push(next_config);
+           
         }
 
-        // Look in the config table for in_config's terminator
-        let delta_config = *self.config_table.get(&strip_config(in_config)).unwrap();
-        Config {
-            state : delta_config.state,
-            read : delta_config.read,
-            counter : in_config.counter + delta_config.counter,
-        }
     }
 }
 
