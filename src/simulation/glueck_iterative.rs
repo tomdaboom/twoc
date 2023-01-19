@@ -61,70 +61,62 @@ impl<'a> GlueckSimulator<'a> {
     }
 
     // Find the terminator of a given configuration
-    pub fn simulate(&mut self, config : Config) -> Config {
-        // Record the stripped config for later use
-        let stripped_config = strip_config(config);
+    pub fn simulate(&mut self, in_config : Config) -> Config {
+        // Put the input configuration on the top of the stack
+        self.stack.push(in_config);
 
-        // Check if the config has been seen before. If it has then we're in an infinite loop.
-        if self.past_configs.contains(&stripped_config) {
-            return config;
-        }
+        loop {
+            // Get current config from stack
+            let config = *self.stack.last().unwrap();
 
-        // Insert this config into set of seen configs
-        self.past_configs.insert(stripped_config);
+            // Record the stripped config for later use
+            let stripped_config = strip_config(config);
 
-        // Check if the config has been memoized
-        if let Some(delta_config) = self.config_table.get(&stripped_config) {
-            println!("config skipped with memoization");
-
-            // Calculate the new config
-            let new_config = Config {
-                state : delta_config.state,
-                read : delta_config.read,
-                counter : config.counter + delta_config.counter,
-            };
-
-            return new_config;
-        }
-
-        // Check if the config is halting
-        if let Some(_) = self.autom.check_if_halting(config.state) {
-            // Construct DeltaConfig that gets mapped to
-            let map_config = make_delta_config(config, config);
-
-            // Memoize and return
-            self.config_table.insert(stripped_config, map_config);
-            return config; 
-        }
-
-        let trans = match get_transition(self.autom, config, self.input.clone()) {
-            // If no such transition exists, then the automaton halts and rejects on this config
-            None => {
-                let map_config = make_delta_config(config, config);
-                self.config_table.insert(stripped_config, map_config);
+            // Check if the config has been seen before. If it has then we're in an infinite loop.
+            if self.past_configs.contains(&stripped_config) {
                 return config;
-            },
+            }
 
-            // If such a transition exists, save it in trans
-            Some(t) => t,
-        };
+            // Insert this config into set of seen configs
+            self.past_configs.insert(stripped_config);
 
-        // Find the next config
-        let next_config = next(
-            config, 
-            trans, 
-            self.input.clone()
-        );
+            // Check if the config has been memoized. If so, we don't need to compute it
+            if let Some(delta_config) = self.config_table.get(&stripped_config) {
+                self.config_table.insert(strip_config(self.stack[0]), *delta_config);
+                break;
+            }
 
-        // Simulate from the next config
-        let new_config = self.simulate(next_config);
+            // Check if the config is halting
+            if let Some(_) = self.autom.check_if_halting(config.state) {
+                return config; 
+            }
 
-        // Make delta config for memoization
-        let map_config = make_delta_config(config, new_config);
+            let trans = match get_transition(self.autom, config, self.input.clone()) {
+                // If no such transition exists, then the automaton halts and rejects on this config
+                None => return config,
+    
+                // If such a transition exists, save it in trans
+                Some(t) => t,
+            };
+    
+            // Find the next config
+            let next_config = next(
+                config, 
+                trans, 
+                self.input.clone()
+            );
 
-        // Memoise and return the new config
-        self.config_table.insert(stripped_config, map_config);
-        new_config
+            // Push the next config to the stack
+            self.stack.push(next_config);
+        }
+
+        // Look in the config table for in_config's terminator
+        let delta_config = *self.config_table.get(&strip_config(in_config)).unwrap();
+        Config {
+            state : delta_config.state,
+            read : delta_config.read,
+            counter : in_config.counter + delta_config.counter,
+        }
     }
 }
 
@@ -152,7 +144,6 @@ pub fn get_transition(autom : &Autom, config : Config, input : Input) -> Option<
 
     // Check that all the potentially conflicting transitions do the same thing
     // If this isn't the case, then the automaton is non-deterministic
-    // TODO: Fix this check to deal with or conditions that are subtly deterministic
     if legal_transitions.len() > 1 {
         // Get a tuple of actions executed by the first transition
         let first_actions = (

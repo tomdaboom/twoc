@@ -86,11 +86,12 @@ impl<'a> GlueckSimulator<'a> {
             return config; 
         }
 
+        // Find the transition off of the current state
         let trans = match get_transition(self.autom, config, self.input.clone()) {
             // If no such transition exists, then the automaton halts and rejects on this config
             None => {
-                let map_config = make_delta_config(config, config);
-                self.config_table.insert(stripped_config, map_config);
+                //let map_config = make_delta_config(config, config);
+                //self.config_table.insert(stripped_config, map_config);
                 return config;
             },
 
