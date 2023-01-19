@@ -63,6 +63,9 @@ impl<'a> GlueckSimulator<'a> {
 
         // Check if the config has been seen before. If it has then we're in an infinite loop.
         if self.past_configs.contains(&stripped_config) {
+            // Memoize and return
+            let map_config = make_delta_config(config, config);
+            self.config_table.insert(stripped_config, map_config);
             return config;
         }
 
@@ -90,14 +93,24 @@ impl<'a> GlueckSimulator<'a> {
         let trans = match get_transition(self.autom, config, self.input.clone()) {
             // If no such transition exists, then the automaton halts and rejects on this config
             None => {
-                //let map_config = make_delta_config(config, config);
-                //self.config_table.insert(stripped_config, map_config);
+                // Memoize and return
+                let map_config = make_delta_config(config, config);
+                self.config_table.insert(stripped_config, map_config);
                 return config;
             },
 
             // If such a transition exists, save it in trans
             Some(t) => t,
         };
+
+        // If the current transition decrements then we're at the terminator
+        /*
+        if trans.incr_by < 0 {
+            let map_config = make_delta_config(config, config);
+            self.config_table.insert(stripped_config, map_config);
+            return config;
+        }
+        */
 
         // Find the next config
         let next_config = next(
