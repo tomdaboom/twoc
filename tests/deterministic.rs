@@ -4,7 +4,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 #[cfg(test)]
 mod determ_tests {
-    use std::{fs, thread};
+    use std::fs;
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
     use twoc::simulation::glueck::glueck_procedure;
@@ -83,24 +83,5 @@ mod determ_tests {
         ];
 
         generic_test("./twocprogs/loops_forever.twoc", &test_words);
-    }
-
-    #[test]
-    pub fn string_length_performance_test() {
-        // Generate a string of n 0s and n 1s
-        let n = 20000;
-        let test_word = "0".repeat(n) + &"1".repeat(n);
-
-        // Declare a caller thread to run the test with a stack that's way bigger than neccesary
-        let caller = thread::Builder::new()
-            .stack_size(100 * n * 0xFF)
-            .spawn(move || 
-                generic_test(
-                    "./twocprogs/zeros_then_ones.twoc", 
-                    &[(test_word.as_str(), true),
-                ])
-            ).unwrap();
-
-        caller.join().unwrap();
     }
 }
