@@ -104,6 +104,7 @@ impl<'a> GlueckSimulator<'a> {
         };
 
         // If the current transition decrements then we're at the terminator
+        // TODO: Get it to work with this check?
         /*
         if trans.incr_by < 0 {
             let map_config = make_delta_config(config, config);
