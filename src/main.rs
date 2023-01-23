@@ -9,9 +9,11 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 // Import parser methods and types
 pub mod parser;
+use twoc::parser::filter_comments::filter_comments;
 
 // Import automaton methods and types
 pub mod automaton;
+pub mod simulation;
 use twoc::automaton::determ_construction;
 use twoc::simulation::glueck::glueck_procedure;
 
@@ -25,8 +27,8 @@ fn main() {
     let test_word = &args[2];
     println!("Parsing {:?}\n", file_path);
 
-    // Load file
-    let test_prog = fs::read_to_string(file_path).expect("File not found");
+    // Load file and filter comments
+    let test_prog = filter_comments(fs::read_to_string(file_path).expect("File not found"));
 
     // Parse the file
     let test = parser.parse(&test_prog);

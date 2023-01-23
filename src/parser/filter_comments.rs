@@ -1,8 +1,16 @@
-pub fn filter_comments(input : &str) -> &str {
+pub fn filter_comments(input : String) -> String {
     let lines = input.split("\n");
 
-    let out_lines = lines.filter(|line| 
-        (line.chars().nth(0) == Some('/')) && (line.chars().nth(1) == Some('/')) 
+    let out_lines = lines.filter(
+        |line| {
+            for char in line.chars() {
+                if char == '/' { return false; }
+                else if !char.is_whitespace() { return true; }
+            }
+
+            true
+    }
+        
     );
 
     let mut out_string = "".to_owned();
@@ -10,5 +18,5 @@ pub fn filter_comments(input : &str) -> &str {
         out_string.push_str(line);
     }
 
-    &*out_string
+    out_string
 }
