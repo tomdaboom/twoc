@@ -1,4 +1,4 @@
-use std::collections::{HashSet, HashMap};
+use hashbrown::{HashSet, HashMap};
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
@@ -10,10 +10,9 @@ pub type StrIndex = i32;
 pub type StateCounterState = (State, i32, State);
 
 pub fn ahu_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
-    // Convert the input into a list of Readables
     let readable_input = Readable::from_input_str(input);
-
-    false
+    let mut simulator = AhuSimulator::new(autom, readable_input);
+    simulator.check_if_accepted()
 }
 
 struct AhuSimulator<'a> {
@@ -108,8 +107,48 @@ impl<'a> AhuSimulator<'a> {
         out
     }
 
-    
+    // TODO: Change this if I come up with a more efficient table implementation
+    pub fn add_to_matrix(&mut self, i : StrIndex, j : StrIndex, elem : StateCounterState) {
+        let cell = self.matrix.get_mut(&(i, j)).unwrap();
+        cell.insert(elem);
+    }
+
+    pub fn check_if_accepted(&mut self) -> bool {
+        let n = self.n;
+
+        // Step 1
+        for d in (-n)..(n+1) {
+            for i in 0..n {
+                if i + d < 0 || i + d > n { continue; }
+
+                let _ = self.delta_pop(i, i+d)
+                    .iter()
+                    .map(|elem| {
+                        self.add_to_matrix(i, i+d, *elem);
+                        self.stack.push((i, i+d, *elem));
+                    });
+            }
+        }
+
+        // Step 2
+        while !self.stack.is_empty() {
+            // a
+            let (i, j, B) = self.stack.pop().unwrap();
+
+
+        }
+
+        // Step 3
+
+        false
+    }    
 }
+
+
+pub fn convolution() {
+
+}
+
 
 pub fn get_transitions(autom : &Autom, config : Config, input : Input) -> Vec<Transition> {
     // Get transitions from the automaton
