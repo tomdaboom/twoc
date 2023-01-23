@@ -7,10 +7,8 @@ pub fn filter_comments(input : String) -> String {
                 if char == '/' { return false; }
                 else if !char.is_whitespace() { return true; }
             }
-
             true
-    }
-        
+        }
     );
 
     let mut out_string = "".to_owned();
