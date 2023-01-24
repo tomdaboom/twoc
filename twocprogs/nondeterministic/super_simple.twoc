@@ -1,0 +1,15 @@
+alphabet = ['0', '1']
+
+twoc (string) {
+    move(1);
+
+    branch {
+        if (read == 0) { 
+            accept; 
+        }
+    } also {
+        if (read == 1) {
+            accept;
+        } 
+    }
+}
