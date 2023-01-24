@@ -34,6 +34,8 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         ast::Stmt::Reject() => autom.make_reject_state(*state),
 
         // Add a new state/transition for a basic block
+        // Contracted ASTs will break ahu!!!!!!
+        /*
         ast::Stmt::BasicBlock(move_by, incr_by) => {
             // Make a new state
             let new_state = autom.introduce();
@@ -50,6 +52,49 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
             // Update the current state to the new state
             *state = new_state;
+        },
+        */
+
+        ast::Stmt::Move(move_by) => {
+            // Make a new state
+            let new_state = autom.introduce();
+
+            // Create a new transition that executes the move
+            let transition = Transition::new_basic_block_trans(
+                new_state, 
+                move_by, 
+                0
+            );
+
+            // Add the transition to the automaton
+            autom.add_transition(*state, transition);
+
+            // Update the current state to the new state
+            *state = new_state;
+        },
+
+        ast::Stmt::Incr(incr_by) => {
+            // Work out how much to increment the counter by on each transition
+            let incrementing = if incr_by >= 0 { 1 } else { -1 };
+
+            // Add one transition for each increment/decrement instruction
+            for _ in 0..incr_by.abs() {
+                // Make a new state
+                let new_state = autom.introduce();
+
+                // Create a new transition that executes the basic block
+                let transition = Transition::new_basic_block_trans(
+                    new_state, 
+                    0, 
+                    incrementing,
+                );
+
+                // Add the transition to the automaton
+                autom.add_transition(*state, transition);
+
+                // Update the current state to the new state
+                *state = new_state;
+            }
         },
 
         // Recursively construct an if statement 

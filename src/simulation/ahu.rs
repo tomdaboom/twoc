@@ -1,4 +1,4 @@
-use hashbrown::{HashSet, HashMap};
+use hashbrown::HashMap;
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
@@ -7,7 +7,7 @@ use crate::parser::ast::{Readable, Input};
 
 pub type StrIndex = i32;
 
-pub type StateCounterState = (State, i32, State);
+pub type StateCounterState = (State, Vec<i32>, State);
 
 pub fn ahu_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     let readable_input = Readable::from_input_str(input);
@@ -22,7 +22,7 @@ struct AhuSimulator<'a> {
 
     n : StrIndex,
 
-    matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>>,
+    matrix : HashMap<(StrIndex, StrIndex), Vec<StateCounterState>>,
 
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
 }
@@ -30,10 +30,10 @@ struct AhuSimulator<'a> {
 impl<'a> AhuSimulator<'a> {
     pub fn new(autom : &'a Autom, input : Input) -> Self {
         // Initialise the dynamic programming matrix
-        let mut matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>> = HashMap::new();
+        let mut matrix : HashMap<(StrIndex, StrIndex), Vec<StateCounterState>> = HashMap::new();
         for i in 0..input.len() {
             for j in 0..input.len() {
-                matrix.insert((i as StrIndex, j as StrIndex), HashSet::new());
+                matrix.insert((i as StrIndex, j as StrIndex), Vec::new());
             }
         }
 
@@ -66,7 +66,7 @@ impl<'a> AhuSimulator<'a> {
                     let moves_to_j = new_index == j;
 
                      if decrementing && moves_to_j  {
-                        out.push((state, trans.incr_by, trans.goto));
+                        out.push((state, vec![counter], trans.goto));
                     }
                 }
             }
@@ -83,7 +83,7 @@ impl<'a> AhuSimulator<'a> {
         for state in 0..self.autom.state_total {
             for counter in [0, 1] {
                 // Construct the appropriate config
-                let config = Config { state, read : i as i32, counter };
+                let config = Config { state, read : i, counter };
 
                 // Find the transitions that can be taken from this config
                 let transitions = get_transitions(self.autom, config, self.input.clone());
@@ -96,8 +96,8 @@ impl<'a> AhuSimulator<'a> {
                     let new_index = (i + trans.move_by).max(0).min(self.n);
                     let moves_to_j = new_index == j;
 
-                     if incrementing && moves_to_j  {
-                        out.push((state, trans.incr_by, trans.goto));
+                    if incrementing && moves_to_j  {
+                        out.push((state, vec![counter, 1], trans.goto));
                     }
                 }
             }
@@ -107,10 +107,15 @@ impl<'a> AhuSimulator<'a> {
         out
     }
 
-    // TODO: Change this if I come up with a more efficient table implementation
+    // TODO: Change these if I come up with a more efficient table implementation
+
     pub fn add_to_matrix(&mut self, i : StrIndex, j : StrIndex, elem : StateCounterState) {
         let cell = self.matrix.get_mut(&(i, j)).unwrap();
-        cell.insert(elem);
+        cell.push(elem);
+    }
+
+    pub fn get_from_matrix(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
+        self.matrix.get(&(i, j)).unwrap().clone()
     }
 
     pub fn check_if_accepted(&mut self) -> bool {
@@ -119,34 +124,85 @@ impl<'a> AhuSimulator<'a> {
         // Step 1
         for d in (-n)..(n+1) {
             for i in 0..n {
-                if i + d < 0 || i + d > n { continue; }
+                if i + d < 0 || i + d >= n { continue; }
 
                 let _ = self.delta_pop(i, i+d)
                     .iter()
                     .map(|elem| {
-                        self.add_to_matrix(i, i+d, *elem);
-                        self.stack.push((i, i+d, *elem));
+                        self.add_to_matrix(i, i+d, elem.clone());
+                        self.stack.push((i, i+d, elem.clone()));
                     });
             }
         }
 
         // Step 2
         while !self.stack.is_empty() {
+            let (i, j, b) = self.stack.pop().unwrap();
+
             // a
-            let (i, j, B) = self.stack.pop().unwrap();
+            for d in (-n)..(n+1) {
+                if i - d < 0 || i - d >= n { continue; }
 
+                for k in 0..n {
+                    let dpush = self.delta_push(i-d, i);
+                    let cell = self.get_from_matrix(j, k);
 
+                    for elem in convolution(dpush, vec![b.clone()], cell) {
+                        self.add_to_matrix(i-d, k, elem.clone());
+                        self.stack.push((i-d, k, elem.clone()));
+                    }
+                }
+            }
+
+            // b
+            for h in 0..n {
+                for d in (-n)..(n+1) {
+                    if h + d < 0 || h + d >= n { continue; }
+
+                    let dpush = self.delta_push(h, h+d);
+                    let cell = self.get_from_matrix(h+d, i);
+
+                    for elem in convolution(dpush, cell, vec![b.clone()]) {
+                        self.add_to_matrix(h, j, elem.clone());
+                        self.stack.push((h, j, elem.clone()));
+                    }
+                }
+            }
+            
         }
 
-        // Step 3
+        // Step 3        
+        for (p, dc, q) in self.get_from_matrix(0, n-1) {
+            if let Some(true) = self.autom.check_if_halting(q) {
+                if p == 0 && dc.len() == 1 && dc[0] == 0 { return true; }
+            }
+        }
 
         false
     }    
 }
 
 
-pub fn convolution() {
+pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : Vec<StateCounterState>) -> Vec<StateCounterState> {
+    let mut out = Vec::new();
 
+    for (p, incr, x1) in &a {
+        let (z, z2) = (incr[0], incr[1]);
+
+        for (x2, decr1, y1) in &b {
+            if *x1 != *x2 { continue; }
+            if decr1[0] != z2 { continue; }
+
+            for (y2, decr2, q) in &c {
+                if *y1 != *y2 { continue; }
+                if decr2[0] != z { continue; }
+
+                out.push((*p, decr2.clone(), *q));
+            }
+        }
+    }
+
+    out
 }
 
 

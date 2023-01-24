@@ -14,8 +14,9 @@ use twoc::parser::filter_comments::filter_comments;
 // Import automaton methods and types
 pub mod automaton;
 pub mod simulation;
-use twoc::automaton::determ_construction;
+use twoc::automaton::{determ_construction, construction};
 use twoc::simulation::glueck::glueck_procedure;
+use twoc::simulation::ahu::ahu_procedure;
 
 fn main() {
     // Declare parser for Twoc rule
@@ -56,27 +57,44 @@ fn main() {
     println!("AST:");
     prog.print();
 
-    // Contract AST
-    prog.contract();
+    if prog.deterministic() {
+        // Contract AST
+        prog.contract();
 
-    // Print contracted AST
-    println!("\nContracted AST:");
-    prog.print();
+        // Print contracted AST
+        println!("\nContracted AST:");
+        prog.print();
 
-    // Construct the automaton from the program
-    let autom = determ_construction::construct_from_prog(prog);
+        // Construct the automaton from the program
+        let autom = determ_construction::construct_from_prog(prog);
 
-    // Print the automaton
-    println!("\nAutomaton:");
-    autom.print();
+        // Print the automaton
+        println!("\nAutomaton:");
+        autom.print();
 
-    // Test that the automaton accepts an example word via the glueck procedure
-    let accepting = glueck_procedure(&autom, test_word);
+        // Test that the automaton accepts an example word via the glueck procedure
+        let accepting = glueck_procedure(&autom, test_word);
 
-    if accepting {
-        print!("\n{:?} is accepted", test_word);
+        if accepting {
+            print!("\n{:?} is accepted", test_word);
+        } else {
+            print!("\n{:?} isn't accepted", test_word);
+        }
     } else {
-        print!("\n{:?} isn't accepted", test_word);
+        // Construct the automaton from the program
+        let autom = construction::construct_from_prog(prog);
+
+        // Print the automaton
+        println!("\nAutomaton:");
+        autom.print();
+
+        // Test that the automaton accepts an example word via the glueck procedure
+        let accepting = ahu_procedure(&autom, test_word);
+
+        if accepting {
+            print!("\n{:?} is accepted", test_word);
+        } else {
+            print!("\n{:?} isn't accepted", test_word);
+        }
     }
-    
 }
