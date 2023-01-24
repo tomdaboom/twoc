@@ -16,6 +16,6 @@ with open(sys.argv[1], 'r') as file:
 dts[0] = 0
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-ax[0].plot(ns[0:180], ts[0:180])
-ax[1].plot(ns[0:180], dts[0:180])
+ax[0].plot(ns, ts)
+ax[1].plot([ns[i] for i in range(len(ns)) if dts[i] < 5], [i for i in dts if i < 5])
 plt.show()

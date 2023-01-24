@@ -37,6 +37,7 @@ impl<'a> AhuSimulator<'a> {
             }
         }
 
+        // Record the size of the input
         let n = input.len() as StrIndex;
 
         // Initialise the stack
@@ -65,7 +66,7 @@ impl<'a> AhuSimulator<'a> {
                     let new_index = (i + trans.move_by).max(0).min(self.n);
                     let moves_to_j = new_index == j;
 
-                     if decrementing && moves_to_j  {
+                    if decrementing && moves_to_j  {
                         out.push((state, vec![counter], trans.goto));
                     }
                 }
@@ -126,12 +127,10 @@ impl<'a> AhuSimulator<'a> {
             for i in 0..n {
                 if i + d < 0 || i + d >= n { continue; }
 
-                let _ = self.delta_pop(i, i+d)
-                    .iter()
-                    .map(|elem| {
-                        self.add_to_matrix(i, i+d, elem.clone());
-                        self.stack.push((i, i+d, elem.clone()));
-                    });
+                for elem in self.delta_pop(i, i+d) {
+                    self.add_to_matrix(i, i+d, elem.clone());
+                    self.stack.push((i, i+d, elem.clone()));
+                }
             }
         }
 
@@ -172,6 +171,13 @@ impl<'a> AhuSimulator<'a> {
         }
 
         // Step 3        
+
+        for i in 0..n {
+            for j in 0..n {
+                println!("{:?}", self.get_from_matrix(i, j));
+            }
+        }
+
         for (p, dc, q) in self.get_from_matrix(0, n-1) {
             if let Some(true) = self.autom.check_if_halting(q) {
                 if p == 0 && dc.len() == 1 && dc[0] == 0 { return true; }
@@ -197,6 +203,7 @@ pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : V
                 if *y1 != *y2 { continue; }
                 if decr2[0] != z { continue; }
 
+                println!("Convolution has a member!");
                 out.push((*p, decr2.clone(), *q));
             }
         }

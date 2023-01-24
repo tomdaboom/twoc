@@ -16,6 +16,7 @@ pub trait TransitionTrait {
 }
 
 // Generic automaton class parameterised across an arbitrary Transition type
+#[derive(Clone)]
 pub struct GenericAutom<Transition> {
     // Adjacency list of states to transitions off of that state
     state_map : HashMap<State, Vec<Transition>>,
