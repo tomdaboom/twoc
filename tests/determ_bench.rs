@@ -65,7 +65,7 @@ mod determ_bench {
             // Run test
             let caller_thread = thread_builder.spawn(move || 
                 generic_test(
-                    "./twocprogs/zeros_then_ones.twoc", 
+                    "./twocprogs/deterministic/zeros_then_ones.twoc", 
                     (test_word.as_str(), true),
                 )
             ).unwrap();
