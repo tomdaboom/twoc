@@ -1,4 +1,4 @@
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
@@ -22,7 +22,7 @@ struct AhuSimulator<'a> {
 
     n : StrIndex,
 
-    matrix : HashMap<(StrIndex, StrIndex), Vec<StateCounterState>>,
+    matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>>,
 
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
 }
@@ -30,10 +30,10 @@ struct AhuSimulator<'a> {
 impl<'a> AhuSimulator<'a> {
     pub fn new(autom : &'a Autom, input : Input) -> Self {
         // Initialise the dynamic programming matrix
-        let mut matrix : HashMap<(StrIndex, StrIndex), Vec<StateCounterState>> = HashMap::new();
+        let mut matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>> = HashMap::new();
         for i in 0..input.len() {
             for j in 0..input.len() {
-                matrix.insert((i as StrIndex, j as StrIndex), Vec::new());
+                matrix.insert((i as StrIndex, j as StrIndex), HashSet::new());
             }
         }
 
@@ -91,14 +91,15 @@ impl<'a> AhuSimulator<'a> {
 
                 for trans in transitions {
                     // Check if the transition increments the counter
-                    let incrementing = trans.incr_by > 0;
+                    let incrementing = trans.incr_by >= 0;
                     
                     // Check if the counter moves from index i to index j
                     let new_index = (i + trans.move_by).max(0).min(self.n);
                     let moves_to_j = new_index == j;
 
                     if incrementing && moves_to_j  {
-                        out.push((state, vec![counter, 1], trans.goto));
+                        //println!("delta_push is nonempty!");
+                        out.push((state, vec![counter, trans.incr_by], trans.goto));
                     }
                 }
             }
@@ -112,18 +113,25 @@ impl<'a> AhuSimulator<'a> {
 
     pub fn add_to_matrix(&mut self, i : StrIndex, j : StrIndex, elem : StateCounterState) {
         let cell = self.matrix.get_mut(&(i, j)).unwrap();
-        cell.push(elem);
+        cell.insert(elem);
     }
 
     pub fn get_from_matrix(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
-        self.matrix.get(&(i, j)).unwrap().clone()
+        let set = &*self.matrix.get(&(i, j)).unwrap();
+
+        let mut out = Vec::new();
+        for elem in set {
+            out.push(elem.clone());
+        }
+
+        out
     }
 
     pub fn check_if_accepted(&mut self) -> bool {
         let n = self.n;
 
         // Step 1
-        for d in (-n)..(n+1) {
+        for d in (-n+1)..(n-1) {
             for i in 0..n {
                 if i + d < 0 || i + d >= n { continue; }
 
@@ -170,13 +178,16 @@ impl<'a> AhuSimulator<'a> {
             
         }
 
-        // Step 3        
-
+        // Step 3   
+        /* 
         for i in 0..n {
             for j in 0..n {
                 println!("{:?}", self.get_from_matrix(i, j));
             }
         }
+        */
+
+        //println!("\n\nr(0, n-1) = {:?}", self.get_from_matrix(0, n-1));
 
         for (p, dc, q) in self.get_from_matrix(0, n-1) {
             if let Some(true) = self.autom.check_if_halting(q) {
@@ -192,19 +203,18 @@ impl<'a> AhuSimulator<'a> {
 pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : Vec<StateCounterState>) -> Vec<StateCounterState> {
     let mut out = Vec::new();
 
-    for (p, incr, x1) in &a {
-        let (z, z2) = (incr[0], incr[1]);
+    for (p, incr, s1) in &a {
+        for (s2, decr1, t1) in &b {
+            for (t2, decr2, q) in &c {
+                let (c1, c2) = (incr[0], incr[1]);
 
-        for (x2, decr1, y1) in &b {
-            if *x1 != *x2 { continue; }
-            if decr1[0] != z2 { continue; }
+                let states_correct = (*s1 == *s2) && (*t1 == *t2);
+                let decrs_correct = (decr1[0] == c2) && (decr2[0] == c1);
 
-            for (y2, decr2, q) in &c {
-                if *y1 != *y2 { continue; }
-                if decr2[0] != z { continue; }
-
-                println!("Convolution has a member!");
-                out.push((*p, decr2.clone(), *q));
+                if states_correct && decrs_correct {
+                    //println!("Convolution has a member!");
+                    out.push((*p, decr2.clone(), *q));
+                }
             }
         }
     }

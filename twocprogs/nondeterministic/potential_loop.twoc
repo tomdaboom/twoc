@@ -1,0 +1,16 @@
+alphabet = [ '0', '1' ]
+
+twoc (string) {
+    branch {
+        while (read == lend || c != 0) {
+            move(1);
+            c++;
+        }
+    } also {
+        move(2);
+        if (read == '1') {
+            move(1);
+            if (read == '1') { accept; }
+        }
+    }
+}

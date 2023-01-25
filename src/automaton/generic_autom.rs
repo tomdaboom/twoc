@@ -146,6 +146,18 @@ impl<Transition : std::clone::Clone + TransitionTrait> GenericAutom<Transition> 
         }
     }
 
+    // Add a transition to empty the counter and go to rend for all accepting states
+    pub fn goto_rend_accept_states(&mut self) {
+        for state in &self.accepting {
+            // Create a transition that decrements the counter by 1
+            let decr_trans = Transition::new_basic_block_trans(*state, 1, 0);
+
+            // Add that transition to the state
+            let transitions = self.state_map.get_mut(state).unwrap();
+            transitions.push(decr_trans);
+        }
+    }
+
     // Get all the transitions off of a state
     pub fn get_transitions(&self, state : State) -> Vec<Transition> {
         match self.state_map.get(&state) {

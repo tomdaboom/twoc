@@ -19,8 +19,9 @@ pub fn construct_from_prog(prog : Program) -> Autom {
     // Remove transitions from all halting states
     autom.clean_halting_states();
 
-    // Add counter-emptying transitions to the automaton
+    // Add counter-emptying and right-moving transitions to all accept states
     autom.empty_accept_states();
+    autom.goto_rend_accept_states();
 
     // Return the constructed automaton
     autom
