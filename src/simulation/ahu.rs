@@ -1,4 +1,5 @@
-use hashbrown::{HashMap, HashSet};
+use hashbrown::{HashSet};
+use vector2d::Vector2d;
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
