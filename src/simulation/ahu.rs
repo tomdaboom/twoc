@@ -17,14 +17,19 @@ pub fn ahu_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
 }
 
 struct AhuSimulator<'a> {
+    // The automaton being simulated
     autom : &'a Autom,
 
+    // The input string
     input : Input,
 
+    // The size of the input
     n : StrIndex,
 
+    // The dynamic programming matrix
     matrix : Array2D<HashSet<StateCounterState>>,
 
+    // The stack used by the algorithm
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
 }
 
