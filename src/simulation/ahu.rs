@@ -113,7 +113,7 @@ impl<'a> AhuSimulator<'a> {
     }
 
     pub fn get_from_matrix(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
-        let set = &*self.matrix.get(i as usize, j as usize).unwrap();
+        let set = self.matrix.get(i as usize, j as usize).unwrap();
 
         let mut out = Vec::new();
         for elem in set {
