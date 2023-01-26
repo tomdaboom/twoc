@@ -13,4 +13,4 @@ lalrpop = "^0.19"
 lalrpop-util = { version = "^0.19", features = ["lexer"] }
 regex = "1"
 hashbrown = "0.1"
-vector2d = "2.2.0"
+array2d = "0.3.0"

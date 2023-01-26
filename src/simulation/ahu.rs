@@ -1,5 +1,5 @@
-use hashbrown::{HashSet};
-use vector2d::Vector2d;
+use hashbrown::HashSet;
+use array2d::Array2D;
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
@@ -23,23 +23,18 @@ struct AhuSimulator<'a> {
 
     n : StrIndex,
 
-    matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>>,
+    matrix : Array2D<HashSet<StateCounterState>>,
 
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
 }
 
 impl<'a> AhuSimulator<'a> {
     pub fn new(autom : &'a Autom, input : Input) -> Self {
-        // Initialise the dynamic programming matrix
-        let mut matrix : HashMap<(StrIndex, StrIndex), HashSet<StateCounterState>> = HashMap::new();
-        for i in 0..input.len() {
-            for j in 0..input.len() {
-                matrix.insert((i as StrIndex, j as StrIndex), HashSet::new());
-            }
-        }
-
         // Record the size of the input
         let n = input.len() as StrIndex;
+
+        // Initialise the dynamic programming matrix
+        let matrix = Array2D::filled_with(HashSet::new(), n as usize, n as usize);
 
         // Initialise the stack
         let stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
@@ -113,12 +108,12 @@ impl<'a> AhuSimulator<'a> {
     // TODO: Change these if I come up with a more efficient table implementation
 
     pub fn add_to_matrix(&mut self, i : StrIndex, j : StrIndex, elem : StateCounterState) {
-        let cell = self.matrix.get_mut(&(i, j)).unwrap();
+        let cell = self.matrix.get_mut(i as usize, j as usize).unwrap();
         cell.insert(elem);
     }
 
     pub fn get_from_matrix(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
-        let set = &*self.matrix.get(&(i, j)).unwrap();
+        let set = &*self.matrix.get(i as usize, j as usize).unwrap();
 
         let mut out = Vec::new();
         for elem in set {
