@@ -57,21 +57,27 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         */
 
         ast::Stmt::Move(move_by) => {
-            // Make a new state
-            let new_state = autom.introduce();
+            // Work out how much to increment the counter by on each transition
+            let moving = if move_by >= 0 { 1 } else { -1 };
 
-            // Create a new transition that executes the move
-            let transition = Transition::new_basic_block_trans(
-                new_state, 
-                move_by, 
-                0
-            );
+            // Add one transition for each increment/decrement instruction
+            for _ in 0..move_by.abs() {
+                // Make a new state
+                let new_state = autom.introduce();
 
-            // Add the transition to the automaton
-            autom.add_transition(*state, transition);
+                // Create a new transition that executes the basic block
+                let transition = Transition::new_basic_block_trans(
+                    new_state, 
+                    moving, 
+                    0,
+                );
 
-            // Update the current state to the new state
-            *state = new_state;
+                // Add the transition to the automaton
+                autom.add_transition(*state, transition);
+
+                // Update the current state to the new state
+                *state = new_state;
+            }
         },
 
         ast::Stmt::Incr(incr_by) => {

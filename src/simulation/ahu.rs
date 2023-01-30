@@ -132,7 +132,7 @@ impl<'a> AhuSimulator<'a> {
         let n = self.n;
 
         // Step 1
-        for d in (-n+1)..(n-1) {
+        for d in [-1, 0, 1] {
             for i in 0..n {
                 if i + d < 0 || i + d >= n { continue; }
 
@@ -148,7 +148,7 @@ impl<'a> AhuSimulator<'a> {
             let (i, j, b) = self.stack.pop().unwrap();
 
             // a
-            for d in (-n)..(n+1) {
+            for d in [-1, 0, 1] {
                 if i - d < 0 || i - d >= n { continue; }
 
                 for k in 0..n {
@@ -164,7 +164,7 @@ impl<'a> AhuSimulator<'a> {
 
             // b
             for h in 0..n {
-                for d in (-n)..(n+1) {
+                for d in [-1, 0, 1] {
                     if h + d < 0 || h + d >= n { continue; }
 
                     let dpush = self.delta_push(h, h+d);
