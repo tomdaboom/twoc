@@ -14,3 +14,6 @@ lalrpop-util = { version = "^0.19", features = ["lexer"] }
 regex = "1"
 hashbrown = "0.1"
 array2d = "0.3.0"
+
+[profile.dev]
+opt-level = 3               # Use slightly better optimizations.
