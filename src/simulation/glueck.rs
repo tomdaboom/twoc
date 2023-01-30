@@ -1,4 +1,4 @@
-use hashbrown::{HashMap, HashSet};
+use hashbrown::HashMap;
 
 use crate::automaton::determ_autom::{Autom, Transition};
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next};
@@ -18,10 +18,10 @@ pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Declare the GlueckSimulator object
     let mut simulator = GlueckSimulator::new(autom, readable_input);
 
-    // Run the simulator
+    // Run the simulator to find the terminator of this config
     let final_config = simulator.simulate(start_config);
 
-    println!("\n{:?}", final_config);
+    //println!("\n{:?}", final_config);
 
     // Return based on the final config
     match autom.check_if_halting(final_config.state) {
@@ -32,7 +32,7 @@ pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
 
 // Struct to hold variables for the Glueck procedure
 struct GlueckSimulator<'a> {
-    // Table that stores the previously computed config terminators
+    // Table that stores the previously computed terminators
     config_table : HashMap<StrippedConfig, DeltaConfig>,
 
     // Automaton being simulated
@@ -40,9 +40,6 @@ struct GlueckSimulator<'a> {
 
     // Input being simulated on
     input : Input,
-
-    // Set to store configs already entered
-    past_configs : HashSet<Config>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -52,96 +49,99 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
-            past_configs : HashSet::new(),
         }
     }
 
     // Find the terminator of a given configuration
-    pub fn simulate(&mut self, config : Config) -> Config {       
-        println!("\n{:?}", config);
-        
-        // Record the stripped config for later use
+    pub fn simulate(&mut self, config : Config) -> Config {    
+        //println!("{:?}", config);
+
         let stripped_config = strip_config(config);
 
-        // Check if the config has been seen before. If it has then we're in an infinite loop.
-        /*
-        if self.past_configs.contains(&config) {    
-            println!("Config seen before!!!");
-            
-            // Memoize and return
-            let map_config = make_delta_config(config, config);
-            self.config_table.insert(stripped_config, map_config);
-            return config;
-        }
-        */
-
-        // Insert this config into set of seen configs
-        self.past_configs.insert(config);
-
-        // Check if the config has been memoized
+        // Check if we've seen this configuration before
         if let Some(delta_config) = self.config_table.get(&stripped_config) {
-            println!("\nMemoized found!!!");
-
-            // Calculate the new config
-            let new_config = Config {
+            // Calculate the new config and return
+            return Config {
                 state : delta_config.state,
                 read : delta_config.read,
                 counter : config.counter + delta_config.counter,
             };
-
-            // Check if we're in an infinite loop. If so, return and fail
-            let configs_equal = 
-                new_config.state == config.state && 
-                new_config.read == config.read &&
-                new_config.counter >= config.counter;
-
-            if configs_equal { return config; }
-
-            // Recurse
-            return self.simulate(new_config);
         }
 
-        // Check if the config is halting
-        if let Some(_) = self.autom.check_if_halting(config.state) {
-            return config; 
+        // Check if this configuration is halting
+        if let Some(accepting) = self.autom.check_if_halting(config.state) {
+            // Are we in a reject state or in an accept state with an empty counter?
+            if !accepting || (accepting && config.counter == 0) { return config; } 
         }
 
-        // Find the transition off of the current state
+        // Find the legal transition from this config if one exists
         let trans = match get_transition(self.autom, config, self.input.clone()) {
             // If no such transition exists, then the automaton halts and rejects on this config
-            None => {
-                // return
-                return config;
-            },
+            None => return config,
 
             // If such a transition exists, save it in trans
             Some(t) => t,
-        };
+        };  
 
-        // Find the next config
-        let next_config = next(
-            config, 
-            trans.clone(), 
-            self.input.clone()
-        );
+        let out : Config;
 
-        // If the current transition decrements then we're at the terminator
-        // TODO: Get it to work with this check
-        if trans.incr_by < 0 {
-            let map_config = make_delta_config(config, next_config);
-            self.config_table.insert(stripped_config, map_config);
-            return self.simulate(next_config);
+        // Check if this transition is decrementing
+        if trans.incr_by < 0 { 
+            // We've found the terminator
+            out = config;
+        }
+        
+        // Check if this transition is incrementing
+        else if trans.incr_by > 0 {  
+            // Find the next configuration
+            let next_config = next(
+                config, 
+                trans.clone(), 
+                self.input.clone()
+            );
+
+            // Find the terminator of the next configuration
+            let next_terminator = self.simulate(next_config);
+
+            // Find the transition off of the next terminator if one exists
+            let next_terminator_trans = match get_transition(
+                self.autom, 
+                next_terminator, 
+                self.input.clone()
+            ) {
+                None => return next_terminator,
+                Some(t) => t,
+            };  
+
+            // Find the configuration following the last terminator
+            let follow = next(
+                next_terminator, 
+                next_terminator_trans,
+                self.input.clone()
+            );
+
+            // Recurse
+            out = self.simulate(follow);
+        } 
+        
+        else {
+            // Find the next configuration
+            let next_config = next(
+                config, 
+                trans.clone(), 
+                self.input.clone()
+            );
+
+            // Recurse
+            out = self.simulate(next_config);
         }
 
-        // Simulate from the next config
-        let new_config = self.simulate(next_config);
-
-        // Make delta config for memoization
-        let map_config = make_delta_config(config, new_config);
-
-        // Memoise and return the new config
+        // Memoize
+        let map_config = make_delta_config(config, out);
         self.config_table.insert(stripped_config, map_config);
-        new_config
+
+        // Return
+        out
     }
 }
 

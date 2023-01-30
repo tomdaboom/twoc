@@ -58,13 +58,12 @@ impl<'a> GlueckSimulator<'a> {
 
     // Find the terminator of a given configuration
     pub fn simulate(&mut self, config : Config) -> Config {       
-        println!("\n{:?}", config);
+        //println!("\n{:?}", config);
         
         // Record the stripped config for later use
         let stripped_config = strip_config(config);
 
         // Check if the config has been seen before. If it has then we're in an infinite loop.
-        /*
         if self.past_configs.contains(&config) {    
             println!("Config seen before!!!");
             
@@ -73,7 +72,6 @@ impl<'a> GlueckSimulator<'a> {
             self.config_table.insert(stripped_config, map_config);
             return config;
         }
-        */
 
         // Insert this config into set of seen configs
         self.past_configs.insert(config);
