@@ -40,6 +40,9 @@ struct GlueckSimulator<'a> {
 
     // Input being simulated on
     input : Input,
+
+    // Stack of past configurations
+    past_configs : Vec<StrippedConfig>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -49,14 +52,22 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
+            past_configs : Vec::new(),
         }
     }
 
     // Find the terminator of a given configuration
     pub fn simulate(&mut self, config : Config) -> Config {    
-        //println!("{:?}", config);
-
         let stripped_config = strip_config(config);
+
+        // Check for infinite loops
+        // If we loop infinitely, return the starting config
+        if self.past_configs.contains(&stripped_config) {
+            return Config { state : 0, read : 0, counter : 0 };
+        }
+
+        // Record config in past configs stack
+        self.past_configs.push(stripped_config);
 
         // Check if we've seen this configuration before
         if let Some(delta_config) = self.config_table.get(&stripped_config) {
@@ -70,8 +81,10 @@ impl<'a> GlueckSimulator<'a> {
 
         // Check if this configuration is halting
         if let Some(accepting) = self.autom.check_if_halting(config.state) {
-            // Are we in a reject state or in an accept state with an empty counter?
-            if !accepting || (accepting && config.counter == 0) { return config; } 
+            // Return if we are in a reject state or in an accept state with an empty counter
+            if !accepting || (accepting && config.counter == 0) { 
+                return config; 
+            } 
         }
 
         // Find the legal transition from this config if one exists
@@ -83,15 +96,18 @@ impl<'a> GlueckSimulator<'a> {
             Some(t) => t,
         };  
 
+        // Variable to hold the value the procedure should output
         let out : Config;
 
         // Check if this transition is decrementing
+        // i.e. pop(config)
         if trans.incr_by < 0 { 
-            // We've found the terminator
+            // We've found the terminator (yaaaayyyyyyyyyyyy!!!!!!!!!)
             out = config;
         }
         
         // Check if this transition is incrementing
+        // i.e. push(config)
         else if trans.incr_by > 0 {  
             // Find the next configuration
             let next_config = next(
@@ -103,12 +119,8 @@ impl<'a> GlueckSimulator<'a> {
             // Find the terminator of the next configuration
             let next_terminator = self.simulate(next_config);
 
-            // Find the transition off of the next terminator if one exists
-            let next_terminator_trans = match get_transition(
-                self.autom, 
-                next_terminator, 
-                self.input.clone()
-            ) {
+            // Find the legal transition off of the next terminator if one exists
+            let next_terminator_trans = match get_transition(self.autom, next_terminator, self.input.clone()) {
                 None => return next_terminator,
                 Some(t) => t,
             };  
@@ -124,6 +136,7 @@ impl<'a> GlueckSimulator<'a> {
             out = self.simulate(follow);
         } 
         
+        // op(config)
         else {
             // Find the next configuration
             let next_config = next(
@@ -141,6 +154,7 @@ impl<'a> GlueckSimulator<'a> {
         self.config_table.insert(stripped_config, map_config);
 
         // Return
+        self.past_configs.pop();
         out
     }
 }
@@ -155,14 +169,19 @@ pub fn get_transition(autom : &Autom, config : Config, input : Input) -> Option<
 
     for trans in transitions {
         match trans.condition {
+            // If this transition has a condition, 
+            // check that it's true before adding it to legal transitions
             Some(ref cond) => {
+                // Find the character under the readhead
                 let read_char = input[config.read as usize];
                 
+                // Check the condition and push
                 if cond.check(read_char, config.counter) {
                     legal_transitions.push(trans);
                 }
             },
 
+            // Otherwise, add to legal transitions
             None => legal_transitions.push(trans), 
         }
     }
