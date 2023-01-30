@@ -11,7 +11,10 @@ pub type StrIndex = i32;
 pub type StateCounterState = (State, Vec<i32>, State);
 
 pub fn ahu_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
+    // Convert the input string into a list of readables 
     let readable_input = Readable::from_input_str(input);
+    
+    // Run the simulator 
     let mut simulator = AhuSimulator::new(autom, readable_input);
     simulator.check_if_accepted()
 }
@@ -143,6 +146,8 @@ impl<'a> AhuSimulator<'a> {
             }
         }
 
+        println!("Step 1 completed");
+
         // Step 2
         while !self.stack.is_empty() {
             let (i, j, b) = self.stack.pop().unwrap();
@@ -179,6 +184,8 @@ impl<'a> AhuSimulator<'a> {
             
         }
 
+        println!("Step 2 completed");
+
         // Step 3   
         /* 
         for i in 0..n {
@@ -205,9 +212,14 @@ pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : V
     let mut out = Vec::new();
 
     for (p, incr, s1) in &a {
+        let (c1, c2) = (incr[0], incr[1]);
+
         for (s2, decr1, t1) in &b {
+            if !(*s1 == *s2) { continue; }
+            if !(decr1[0] == c2) { continue; }
+
             for (t2, decr2, q) in &c {
-                let (c1, c2) = (incr[0], incr[1]);
+                
 
                 let states_correct = (*s1 == *s2) && (*t1 == *t2);
                 let decrs_correct = (decr1[0] == c2) && (decr2[0] == c1);
