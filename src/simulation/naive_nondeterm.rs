@@ -33,8 +33,10 @@ impl<'a> NaiveSimulator<'a> {
         let mut paths = vec![start_cfg];
 
         loop {
+            // Reject if all of the computation paths have failed
             if paths.len() == 0 { return false; }
 
+            // Vector to store possible paths of the next computation
             let mut possible_next_paths = Vec::new();
 
             for cfg in &paths {
@@ -55,12 +57,18 @@ impl<'a> NaiveSimulator<'a> {
                 }
             }
 
+            // Clear the current vector of computation paths
             paths = Vec::new();
 
+            // Reform paths vector
             for cfg in possible_next_paths {
+                // Check halting states
                 if let Some(accepting) = self.autom.check_if_halting(cfg.state) {
                     match accepting {
+                        // Stop if any path is accepting
                         true => return true,
+
+                        // Exclude any path that is rejecting
                         false => continue,
                     }
                 }
