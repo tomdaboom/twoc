@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 
-use crate::automaton::determ_autom::{Autom, Transition};
-use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next};
+use crate::automaton::determ_autom::Autom;
+use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next, get_transition};
 use crate::parser::ast::{Readable, Input};
 
 // Check if a string is accepted by a deterministic automaton using the glueck procedure
@@ -156,57 +156,5 @@ impl<'a> GlueckSimulator<'a> {
         // Return
         self.past_configs.pop();
         out
-    }
-}
-
-// Get the transition that the automaton can take from the given configuration, if one exists
-pub fn get_transition(autom : &Autom, config : Config, input : Input) -> Option<Transition> {
-    // Get transitions from the automaton
-    let transitions = autom.get_transitions(config.state);
-
-    // Declare vector of legal transitions
-    let mut legal_transitions = Vec::new();
-
-    for trans in transitions {
-        match trans.condition {
-            // If this transition has a condition, 
-            // check that it's true before adding it to legal transitions
-            Some(ref cond) => {
-                // Find the character under the readhead
-                let read_char = input[config.read as usize];
-                
-                // Check the condition and push
-                if cond.check(read_char, config.counter) {
-                    legal_transitions.push(trans);
-                }
-            },
-
-            // Otherwise, add to legal transitions
-            None => legal_transitions.push(trans), 
-        }
-    }
-
-    // Check that all the potentially conflicting transitions do the same thing
-    // If this isn't the case, then the automaton is non-deterministic
-    if legal_transitions.len() > 1 {
-        // Get a tuple of actions executed by the first transition
-        let first_actions = (
-            legal_transitions[0].goto, 
-            legal_transitions[0].move_by, 
-            legal_transitions[0].incr_by
-        );
-
-        // Panic if any other legal transition doesn't do exactly the same thing
-        for trans in legal_transitions.iter().skip(1) {
-            if (trans.goto, trans.move_by, trans.incr_by) != first_actions {
-                panic!("From state {:?}, this automaton is nondeterministic!", config.state);
-            }
-        }
-    }
-
-    // Return based on number of legal transitions 
-    match legal_transitions.len() {
-        0 => None,
-        _ => Some(legal_transitions[0].clone()),
     }
 }

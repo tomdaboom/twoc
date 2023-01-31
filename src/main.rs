@@ -16,7 +16,8 @@ pub mod automaton;
 pub mod simulation;
 use twoc::automaton::{determ_construction, construction};
 use twoc::simulation::glueck::glueck_procedure;
-use twoc::simulation::ahu::ahu_procedure;
+//use twoc::simulation::ahu::ahu_procedure;
+use twoc::simulation::naive_nondeterm::naive;
 
 fn main() {
     // Declare parser for Twoc rule
@@ -57,7 +58,7 @@ fn main() {
     println!("AST:");
     prog.print();
 
-    if prog.deterministic() {
+    if false{//prog.deterministic() {
         // Contract AST
         prog.contract();
 
@@ -89,7 +90,7 @@ fn main() {
         autom.print();
 
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = ahu_procedure(&autom, test_word);
+        let accepting = naive(&autom, test_word);
 
         match accepting {
             true  => print!("\n{:?} is accepted", test_word),

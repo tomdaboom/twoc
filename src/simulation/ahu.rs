@@ -1,9 +1,9 @@
 use hashbrown::HashSet;
 use array2d::Array2D;
 
-use crate::automaton::autom::{Autom, Transition};
+use crate::automaton::autom::Autom;
 use crate::automaton::generic_autom::State;
-use crate::simulation::config::Config;
+use crate::simulation::config::{Config, get_transitions};
 use crate::parser::ast::{Readable, Input};
 
 pub type StrIndex = i32;
@@ -231,39 +231,4 @@ pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : V
     }
 
     out
-}
-
-
-pub fn get_transitions(autom : &Autom, config : Config, input : Input) -> Vec<Transition> {
-    // Get transitions from the automaton
-    let transitions = autom.get_transitions(config.state);
-
-    // Declare vector of legal transitions
-    let mut legal_transitions = Vec::new();
-
-    for trans in transitions {
-        // Compute whether or not the counter is zero and what character is at the read index
-        let counter_zero = config.counter == 0;
-        let read_char = input[config.read as usize];
-
-        // Work out if the counter check passes
-        let counter_check_passes = match trans.test_counter_zero {
-            None => true,
-            Some(check_counter_zero) => counter_zero == check_counter_zero,
-        };
-
-        // Work out if the read check passes
-        let read_check_passes = match trans.read_char {
-            None => true,
-            Some(char) => char == read_char,
-        };
-
-        // Include the transition if both pass
-        if counter_check_passes && read_check_passes {
-            legal_transitions.push(trans);
-        }
-    }
-
-    // Return
-    legal_transitions
 }
