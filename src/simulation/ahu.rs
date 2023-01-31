@@ -215,12 +215,10 @@ pub fn convolution(a : Vec<StateCounterState>, b : Vec<StateCounterState>, c : V
         let (c1, c2) = (incr[0], incr[1]);
 
         for (s2, decr1, t1) in &b {
-            if !(*s1 == *s2) { continue; }
-            if !(decr1[0] == c2) { continue; }
+            if *s1 != *s2 { continue; }
+            if decr1[0] != c2 { continue; }
 
             for (t2, decr2, q) in &c {
-                
-
                 let states_correct = (*s1 == *s2) && (*t1 == *t2);
                 let decrs_correct = (decr1[0] == c2) && (decr2[0] == c1);
 
