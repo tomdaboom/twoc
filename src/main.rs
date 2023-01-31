@@ -75,11 +75,11 @@ fn main() {
         // Test that the automaton accepts an example word via the glueck procedure
         let accepting = glueck_procedure(&autom, test_word);
 
-        if accepting {
-            print!("\n{:?} is accepted", test_word);
-        } else {
-            print!("\n{:?} isn't accepted", test_word);
+        match accepting {
+            true  => print!("\n{:?} is accepted", test_word),
+            false => print!("\n{:?} isn't accepted", test_word),
         }
+
     } else {
         // Construct the automaton from the program
         let autom = construction::construct_from_prog(prog);
@@ -91,10 +91,9 @@ fn main() {
         // Test that the automaton accepts an example word via the glueck procedure
         let accepting = ahu_procedure(&autom, test_word);
 
-        if accepting {
-            print!("\n{:?} is accepted", test_word);
-        } else {
-            print!("\n{:?} isn't accepted", test_word);
+        match accepting {
+            true  => print!("\n{:?} is accepted", test_word),
+            false => print!("\n{:?} isn't accepted", test_word),
         }
     }
 }
