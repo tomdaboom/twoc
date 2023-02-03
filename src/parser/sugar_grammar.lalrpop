@@ -1,0 +1,146 @@
+use std::str::FromStr;
+use twoc::parser::ast;
+use twoc::parser::program;
+
+grammar;
+
+// Top-level rule of the grammar
+// TODO: add actual arguments
+pub Twoc : program::Program = {
+    <alpha:AlphabetDef> "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
+        => program::Program::new(prog, alpha),
+}
+
+// Rule to parse alphabet definition
+AlphabetDef : Vec<char> = {
+    "alphabet" "=" "[" <cs:Letters> "]" => cs,
+}
+
+// Rule to parse comma-separated list of letters
+Letters : Vec<char> = {
+    <c:r"'[a-zA-Z0-9]'"> => vec![c.chars().nth(1).unwrap()],
+
+    <c:r"'[a-zA-Z0-9]'"> "," <mut cs:Letters> => {
+        cs.push(c.chars().nth(1).unwrap());
+        cs
+    },
+}
+
+// Rule to parse lists of statements
+// StmtList ::= Stmt*
+StmtList : Vec<ast::Stmt> = {
+    <stmts:Stmt*> => stmts,
+}
+
+// Rule to parse single statements
+// TODO: add syntactic sugar macros (assignments, regex, etc.)
+Stmt : ast::Stmt = {
+    // accept and reject
+    "accept" ";" => ast::Stmt::Accept(),
+    "reject" ";" => ast::Stmt::Reject(),
+
+    // move
+    "move" "(" <s:r"-?[0-9]+"> ")" ";" 
+        => ast::Stmt::Move(i32::from_str(s).unwrap()),
+
+    // increments and decrements
+    "c" "++" ";" => ast::Stmt::Incr(1),
+    "c" "--" ";" => ast::Stmt::Incr(-1),
+
+    // increments and decrements with integer parameters
+    "c" "+=" <s:r"-?[0-9]+"> ";"
+        => ast::Stmt::Incr(i32::from_str(s).unwrap()), 
+        
+    "c" "-=" <s:r"-?[0-9]+"> ";"
+        => ast::Stmt::Incr(-1 * i32::from_str(s).unwrap()),
+
+    // if and if-else statements    
+    "if" "(" <cond:Cond> ")" "{" <if_body:StmtList> "}" <else_body:ElseBody?>
+        => match else_body {
+            None             => ast::Stmt::If(cond, if_body, Vec::new()),
+            Some(else_block) => ast::Stmt::If(cond, if_body, else_block),
+        },
+
+    // while statements
+    "while" "(" <cond:Cond> ")" "{" <while_body:StmtList> "}"
+        => ast::Stmt::While(cond, while_body),
+
+    // Branch statements
+    "branch" "{" <branch_body:StmtList> "}" <mut alsos:AlsoBody+>
+        => {
+            alsos.insert(0, branch_body);
+            ast::Stmt::Branch(alsos)
+        }
+}
+
+// Rule to parse else statements
+// TODO: extend for else-if statements
+ElseBody : Vec<ast::Stmt> = {
+    "else" "{" <else_body:StmtList> "}" => else_body,
+}
+
+// Rule to parse also statements
+AlsoBody : Vec<ast::Stmt> = {
+    "also" "{" <also_body:StmtList> "}" => also_body,
+}
+ 
+// Rule to parse logical expressions
+// Logical or binds the least tightly
+Cond : ast::Cond = {
+    <cond:AndCond> => cond,
+    
+    <cond:AndCond> "||" <conds:Cond>
+        => ast::Cond::Or(Box::new(cond), Box::new(conds)),
+}
+
+// Logical and binds tighter
+AndCond : ast::Cond = {
+    <cond:BaseCond> => cond,
+
+    <cond:BaseCond> "&&" <conds:AndCond>
+        => ast::Cond::And(Box::new(cond), Box::new(conds)),
+}
+
+
+// Base conditionals
+BaseCond : ast::Cond = {
+    // Check the counter
+    "c" "==" "0" => ast::Cond::CheckZero(),
+    "c" "!=" "0" => ast::Cond::CheckNotZero(),
+
+    // Read a char from the tape
+    "read" "==" <read_char:r"'[a-zA-Z0-9]'">
+        => {
+            let read = ast::Readable::Char(read_char.chars().nth(1).unwrap());
+            ast::Cond::Read(read)
+        },
+
+    // Don't read a char from the tape
+    "read" "!=" <read_char:r"'[a-zA-Z0-9]'">
+        => {
+            let read = ast::Readable::Char(read_char.chars().nth(1).unwrap());
+            ast::Cond::NotRead(read)
+        },
+
+    // Read an endmarker
+    "read" "==" <endmarker:r"(lend|rend)"> 
+        => match endmarker {
+            "lend" => ast::Cond::Read(ast::Readable::LEnd()),
+            "rend" => ast::Cond::Read(ast::Readable::REnd()),
+            _      => ast::Cond::Read(ast::Readable::LEnd()),
+        }, 
+
+    // Don't read an endmarker
+    "read" "!=" <endmarker:r"(lend|rend)"> 
+        => match endmarker {
+            "lend" => ast::Cond::NotRead(ast::Readable::LEnd()),
+            "rend" => ast::Cond::NotRead(ast::Readable::REnd()),
+            _      => ast::Cond::NotRead(ast::Readable::LEnd()),
+        }, 
+
+    // Logical not
+    "!" <cond:BaseCond> => ast::Cond::Not(Box::new(cond)),
+
+    // brackets
+    "(" <cond:Cond> ")" => cond,
+}
