@@ -13,10 +13,10 @@ pub enum Stmt {
     Move(i32),
 
     // c += j
-    Incr(i32), 
+    Incr(Value), 
 
     // c = j
-    Asgn(i32),
+    Asgn(Value),
 
     // (move(i), c += j), only present after contraction
     BasicBlock(i32, i32),
@@ -31,7 +31,16 @@ pub enum Stmt {
     Branch(Vec<Vec<Stmt>>),
 }
 
+#[derive(Debug, Clone)]
+pub enum Value {
+    Lit(i32),
+    Par(String),
+}
+
+
 impl Stmt {
+
+
     // AST Printer method
     pub fn print(&self, offset : usize) -> String {
         // Generate whitespace buffer
@@ -135,3 +144,4 @@ impl Stmt {
         out
     }
 }
+

@@ -8,4 +8,4 @@ pub mod program;
 
 pub mod filter_comments;
 
-pub mod ast_sugar;
+pub mod sugar;
