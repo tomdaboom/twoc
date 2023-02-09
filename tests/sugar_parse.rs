@@ -7,6 +7,8 @@ mod sugar_parse {
     use std::fs;
     use crate::grammar_rules::TwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
+    use twoc::automaton::determ_construction::construct_from_prog;
+    use twoc::simulation::glueck::glueck_procedure;
 
     #[test]
     fn test() {
@@ -28,16 +30,39 @@ mod sugar_parse {
             Ok(prog) => prog,
         };
 
-        println!("{:?}", prog.pars);
-
         // Print AST
         println!("\nAST:");
         prog.print();
 
-        // Print desugared AST
-        let desugared_prog = convert_sugar(prog);
+        // Desugar AST
+        let mut desugared_prog = convert_sugar(prog);
+        desugared_prog.contract();
+
         println!("\nDesugared AST:");
         desugared_prog.print();
+
+        // Construct automaton 
+        let autom = construct_from_prog(desugared_prog);
+
+        println!("\nAutomaton:");
+        autom.print();
+
+        let test_words = [
+            "00001111",
+            "0001111", 
+            "01010101",
+            "",
+        ];
+
+        println!("");
+        for word in test_words {
+            print!("{:?} ", word);
+            if glueck_procedure(&autom, word) {
+                println!("is accepted");
+            } else {
+                println!("is not accepted");
+            }
+        }
 
         panic!("panic to show stdout; don't worry about me hoo hoo hee hee")
     }

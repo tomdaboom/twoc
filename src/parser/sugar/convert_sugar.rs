@@ -7,17 +7,52 @@ type SugarStmt = crate::parser::sugar::ast::Stmt;
 type Prog = crate::parser::program::Program;
 type Stmt = crate::parser::ast::Stmt;     
 
-fn convert_sugar(in_prog : SugarProg) -> Prog {
+pub fn convert_sugar(in_prog : SugarProg) -> Prog {
     // Get alphabet
     let alpha = in_prog.alpha.clone();
 
-    // Convert old program
+    // Declare vector to hold new program
     let mut stmts = Vec::new();
+
+    // Insert code to check that the program satisfies alpha[0]* + alpha[1]* + ... 
+    
+    // Find the order in which characters should show up
+    let mut char_order = Vec::new();
+    for p in in_prog.pars.into_iter().rev() {
+        // Get the character that the param is looking for
+        let c = in_prog.parmap.get(&p).unwrap();
+        char_order.push(c);
+    }
+
+    // Move off the left endmarker
+    stmts.push(Stmt::Move(1));
+
+    for c in char_order {        
+        // Read each occurence of c
+        stmts.push(Stmt::While(
+            Cond::Read(Readable::Char(*c)),
+            vec![Stmt::Move(1)],
+        ));
+    }
+
+    // Check that we're at rend
+    stmts.push(Stmt::If(
+        Cond::NotRead(Readable::REnd()),
+        vec![Stmt::Reject()],
+        vec![],
+    ));
+
+    // Return to lend
+    stmts.push(Stmt::While(
+        Cond::NotRead(Readable::LEnd()), 
+        vec![Stmt::Move(-1)],            
+    ));
+    
+    // Convert old program
     for stmt in in_prog.stmts {
         stmts.append(&mut convert_statement(stmt, &in_prog.parmap));
     }
 
-    // Construct new program
     Prog { stmts, alpha : alpha.clone() }
 }
 
@@ -44,7 +79,10 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
                 // Move to character index
                 let move_to_char = Stmt::While(
-                    Cond::NotRead(Readable::Char(*c)),
+                    Cond::And(
+                        Box::new(Cond::NotRead(Readable::Char(*c))), 
+                        Box::new(Cond::NotRead(Readable::REnd()))
+                    ),
                     vec![Stmt::Move(1)],
                 );
 
@@ -69,7 +107,10 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
                 // Move to character index
                 let move_to_char = Stmt::While(
-                    Cond::NotRead(Readable::Char(*c)),
+                    Cond::And(
+                        Box::new(Cond::NotRead(Readable::Char(*c))), 
+                        Box::new(Cond::NotRead(Readable::REnd()))
+                    ),
                     vec![Stmt::Move(1)],
                 );
 
@@ -120,7 +161,10 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
                 // Move to character index
                 let move_to_char = Stmt::While(
-                    Cond::NotRead(Readable::Char(*c)),
+                    Cond::And(
+                        Box::new(Cond::NotRead(Readable::Char(*c))), 
+                        Box::new(Cond::NotRead(Readable::REnd()))
+                    ),
                     vec![Stmt::Move(1)],
                 );
 
