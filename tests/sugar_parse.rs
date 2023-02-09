@@ -6,6 +6,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");
 mod sugar_parse {
     use std::fs;
     use crate::grammar_rules::TwocParser;
+    use twoc::parser::sugar::convert_sugar::convert_sugar;
 
     #[test]
     fn test() {
@@ -27,8 +28,17 @@ mod sugar_parse {
             Ok(prog) => prog,
         };
 
+        println!("{:?}", prog.pars);
+
         // Print AST
         println!("\nAST:");
         prog.print();
+
+        // Print desugared AST
+        let desugared_prog = convert_sugar(prog);
+        println!("\nDesugared AST:");
+        desugared_prog.print();
+
+        panic!("panic to show stdout; don't worry about me hoo hoo hee hee")
     }
 }
