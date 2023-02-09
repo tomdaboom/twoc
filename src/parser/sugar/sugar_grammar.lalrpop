@@ -34,9 +34,9 @@ Params : Vec<String> = {
 }
 
 ParList : Vec<String> = {
-    "int" <p:r"[a-zA-Z]+"> => vec![p.to_string()],
+    "int" <p:r"[A-Z]+"> => vec![p.to_string()],
 
-    "int" <p:r"[a-zA-Z]+"> "," <mut ps:ParList> => {
+    "int" <p:r"[A-Z]+"> "," <mut ps:ParList> => {
         ps.push(p.to_string());
         ps
     },
@@ -60,8 +60,8 @@ Stmt : ast::Stmt = {
         => ast::Stmt::Move(i32::from_str(s).unwrap()),
 
     // increments and decrements
-    "c" "++" ";" => ast::Stmt::Incr(1),
-    "c" "--" ";" => ast::Stmt::Incr(-1),
+    "c" "++" ";" => ast::Stmt::Incr(ast::Value::Lit(1)),
+    "c" "--" ";" => ast::Stmt::Incr(ast::Value::Lit(-1)),
 
     // increments and decrements with integer parameters
     "c" "+=" <s:r"-?[0-9]+"> ";"
@@ -71,19 +71,19 @@ Stmt : ast::Stmt = {
         => ast::Stmt::Incr(ast::Value::Lit(-1 * i32::from_str(s).unwrap())),
 
     // increments and decrements with inputs
-    "c" "+=" <p:"[a-zA-Z]+"> ";"
-        => ast::Stmt::Incr(ast::Value::Par(p)),
+    "c" "+=" <p:r"[A-Z]+"> ";"
+        => ast::Stmt::Incr(ast::Value::Par(p.to_string())),
 
-    "c" "-=" <p:"[a-zA-Z]+"> ";"
-        => ast::Stmt::Incr(ast::Value::NegPar(p)),
+    "c" "-=" <p:r"[A-Z]+"> ";"
+        => ast::Stmt::Incr(ast::Value::NegPar(p.to_string())),
 
     // assignments
     "c" "=" <s:r"-?[0-9]+"> ";"
         => ast::Stmt::Asgn(ast::Value::Lit(i32::from_str(s).unwrap().abs())),
 
     // assignments to inputs
-    "c" "=" <p:"[a-zA-Z]+"> ";"
-        => ast::Stmt::Asgn(ast::Value::Par(p)),
+    "c" "=" <p:r"[A-Z]+"> ";"
+        => ast::Stmt::Asgn(ast::Value::Par(p.to_string())),
 
     // if and if-else statements    
     "if" "(" <cond:Cond> ")" "{" <if_body:StmtList> "}" <else_body:ElseBody?>

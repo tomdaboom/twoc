@@ -1,5 +1,3 @@
-use crate::parser::ast::Cond;
-
 // AST nodes for statements 
 #[derive(Debug, Clone)]
 pub enum Stmt {
@@ -31,17 +29,7 @@ pub enum Stmt {
     Branch(Vec<Vec<Stmt>>),
 }
 
-#[derive(Debug, Clone)]
-pub enum Value {
-    Lit(i32),
-    Par(String),
-    NegPar(String),
-}
-
-
 impl Stmt {
-
-
     // AST Printer method
     pub fn print(&self, offset : usize) -> String {
         // Generate whitespace buffer
@@ -73,6 +61,12 @@ impl Stmt {
             Stmt::Incr(incr_by) => {
                 out.push_str(&buffer);
                 out.push_str(&format!("c += {:?}\n", incr_by));
+            },
+
+            // Print increment/decrement statement
+            Stmt::Asgn(incr_by) => {
+                out.push_str(&buffer);
+                out.push_str(&format!("c = {:?}\n", incr_by));
             },
 
             // Print basic block
@@ -137,7 +131,7 @@ impl Stmt {
                 }
             }
 
-            _ => panic!("Can't print this kind of statement yet!"),
+            //_ => panic!("Can't print this kind of statement yet!"),
             
         }
 
@@ -146,3 +140,137 @@ impl Stmt {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum Value {
+    Lit(i32),
+    Par(String),
+    NegPar(String),
+}
+
+// AST nodes for conditions
+#[derive(Debug, Clone)]
+pub enum Cond {
+    // read == X
+    Read(Readable),
+
+    // read != X
+    NotRead(Readable),
+
+    // c == 0
+    CheckZero(),
+
+    // c != 0
+    CheckNotZero(),
+
+    // X && Y
+    And(Box<Cond>, Box<Cond>),
+
+    // X || Y
+    Or(Box<Cond>, Box<Cond>),
+
+    // !X
+    Not(Box<Cond>),
+}
+
+impl Cond {
+    // Check that a condition is true given a certain character at the readhead and a certain counter value 
+    pub fn check(&self, read : Readable, counter : i32) -> bool {
+        match self {
+            // Compare the character at the readhead to the character in the condition
+            Cond::Read(char) => read == *char,
+            Cond::NotRead(char) => read != *char,
+
+            // Check the value of the counter
+            Cond::CheckZero() => counter == 0,
+            Cond::CheckNotZero() => counter != 0,
+
+            // Recurse on and statements
+            Cond::And(left, right) => left.check(read, counter) && right.check(read, counter),
+
+            // Recurse on or statements
+            Cond::Or(left, right) => left.check(read, counter) || right.check(read, counter),
+
+            // Recurse on not statements
+            Cond::Not(inner) => !inner.check(read, counter),
+        }
+    }
+
+    // Print the condition to the terminal
+    pub fn print(&self) {
+        match self {
+            // Print read conditions
+
+            Cond::Read(char) => {
+                print!("read == ");
+                char.print();
+            },
+
+            Cond::NotRead(char) => {
+                print!("read != ");
+                char.print();
+            },
+
+            // Print counter conditions
+            Cond::CheckZero() => print!("c == 0"),
+            Cond::CheckNotZero() => print!("c != 0"),
+
+            // Recurse on and statements
+            Cond::And(left, right) => {
+                print!("(");
+                left.print();
+                print!(") && (");
+                right.print();
+                print!(")");
+            },
+
+            // Recurse on or statements
+            Cond::Or(left, right) => {
+                print!("(");
+                left.print();
+                print!(") || (");
+                right.print();
+                print!(")");
+            },
+
+            // Recurse on not statements
+            Cond::Not(inner) => {
+                print!("!(");
+                inner.print();
+                print!(")");
+            }
+        }
+    }
+}
+
+// Enum for things on the rhs of a read condition (either a character or lend/rend)
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum Readable { Char(char), LEnd(), REnd(), }
+
+impl Readable {
+    // Simple printer method
+    pub fn print(&self) {
+        match self {
+            Readable::LEnd() => print!("lend"),
+            Readable::REnd() => print!("rend"),
+            Readable::Char(char) => print!("{:?}", char),
+        }
+    }
+}
+
+// Type alias for automata inputs
+pub type Input = Vec<Readable>;
+
+impl Readable {
+    // Constructor to turn a string into a correctly formatted Input
+    pub fn from_input_str(input : &str) -> Vec<Self> {
+        let mut out_vector = Vec::new();
+
+        out_vector.push(Self::LEnd());
+        for c in input.chars() {
+            out_vector.push(Self::Char(c));
+        }
+        out_vector.push(Self::REnd());
+
+        out_vector
+    }
+}

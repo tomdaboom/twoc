@@ -1,12 +1,12 @@
 alphabet = [ '0', '1' ]
 
-twoc (int x, int y) {
-    c  = x;
-    c -= y;
+twoc (int X, int Y) {
+    c  = X;
+    c -= Y;
     if (c != 0) { reject; }
 
-    c  = y;
-    c -= x;
+    c  = Y;
+    c -= X;
     if (c != 0) { reject; }
     
     accept;
