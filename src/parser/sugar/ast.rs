@@ -35,6 +35,7 @@ pub enum Stmt {
 pub enum Value {
     Lit(i32),
     Par(String),
+    NegPar(String),
 }
 
 

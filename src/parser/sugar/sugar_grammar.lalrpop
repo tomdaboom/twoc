@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use twoc::parser::sugar::ast::{stmt, ;
+use twoc::parser::sugar::ast;
 use twoc::parser::sugar::program;
 
 grammar;
@@ -65,14 +65,25 @@ Stmt : ast::Stmt = {
 
     // increments and decrements with integer parameters
     "c" "+=" <s:r"-?[0-9]+"> ";"
-        => ast::Stmt::Incr(i32::from_str(s).unwrap()), 
+        => ast::Stmt::Incr(ast::Value::Lit(i32::from_str(s).unwrap())), 
         
     "c" "-=" <s:r"-?[0-9]+"> ";"
-        => ast::Stmt::Incr(-1 * i32::from_str(s).unwrap()),
+        => ast::Stmt::Incr(ast::Value::Lit(-1 * i32::from_str(s).unwrap())),
 
     // increments and decrements with inputs
-    "c" "+=" <p"[a-zA-Z]+"> ";"
-        => 
+    "c" "+=" <p:"[a-zA-Z]+"> ";"
+        => ast::Stmt::Incr(ast::Value::Par(p)),
+
+    "c" "-=" <p:"[a-zA-Z]+"> ";"
+        => ast::Stmt::Incr(ast::Value::NegPar(p)),
+
+    // assignments
+    "c" "=" <s:r"-?[0-9]+"> ";"
+        => ast::Stmt::Asgn(ast::Value::Lit(i32::from_str(s).unwrap().abs())),
+
+    // assignments to inputs
+    "c" "=" <p:"[a-zA-Z]+"> ";"
+        => ast::Stmt::Asgn(ast::Value::Par(p)),
 
     // if and if-else statements    
     "if" "(" <cond:Cond> ")" "{" <if_body:StmtList> "}" <else_body:ElseBody?>
