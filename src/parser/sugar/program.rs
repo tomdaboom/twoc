@@ -1,11 +1,13 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
+use std::iter::zip;
 
 use crate::parser::sugar::ast;
 
 pub struct Program {
-    pub stmts : Vec<ast::Stmt>,
-    pub alpha : HashSet<char>,
-    pub pars  : HashSet<String>,
+    pub stmts  : Vec<ast::Stmt>,
+    pub alpha  : HashSet<char>,
+    pub pars   : Vec<String>,
+    pub parmap : HashMap<String, char>,
 }
 
 impl Program {
@@ -13,23 +15,24 @@ impl Program {
     pub fn new(prog : Vec<ast::Stmt>, char_list : Vec<char>, par_list : Vec<String>) -> Self {
         // Convert the alphabet from a vector to a HashSet
         let mut char_set = HashSet::new();
-        for char in char_list {
+        for char in char_list.clone() {
             char_set.insert(char);
         }
 
-        // Convert the pars from a vector to a HashSet
-        let mut par_set = HashSet::new();
-        for par in par_list {
-            par_set.insert(par);
+        // Check that the alphabet and parameter list are of the same size
+        if par_list.len() != char_set.len() {
+            panic!("Different number of parameters to characters in alphabet!");
         }
 
-        // Check that the alphabet and parameter sets are of the same size
-        if par_set.len() != char_set.len() {
-            panic!("Different number of parameters to alphabet!");
+        let mut map = HashMap::new();
+
+        // Construct the parmap
+        for (p, c) in zip(par_list.clone(), char_list) {
+            map.insert(p, c);
         }
 
         // Construct the Program object
-        Self { stmts : prog, alpha : char_set, pars : par_set }
+        Self { stmts : prog, alpha : char_set, pars : par_list, parmap : map }
     }
 
     // Print out the program
