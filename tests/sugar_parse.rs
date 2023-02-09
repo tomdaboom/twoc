@@ -54,6 +54,7 @@ mod sugar_parse {
             "",
         ];
 
+        // Print test case outputs
         println!("");
         for word in test_words {
             print!("{:?} ", word);
