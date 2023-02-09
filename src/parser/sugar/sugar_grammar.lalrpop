@@ -37,7 +37,7 @@ ParList : Vec<String> = {
     "int" <p:r"[A-Z]+"> => vec![p.to_string()],
 
     "int" <p:r"[A-Z]+"> "," <mut ps:ParList> => {
-        ps.insert(0, p.to_string());
+        ps.push(p.to_string());
         ps
     },
 }
