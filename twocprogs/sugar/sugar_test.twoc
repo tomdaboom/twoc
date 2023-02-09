@@ -1,0 +1,13 @@
+alphabet = [ '0', '1' ]
+
+twoc (int x, int y) {
+    c  = x;
+    c -= y;
+    if (c != 0) { reject; }
+
+    c  = y;
+    c -= x;
+    if (c != 0) { reject; }
+    
+    accept;
+}
