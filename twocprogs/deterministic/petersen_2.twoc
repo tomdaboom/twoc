@@ -1,0 +1,26 @@
+alphabet = [ '0', '1' ]
+
+twoc (int N, int M) {
+    // accept if (N, M) in {(0, 1), (1, 2), (2, 4), (3, 8)}
+    
+    // (0, 1)
+    c = N;
+    if (c == 0) {
+        c = N;
+        c -= 1;
+    }
+
+
+
+
+    // reject if n<4
+    c = N; c -= 3;
+    if (c == 0) { reject; }
+
+    // reject if m < 16
+    c = M; c -= 15;
+    if (c == 0) { reject; }
+
+    c = M;
+    
+}
