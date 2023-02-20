@@ -1,5 +1,3 @@
-// This file implements the propositional calculus described in https://arxiv.org/abs/2101.11320
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PropFormula<A> {
     Var(A),
