@@ -32,6 +32,9 @@ pub struct GenericAutom<Transition> {
 
     // The tape alphabet (excluding the endmarkers)
     pub alpha : HashSet<char>,
+
+    // Flag to store whether or not decrementing the counter past zero should fail the computation
+    //pub zero_fail : bool,
 }
 
 // Implementation for above struct

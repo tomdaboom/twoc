@@ -1,4 +1,5 @@
-alphabet = [ '0' ]
+decr_on_zero = true;
+alphabet = [ '0' ];
 
 twoc (string) {
     while (read == lend) {

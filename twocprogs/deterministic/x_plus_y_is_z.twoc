@@ -1,3 +1,4 @@
+decr_on_zero = true;
 alphabet = ['x', 'y', 'z']
 
 twoc (string) {

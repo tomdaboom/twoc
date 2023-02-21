@@ -7,8 +7,15 @@ grammar;
 // Top-level rule of the grammar
 // TODO: add actual arguments
 pub Twoc : program::Program = {
-    <alpha:AlphabetDef> "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
+    <zero_decr:ZeroDecr> <alpha:AlphabetDef> "twoc" "(" "string" ")" "{" <prog:StmtList> "}" 
         => program::Program::new(prog, alpha),
+}
+
+// Rule to parse zero_decr setting
+ZeroDecr : bool = {
+    "decr_on_zero" "=" "true" ";" => true,
+    
+    "decr_on_zero" "=" "false" ";" => false,
 }
 
 // Rule to parse alphabet definition
