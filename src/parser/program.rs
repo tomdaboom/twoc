@@ -5,11 +5,12 @@ use crate::parser::{ast, contract::contract};
 pub struct Program {
     pub stmts : Vec<ast::Stmt>,
     pub alpha : HashSet<char>,
+    pub decr_zero : bool,
 }
 
 impl Program {
     // Construct a Program given an AST and an alphabet
-    pub fn new(prog : Vec<ast::Stmt>, char_list : Vec<char>) -> Self {
+    pub fn new(prog : Vec<ast::Stmt>, char_list : Vec<char>, decr_zero : bool) -> Self {
         // Convert the alphabet from a vector to a HashSet
         let mut char_set = HashSet::new();
         for char in char_list {
@@ -17,7 +18,7 @@ impl Program {
         }
 
         // Construct the Program object
-        Self { stmts : prog, alpha : char_set }
+        Self { stmts : prog, alpha : char_set, decr_zero }
     }
 
     // Contract the statements in the program

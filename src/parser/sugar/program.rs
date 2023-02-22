@@ -8,11 +8,12 @@ pub struct Program {
     pub alpha  : HashSet<char>,
     pub pars   : Vec<String>,
     pub parmap : HashMap<String, char>,
+    pub decr_zero : bool,
 }
 
 impl Program {
     // Construct a Program given an AST and an alphabet
-    pub fn new(prog : Vec<ast::Stmt>, char_list : Vec<char>, par_list : Vec<String>) -> Self {
+    pub fn new(prog : Vec<ast::Stmt>, char_list : Vec<char>, par_list : Vec<String>, decr_zero : bool) -> Self {
         // Convert the alphabet from a vector to a HashSet
         let mut char_set = HashSet::new();
         for char in char_list.clone() {
@@ -32,7 +33,7 @@ impl Program {
         }
 
         // Construct the Program object
-        Self { stmts : prog, alpha : char_set, pars : par_list, parmap : map }
+        Self { stmts : prog, alpha : char_set, pars : par_list, parmap : map, decr_zero }
     }
 
     // Print out the program

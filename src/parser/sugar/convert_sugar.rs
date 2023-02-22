@@ -53,7 +53,7 @@ pub fn convert_sugar(in_prog : SugarProg) -> Prog {
         stmts.append(&mut convert_statement(stmt, &in_prog.parmap));
     }
 
-    Prog { stmts, alpha : alpha.clone() }
+    Prog { stmts, alpha : alpha.clone(), decr_zero : in_prog.decr_zero }
 }
 
 fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<Stmt> {

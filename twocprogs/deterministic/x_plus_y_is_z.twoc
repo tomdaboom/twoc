@@ -1,7 +1,7 @@
 decr_on_zero = true;
-alphabet = ['x', 'y', 'z']
+alphabet = ['x', 'y', 'z'];
 
-twoc (string) {
+twoc (string) { 
     move(1);
 
     while (read != rend) {

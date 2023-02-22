@@ -8,7 +8,7 @@ grammar;
 // TODO: add actual arguments
 pub Twoc : program::Program = {
     <zero_decr:ZeroDecr> <alpha:AlphabetDef> "twoc" "(" <pars:Params> ")" "{" <prog:StmtList> "}" 
-        => program::Program::new(prog, alpha, pars),
+        => program::Program::new(prog, alpha, pars, zero_decr),
 }
 
 // Rule to parse zero_decr setting
