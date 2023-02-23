@@ -21,7 +21,7 @@ impl Program {
         }
 
         // Check that the alphabet and parameter list are of the same size
-        if par_list.len() != char_set.len() {
+        if (par_list.len() > 0) && (par_list.len() != char_set.len()) {
             panic!("Different number of parameters to characters in alphabet!");
         }
 

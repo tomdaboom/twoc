@@ -15,7 +15,7 @@ mod sugar_parse {
         // Declare parser for Twoc rule
         let parser = TwocParser::new();
 
-        let file_path = "./twocprogs/sugar/sugar_test.twoc";
+        let file_path = "./twocprogs/deterministic/equal_zeros_ones.twoc";
 
         println!("Parsing {:?}\n", file_path);
 

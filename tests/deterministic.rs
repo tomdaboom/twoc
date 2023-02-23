@@ -1,11 +1,12 @@
 // Import grammar
 #[macro_use] extern crate lalrpop_util;
-lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
+lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");
 
 #[cfg(test)]
 mod determ_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
+    use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::determ_construction::construct_from_prog; 
     use twoc::simulation::glueck::glueck_procedure;
 
@@ -19,11 +20,14 @@ mod determ_tests {
 
         // Parse the file
         let test = parser.parse(&test_prog);
-        let mut prog = match test {
+        let sugared_prog = match test {
             // Output any parse errors
             Err(ref err) => panic!("Parse Error:\n{:?}", err),
             Ok(prog) => prog,
         };
+
+        // Desugar
+        let mut prog = convert_sugar(sugared_prog);
 
         // Contract the AST
         prog.contract();
