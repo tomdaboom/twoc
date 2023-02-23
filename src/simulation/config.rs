@@ -37,39 +37,41 @@ pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
 }
 
 // Given a config, a determ transition off of it and an input string, find the next config
-pub fn next(config : Config, transition : determ_autom::Transition, input : Input) -> Config {
+pub fn next(config : Config, transition : determ_autom::Transition, input : Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);
 
     // Find the new counter value
     let mut new_counter = config.counter + transition.incr_by;
+    if !decr_zero && new_counter < 0 { return None; }
     new_counter = new_counter.max(0);
 
     // Return new config
-    Config {
+    Some(Config {
         state   : transition.goto,
         read    : new_read,
         counter : new_counter,
-    }
+    })
 }
 
 // Given a config, a nondeterm transition off of it and an input string, find the next config
-pub fn next_nondeterm(config : Config, transition : autom::Transition, input : Input) -> Config {
+pub fn next_nondeterm(config : Config, transition : autom::Transition, input : Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);
 
     // Find the new counter value
     let mut new_counter = config.counter + transition.incr_by;
+    if !decr_zero && new_counter < 0 { return None; }
     new_counter = new_counter.max(0);
 
     // Return new config
-    Config {
+    Some(Config {
         state   : transition.goto,
         read    : new_read,
         counter : new_counter,
-    }
+    })
 }
 
 // Get the legal nondeterministic transition off of an automaton if one exists

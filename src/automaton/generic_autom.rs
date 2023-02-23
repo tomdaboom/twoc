@@ -33,21 +33,22 @@ pub struct GenericAutom<Transition> {
     // The tape alphabet (excluding the endmarkers)
     pub alpha : HashSet<char>,
 
-    // Flag to store whether or not decrementing the counter past zero should fail the computation
-    //pub zero_fail : bool,
+    // Flag to store whether or not decrementing the counter past zero should be allowed
+    pub decr_zero : bool,
 }
 
 // Implementation for above struct
 // Transitions must be cloneable and implement the TransitionTrait
 impl<Transition : std::clone::Clone + TransitionTrait> GenericAutom<Transition> {
     // Create a new empty automaton
-    pub fn new(char_set : HashSet<char>) -> Self {
+    pub fn new(char_set : HashSet<char>, decr_zero : bool) -> Self {
         Self { 
             state_map : HashMap::new(), 
             state_total : 0,
             accepting : Vec::new(),
             rejecting : Vec::new(), 
             alpha : char_set,
+            decr_zero
         }
     }
 

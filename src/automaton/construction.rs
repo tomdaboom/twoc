@@ -6,7 +6,7 @@ use crate::automaton::generic_autom::{State, TransitionTrait};
 // Turn a program into an automaton
 pub fn construct_from_prog(prog : Program) -> Autom {
     // Initialise the automaton
-    let mut autom = Autom::new(prog.alpha);
+    let mut autom = Autom::new(prog.alpha, prog.decr_zero);
 
     // Introduce a start state and record it
     let mut state = autom.introduce();

@@ -110,11 +110,16 @@ impl<'a> GlueckSimulator<'a> {
         // i.e. push(config)
         else if trans.incr_by > 0 {  
             // Find the next configuration
-            let next_config = next(
+            let next_config = match next(
                 config, 
                 trans.clone(), 
-                self.input.clone()
-            );
+                self.input.clone(),
+                self.autom.decr_zero
+            ) {
+                None => return config,
+
+                Some(c) => c,
+            };
 
             // Find the terminator of the next configuration
             let next_terminator = self.simulate(next_config);
@@ -126,11 +131,16 @@ impl<'a> GlueckSimulator<'a> {
             };  
 
             // Find the configuration following the last terminator
-            let follow = next(
+            let follow = match next(
                 next_terminator, 
                 next_terminator_trans,
-                self.input.clone()
-            );
+                self.input.clone(),
+                self.autom.decr_zero
+            ) {
+                None => return next_terminator,
+
+                Some(c) => c,
+            };
 
             // Recurse
             out = self.simulate(follow);
@@ -139,11 +149,16 @@ impl<'a> GlueckSimulator<'a> {
         // op(config)
         else {
             // Find the next configuration
-            let next_config = next(
+            let next_config = match next(
                 config, 
                 trans.clone(), 
-                self.input.clone()
-            );
+                self.input.clone(),
+                self.autom.decr_zero
+            ) {
+                None => return config,
+
+                Some(c) => c,
+            };
 
             // Recurse
             out = self.simulate(next_config);

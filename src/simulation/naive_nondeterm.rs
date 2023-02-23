@@ -47,11 +47,16 @@ impl<'a> NaiveSimulator<'a> {
                 );
 
                 for trans in &transes {
-                    let next_cfg = next_nondeterm(
+                    let next_cfg = match next_nondeterm(
                         *cfg, 
                         *trans, 
-                        self.input.clone()
-                    );
+                        self.input.clone(),
+                        self.autom.decr_zero
+                    ) {
+                        None => continue,
+
+                        Some(c) => c,
+                    };
 
                     possible_next_paths.push(next_cfg);
                 }
