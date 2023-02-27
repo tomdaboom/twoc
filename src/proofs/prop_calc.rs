@@ -127,19 +127,65 @@ mod rules {
 
 pub enum Pos { Left, Right }
 
-pub type Path = Vec<Pos>;
-
-pub fn apply_prop_rule<A, F>(path : Path, rule : F, x : PropFormula<A>) -> PropFormula<A> 
+pub fn apply_prop_rule<A, F>(path : &[Pos], rule : F, formula : PropFormula<A>) -> PropFormula<A> 
     where F : Fn(PropFormula<A>) -> PropFormula<A> 
 {
-    let (head, tail) = path.split_first().unwrap();
+    let (head, tail) = match path.split_first() {
+        Some(lists) => lists,
 
-    match x {
-        PropFormula::Not(inner) => todo!(),
+        None => return rule(formula),
+    };
 
-        PropFormula::And(_, _) => todo!(),
-        PropFormula::Or(_, _) => todo!(),
-        PropFormula::Imp(_, _) => todo!(),
-        PropFormula::Var(_) => todo!(),
+    match formula {
+        PropFormula::Not(inner) => { 
+            let new_inner = apply_prop_rule(tail, rule, *inner);
+            
+            PropFormula::Not(Box::new(new_inner))
+        },
+
+        PropFormula::Var(v) => return PropFormula::Var(v),
+
+        PropFormula::And(left, right) => {
+            match *head {
+                Pos::Left  => {
+                    let applied_left = apply_prop_rule(tail, rule, *left);
+                    PropFormula::And(Box::new(applied_left), right)
+                },
+
+                Pos::Right => {
+                    let applied_right = apply_prop_rule(tail, rule, *right);
+                    PropFormula::And(left, Box::new(applied_right))
+                },
+            }
+        },
+
+        PropFormula::Or(left, right) => {
+            match *head {
+                Pos::Left  => {
+                    let applied_left = apply_prop_rule(tail, rule, *left);
+                    PropFormula::Or(Box::new(applied_left), right)
+                },
+
+                Pos::Right => {
+                    let applied_right = apply_prop_rule(tail, rule, *right);
+                    PropFormula::Or(left, Box::new(applied_right))
+                },
+            }
+        },
+
+        PropFormula::Imp(left, right) => {
+            match *head {
+                Pos::Left  => {
+                    let applied_left = apply_prop_rule(tail, rule, *left);
+                    PropFormula::Imp(Box::new(applied_left), right)
+                },
+
+                Pos::Right => {
+                    let applied_right = apply_prop_rule(tail, rule, *right);
+                    PropFormula::Imp(left, Box::new(applied_right))
+                },
+            }
+        },
+        
     }
 }
