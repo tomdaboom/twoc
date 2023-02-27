@@ -58,7 +58,7 @@ fn main() {
     println!("AST:");
     prog.print();
 
-    if false{//prog.deterministic() {
+    if prog.deterministic() {
         // Contract AST
         prog.contract();
 
