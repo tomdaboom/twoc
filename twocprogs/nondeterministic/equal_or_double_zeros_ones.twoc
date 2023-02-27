@@ -1,0 +1,44 @@
+decr_on_zero = false;
+alphabet = [ '0', '1' ];
+
+twoc (string) {
+    move(1);
+
+    branch {    
+        while (read != rend) {
+            if (read == '0') { c++; }
+            move(1);
+        }
+
+        move(-1);
+
+        while (read != lend) {
+            if (read == '1') {
+                c--;
+            }
+            move(-1);
+        }
+
+        if (c == 0) { accept; } 
+        else        { reject; }
+    } 
+    
+    also {
+        while (read != rend) {
+            if (read == '0') { c++; }
+            move(1);
+        }
+
+        move(-1);
+
+        while (read != lend) {
+            if (read == '1') {
+                c-=2;
+            }
+            move(-1);
+        }
+
+        if (c == 0) { accept; } 
+        else        { reject; }
+    }
+}
