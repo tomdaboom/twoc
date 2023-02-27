@@ -122,4 +122,24 @@ mod rules {
 
         panic!("switcheroo applied incorrectly");
     }
+
+}
+
+pub enum Pos { Left, Right }
+
+pub type Path = Vec<Pos>;
+
+pub fn apply_prop_rule<A, F>(path : Path, rule : F, x : PropFormula<A>) -> PropFormula<A> 
+    where F : Fn(PropFormula<A>) -> PropFormula<A> 
+{
+    let (head, tail) = path.split_first().unwrap();
+
+    match x {
+        PropFormula::Not(inner) => todo!(),
+
+        PropFormula::And(_, _) => todo!(),
+        PropFormula::Or(_, _) => todo!(),
+        PropFormula::Imp(_, _) => todo!(),
+        PropFormula::Var(_) => todo!(),
+    }
 }

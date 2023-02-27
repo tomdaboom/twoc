@@ -8,7 +8,7 @@ pub enum Arith<A> {
 
     Plus(Box<Arith<A>>, Box<Arith<A>>),
 
-    Minus(Box<Arith<A>>, Box<Arith<A>>),    
+    Mult(Box<Arith<A>>, Box<Arith<A>>),    
 }
 
 pub fn substitute_arith<A : Eq + PartialEq + Clone>(formula : Arith<A>, from : Arith<A>, to : Arith<A>) -> Arith<A> {
@@ -32,11 +32,36 @@ pub fn substitute_arith<A : Eq + PartialEq + Clone>(formula : Arith<A>, from : A
             Arith::Plus(Box::new(x_sub), Box::new(y_sub))
         },
 
-        Arith::Minus(x, y) => {
+        Arith::Mult(x, y) => {
             let x_sub = substitute_arith(*x, from.clone(), to.clone());
             let y_sub = substitute_arith(*y, from.clone(), to.clone());
 
-            Arith::Minus(Box::new(x_sub), Box::new(y_sub))
+            Arith::Mult(Box::new(x_sub), Box::new(y_sub))
         },
     }
+}
+
+pub fn get_arith_vars<A : Eq + PartialEq + Clone>(formula : Arith<A>) -> Vec<A> {
+    let mut vars = match formula {
+        Arith::Var(v) => vec![v],
+
+        Arith::Succ(x) => get_arith_vars(*x),
+
+        Arith::Plus(left, right) => {
+            let mut vars = get_arith_vars(*left);
+            vars.append(&mut get_arith_vars(*right));
+            vars
+        },
+
+        Arith::Mult(left, right) => {
+            let mut vars = get_arith_vars(*left);
+            vars.append(&mut get_arith_vars(*right));
+            vars
+        },
+
+        Arith::Zero() => vec![],
+    };
+
+    vars.dedup();
+    vars
 }
