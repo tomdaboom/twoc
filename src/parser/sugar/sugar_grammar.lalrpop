@@ -108,7 +108,14 @@ Stmt : ast::Stmt = {
         => {
             alsos.insert(0, branch_body);
             ast::Stmt::Branch(alsos)
-        }
+        },
+
+    // Repeat statements
+    "repeat" "(" <s:r"-?[0-9]+"> ")" "{" <repeat_body:StmtList> "}"
+        => {
+            let repeat_times = i32::from_str(s).unwrap().abs();
+            ast::Stmt::Repeat(repeat_times, repeat_body)
+        },
 }
 
 // Rule to parse else statements

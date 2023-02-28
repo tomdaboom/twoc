@@ -8,14 +8,14 @@ mod sugar_parse {
     use crate::grammar_rules::TwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::determ_construction::construct_from_prog;
-    use twoc::simulation::glueck::glueck_procedure;
+    //use twoc::simulation::glueck::glueck_procedure;
 
     #[test]
     fn test() {
         // Declare parser for Twoc rule
         let parser = TwocParser::new();
 
-        let file_path = "./twocprogs/deterministic/equal_zeros_ones.twoc";
+        let file_path = "./twocprogs/sugar/petersen_2.twoc";
 
         println!("Parsing {:?}\n", file_path);
 
@@ -47,6 +47,7 @@ mod sugar_parse {
         println!("\nAutomaton:");
         autom.print();
 
+        /*
         let test_words = [
             "00001111",
             "0001111", 
@@ -64,6 +65,7 @@ mod sugar_parse {
                 println!("is not accepted");
             }
         }
+        */
 
         panic!("panic to show stdout; don't worry about me hoo hoo hee hee")
     }

@@ -221,5 +221,21 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
             vec![Stmt::Branch(converted_branches)]
         },
+
+        SugarStmt::Repeat(k, block) => {
+            let mut converted_block = Vec::new();
+            for stmt in block {
+                converted_block.append(&mut convert_statement(stmt, parmap));
+            }
+
+            let mut repeated_block = Vec::new();
+            for _ in 0..k {
+                for stmt in &converted_block {
+                    repeated_block.push(stmt.clone());
+                }
+            }
+
+            repeated_block
+        },
     }
 }

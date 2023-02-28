@@ -27,6 +27,9 @@ pub enum Stmt {
 
     // branch
     Branch(Vec<Vec<Stmt>>),
+
+    // repeat
+    Repeat(i32, Vec<Stmt>),
 }
 
 impl Stmt {
@@ -119,6 +122,18 @@ impl Stmt {
                         let line = stmt.print(offset + 2);
                         out.push_str(&line);
                     }
+                }
+            }
+
+            // Print repeat block
+            Stmt::Repeat(k, block) => {
+                // Print repeat
+                out.push_str(&buffer);
+                out.push_str(&format!("repeat ({:?})", k));
+
+                for stmt in block.iter() {
+                    let line = stmt.print(offset + 2);
+                    out.push_str(&line);
                 }
             }
 
