@@ -132,7 +132,7 @@ impl Stmt {
             Stmt::Repeat(k, block) => {
                 // Print repeat
                 out.push_str(&buffer);
-                out.push_str(&format!("repeat ({:?})", k));
+                out.push_str(&format!("repeat ({:?})\n", k));
 
                 for stmt in block.iter() {
                     let line = stmt.print(offset + 2);
