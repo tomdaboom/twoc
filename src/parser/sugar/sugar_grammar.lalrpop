@@ -116,6 +116,9 @@ Stmt : ast::Stmt = {
             let repeat_times = i32::from_str(s).unwrap().abs();
             ast::Stmt::Repeat(repeat_times, repeat_body)
         },
+
+    // Comments
+    r"//.*" => ast::Stmt::Comment(),
 }
 
 // Rule to parse else statements

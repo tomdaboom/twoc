@@ -30,6 +30,9 @@ pub enum Stmt {
 
     // repeat
     Repeat(i32, Vec<Stmt>),
+
+    // comment (placeholder that gets nuked as soon as the program gets desugared)
+    Comment(),
 }
 
 impl Stmt {
@@ -136,6 +139,8 @@ impl Stmt {
                     out.push_str(&line);
                 }
             }
+
+            Stmt::Comment() => {},
 
             //_ => panic!("Can't print this kind of statement yet!"),
             

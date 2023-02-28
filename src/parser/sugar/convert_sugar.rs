@@ -237,5 +237,7 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
             repeated_block
         },
+
+        SugarStmt::Comment() => Vec::new(),
     }
 }
