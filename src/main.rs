@@ -45,12 +45,10 @@ fn main() {
     }
 
     // Output if the program is deterministic or not
-    if prog.deterministic() {
-        print!("Deterministic");        
-    } else {
-        print!("Nondeterministic");
+    match prog.deterministic() {
+        true  => print!("Deterministic"),
+        false => print!("Nondeterministic"),
     }
-
     println!(" program detected\n");
 
     // Print AST
