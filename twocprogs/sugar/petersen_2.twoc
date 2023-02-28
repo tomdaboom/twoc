@@ -1,4 +1,4 @@
-decr_on_zero = false;
+decr_on_zero = true;
 alphabet = [ '0', '1' ];
 
 twoc (int N, int M) {
@@ -13,17 +13,37 @@ twoc (int N, int M) {
 
     //(1, 2)
     c = N; c -= 1;
+    if (c == 0) {
+        c = M; c -= 2;
+        if (c == 0) { accept; }
+    }
 
     //(2, 4)
+    c = N; c -= 2;
+    if (c == 0) {
+        c = M; c -= 4;
+        if (c == 0) { accept; }
+    } 
 
     //(3, 8)
-
+    c = N; c -= 3;
+    if (c == 0) {
+        c = M; c -= 8;
+        if (c == 0) { accept; }
+    }
 
     // reject if n<4
-    c = N; c -= 4; c = 0;
-
+    c = N;
+    repeat (4) {
+        if (c == 0) { reject; }
+        c--;
+    }
+    
+    
     // reject if m < 16
-    c = M; c -= 16; c = 0;
-
-
+    c = M;
+    repeat (16) {
+        if (c == 0) { reject; }
+        c--;
+    }
 }
