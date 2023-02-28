@@ -134,6 +134,7 @@ impl Stmt {
                 out.push_str(&buffer);
                 out.push_str(&format!("repeat ({:?})\n", k));
 
+                // Print each statement in the block being repeated
                 for stmt in block.iter() {
                     let line = stmt.print(offset + 2);
                     out.push_str(&line);
