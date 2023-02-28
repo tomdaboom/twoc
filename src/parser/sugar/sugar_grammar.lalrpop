@@ -99,6 +99,10 @@ Stmt : ast::Stmt = {
             Some(else_block) => ast::Stmt::If(cond, if_body, else_block),
         },
 
+    // if-elseif-else statements
+    "if" "(" <cond:Cond> ")" "{" <if_body:StmtList> "}" <elif_body:ElseIf> 
+        => ast::Stmt::If(cond, if_body, vec![elif_body]),
+
     // while statements
     "while" "(" <cond:Cond> ")" "{" <while_body:StmtList> "}"
         => ast::Stmt::While(cond, while_body),
@@ -125,6 +129,18 @@ Stmt : ast::Stmt = {
 // TODO: extend for else-if statements
 ElseBody : Vec<ast::Stmt> = {
     "else" "{" <else_body:StmtList> "}" => else_body,
+}
+
+// Rule to parse else-if statements
+ElseIf : ast::Stmt = {
+    "else" "if" "(" <cond:Cond> ")" "{" <elif_body:StmtList> "}" <else_body:ElseBody?>
+        => match else_body {
+        None             => ast::Stmt::If(cond, elif_body, Vec::new()),
+        Some(else_block) => ast::Stmt::If(cond, elif_body, else_block),
+    },
+
+    "else" "if" "(" <cond:Cond> ")" "{" <elif_body:StmtList> "}" <other_elif:ElseIf>
+        => ast::Stmt::If(cond, elif_body, vec![other_elif]),
 }
 
 // Rule to parse also statements

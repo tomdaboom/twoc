@@ -1,0 +1,12 @@
+decr_on_zero = true;
+alphabet = [ '0', '1' ];
+
+twoc (string) {
+    if (c == 0) {
+        accept;
+    } else if (read == '0') {
+        reject;
+    } else {
+        c += 7;
+    }
+}

@@ -15,7 +15,7 @@ mod sugar_parse {
         // Declare parser for Twoc rule
         let parser = TwocParser::new();
 
-        let file_path = "./twocprogs/sugar/petersen_2.twoc";
+        let file_path = "./twocprogs/sugar/elif.twoc";
 
         println!("Parsing {:?}\n", file_path);
 
