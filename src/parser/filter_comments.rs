@@ -2,12 +2,9 @@ pub fn filter_comments(input : String) -> String {
     let lines = input.split("\n");
 
     let out_lines = lines.filter(
-        |line| {
-            for char in line.chars() {
-                if char == '/' { return false; }
-                else if !char.is_whitespace() { return true; }
-            }
-            true
+        |_| {
+            // TODO: Fix
+            return true;
         }
     );
 
