@@ -93,8 +93,8 @@ fn main() {
         let accepting = naive(&autom, test_word);
 
         match accepting {
-            true  => print!("\n{:?} is accepted", test_word),
-            false => print!("\n{:?} isn't accepted", test_word),
+            true  => println!("\n{:?} is accepted", test_word),
+            false => println!("\n{:?} isn't accepted", test_word),
         }
     }
 }
