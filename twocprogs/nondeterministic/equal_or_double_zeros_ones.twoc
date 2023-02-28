@@ -13,9 +13,7 @@ twoc (string) {
         move(-1);
 
         while (read != lend) {
-            if (read == '1') {
-                c--;
-            }
+            if (read == '1') { c--; }
             move(-1);
         }
 
@@ -32,9 +30,7 @@ twoc (string) {
         move(-1);
 
         while (read != lend) {
-            if (read == '1') {
-                c-=2;
-            }
+            if (read == '1') { c-=2; }
             move(-1);
         }
 
