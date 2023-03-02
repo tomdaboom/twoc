@@ -39,7 +39,6 @@ twoc (int N, int M) {
         c--;
     }
     
-    
     // reject if m < 16
     c = M;
     repeat (16) {
