@@ -8,28 +8,34 @@ twoc (int N, int M) {
     c = N;
     if (c == 0) {
         c = M; c -= 1;
-        if (c == 0) { accept; }
+        if (c == 0) { accept; } else { reject; }
     }
 
-    //(1, 2)
-    c = N; c -= 1;
+    // (1, 2)
+    c = N; 
+    if (c == 0) { reject; }
+    c -= 1;
     if (c == 0) {
         c = M; c -= 2;
-        if (c == 0) { accept; }
+        if (c == 0) { accept; } else { reject; }
     }
 
-    //(2, 4)
-    c = N; c -= 2;
+    // (2, 4)
+    c = N;
+    repeat (2) { 
+        c--; 
+        if (c == 0) { reject; }
+    }
     if (c == 0) {
         c = M; c -= 4;
-        if (c == 0) { accept; }
+        if (c == 0) { accept; } else { reject; }
     } 
 
-    //(3, 8)
+    // (3, 8)
     c = N; c -= 3;
     if (c == 0) {
         c = M; c -= 8;
-        if (c == 0) { accept; }
+        if (c == 0) { accept; } else { reject; }
     }
 
     // reject if n<4
@@ -39,10 +45,12 @@ twoc (int N, int M) {
         c--;
     }
     
-    // reject if m < 16
+    // reject if m<16
     c = M;
     repeat (16) {
         if (c == 0) { reject; }
         c--;
     }
+
+    
 }
