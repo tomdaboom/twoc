@@ -5,7 +5,6 @@ use twoc::parser::sugar::program;
 grammar;
 
 // Top-level rule of the grammar
-// TODO: add actual arguments
 pub Twoc : program::Program = {
     <zero_decr:ZeroDecr> <alpha:AlphabetDef> "twoc" "(" <pars:Params> ")" "{" <prog:StmtList> "}" 
         => program::Program::new(prog, alpha, pars, zero_decr),
@@ -40,6 +39,7 @@ Params : Vec<String> = {
     <ps:ParList> => ps, 
 }
 
+// Rule to parse list of named integer parameters
 ParList : Vec<String> = {
     "int" <p:r"[A-Z]+"> => vec![p.to_string()],
 
@@ -56,7 +56,6 @@ StmtList : Vec<ast::Stmt> = {
 }
 
 // Rule to parse single statements
-// TODO: add syntactic sugar macros (assignments, regex, etc.)
 Stmt : ast::Stmt = {
     // accept and reject
     "accept" ";" => ast::Stmt::Accept(),
