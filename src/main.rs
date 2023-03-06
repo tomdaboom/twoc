@@ -5,10 +5,12 @@ extern crate hashbrown;
 
 // Import grammar
 #[macro_use] extern crate lalrpop_util;
-lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
+//lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
+lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");
 
 // Import parser methods and types
 pub mod parser;
+use twoc::parser::sugar::convert_sugar::convert_sugar;
 
 // Import automaton methods and types
 pub mod automaton;
@@ -33,11 +35,14 @@ fn main() {
 
     // Parse the file
     let test = parser.parse(&test_prog);
-    let mut prog = match test {
+    let sugar_prog = match test {
         // Output any parse errors
         Err(ref err) => panic!("Parse Error:\n{:?}", err),
         Ok(prog) => prog,
     };
+
+    // Desugar the program
+    let mut prog = convert_sugar(sugar_prog);
 
     // Panic if the input string isn't consistent with the parsed alphabet
     if !prog.check_if_input_in_alphabet(&test_word) {
