@@ -1,0 +1,8 @@
+decr_on_zero = false;
+alphabet = [ '0' ];
+
+twoc (int X) {
+    c = X;
+    while (c != 0) { c -= 2; }
+    if (c == 0) { accept; }
+}

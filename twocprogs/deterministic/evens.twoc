@@ -1,0 +1,15 @@
+decr_on_zero = false;
+alphabet = [ '0' ];
+
+twoc (string) {
+    move(1);
+
+    while (read == '0') {
+        c++;
+        move(1);
+    }
+
+    while (c != 0) { c -= 2; }
+
+    if (c == 0) { accept; }
+}
