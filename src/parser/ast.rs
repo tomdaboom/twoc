@@ -63,10 +63,7 @@ impl Stmt {
             // Print basic block
             Stmt::BasicBlock(move_by, incr_by) => {
                 out.push_str(&buffer);
-                out.push_str(&format!("move({:?})\n", move_by));
-                
-                out.push_str(&buffer);
-                out.push_str(&format!("c += {:?}\n", incr_by));
+                out.push_str(&format!("move({:?}), c += {:?}\n", move_by, incr_by));
             },
 
             // Print if statement
