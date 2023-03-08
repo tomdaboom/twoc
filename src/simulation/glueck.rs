@@ -117,7 +117,6 @@ impl<'a> GlueckSimulator<'a> {
                 self.autom.decr_zero
             ) {
                 None => return config,
-
                 Some(c) => c,
             };
 
@@ -138,7 +137,6 @@ impl<'a> GlueckSimulator<'a> {
                 self.autom.decr_zero
             ) {
                 None => return next_terminator,
-
                 Some(c) => c,
             };
 
@@ -156,7 +154,6 @@ impl<'a> GlueckSimulator<'a> {
                 self.autom.decr_zero
             ) {
                 None => return config,
-
                 Some(c) => c,
             };
 
