@@ -37,7 +37,7 @@ mod auto_tests {
 
         // Shitton of tests
         for i in 0..1000 {
-            // The automaton should accept if i is even
+            // The automaton should accept iff i is even
             let should_accept = i % 2 == 0;
 
             // Print i occasionally
