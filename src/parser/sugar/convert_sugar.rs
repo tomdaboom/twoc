@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use crate::parser::ast::{Cond, Readable};
+//use crate::parser::sugar::ast::CounterTestCond;
 
 // Type aliases for sugared programs
 type SugarProg = crate::parser::sugar::program::Program;
@@ -254,6 +255,44 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
 
             repeated_block
         },
+
+        SugarStmt::Countertest(_cond, _block) => vec![], /*{
+            let mut converted : Vec<Stmt> = Vec::new();
+
+            // Recursively convert the block's contents
+            let mut converted_block = Vec::new();            
+            for stmt in block {
+                converted_block.append(&mut convert_statement(stmt, parmap));
+            }
+
+            match cond {
+                CounterTestCond::Eq(i) => {
+                    let gadget = vec![
+                        Stmt::If(Cond::CheckZero(), vec![], vec![]),
+                        Stmt::Incr(-1)
+                    ];
+                },
+
+                CounterTestCond::LEq(i) => {
+
+                },
+
+                CounterTestCond::GEq(i) => {
+
+                },
+
+                CounterTestCond::Lt(i) => {
+
+                },
+
+                CounterTestCond::Gt(i) => {
+
+                },
+            }
+
+            converted
+        },
+        */
 
         // Comments should do nothing 
         // in fact, they probably shouldn't be in the AST in the first place, 

@@ -31,6 +31,9 @@ pub enum Stmt {
     // repeat
     Repeat(i32, Vec<Stmt>),
 
+    // countertest
+    Countertest(CounterTestCond, Vec<Stmt>),
+
     // comment (placeholder that gets nuked as soon as the program gets desugared)
     Comment(),
 }
@@ -141,6 +144,19 @@ impl Stmt {
                 }
             }
 
+            // Print countertest block
+            Stmt::Countertest(test, block) => {
+                // Print countertest
+                out.push_str(&buffer);
+                out.push_str(&format!("countertest ({:?})\n", test));
+
+                // Print each statement in the countertest block being repeated
+                for stmt in block.iter() {
+                    let line = stmt.print(offset + 2);
+                    out.push_str(&line);
+                }
+            },
+
             Stmt::Comment() => {},
 
             //_ => panic!("Can't print this kind of statement yet!"),
@@ -157,4 +173,18 @@ pub enum Value {
     Lit(i32),
     Par(String),
     NegPar(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum CounterTestCond {
+    // Equality tests
+    Eq(i32), 
+    
+    // <= and >= tests
+    LEq(i32), 
+    GEq(i32),
+
+    // < and > tests
+    Lt(i32),
+    Gt(i32),
 }
