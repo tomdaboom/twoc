@@ -51,8 +51,9 @@ mod auto_tests {
             // Run test with a massive stack of size O(n)
             thread::scope(|s| {
                 thread::Builder::new().stack_size(0xFFFF * i)
-                .spawn_scoped(s, || assert_eq!(glueck_procedure(&autom, &input), should_accept))
-                .unwrap();
+                .spawn_scoped(s, 
+                    || assert_eq!(glueck_procedure(&autom, &input), should_accept)
+                ).unwrap();
             });
         }
     }
