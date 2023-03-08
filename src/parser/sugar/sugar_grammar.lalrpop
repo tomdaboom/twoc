@@ -6,7 +6,11 @@ grammar;
 
 // Top-level rule of the grammar
 pub Twoc : program::Program = {
-    <zero_decr:ZeroDecr> <alpha:AlphabetDef> "twoc" "(" <pars:Params> ")" "{" <prog:StmtList> "}" 
+    <zero_decr:ZeroDecr> 
+    <alpha:AlphabetDef> 
+    "twoc" "(" <pars:Params> ")" "{" 
+        <prog:StmtList> 
+    "}" 
         => program::Program::new(prog, alpha, pars, zero_decr),
 }
 
