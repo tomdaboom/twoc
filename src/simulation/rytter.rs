@@ -21,6 +21,4 @@ struct RytterSimulator<'a> {
     n : StrIndex,
 
     queue : VecDeque<(StrIndex, StrIndex)>,
-
-
 }
