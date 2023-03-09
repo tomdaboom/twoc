@@ -36,7 +36,6 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
         // Add a new state/transition for a basic block
         // Contracted ASTs will break ahu!!!!!!
-        /*
         ast::Stmt::BasicBlock(move_by, incr_by) => {
             // Make a new state
             let new_state = autom.introduce();
@@ -54,7 +53,6 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             // Update the current state to the new state
             *state = new_state;
         },
-        */
 
         ast::Stmt::Move(move_by) => {
             // Work out how much to increment the counter by on each transition
@@ -197,7 +195,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = final_state;
         },
 
-        _ => panic!("Can't construct this type of statement yet!"),
+        //_ => panic!("Can't construct this type of statement yet!"),
     }
 }
 
