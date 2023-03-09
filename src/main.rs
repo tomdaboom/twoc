@@ -90,16 +90,16 @@ fn main() {
         prog.print();
     }
 
-    if prog.deterministic() {
-        // Contract AST
-        prog.contract();
+    // Contract AST
+    prog.contract();
 
-        if verbose {
-            // Print contracted AST
-            println!("\nContracted AST:");
-            prog.print();
-        }
-        
+    if verbose {
+        // Print contracted AST
+        println!("\nContracted AST:");
+        prog.print();
+    }
+
+    if prog.deterministic() {
         // Construct the automaton from the program
         let autom = determ_construction::construct_from_prog(prog);
 
@@ -114,10 +114,11 @@ fn main() {
 
         match accepting {
             true  => print!("\n{:?} is accepted", test_word),
-            false => print!("\n{:?} isn't accepted", test_word),
+            false => print!("\n{:?} is rejected", test_word),
         }
-
-    } else {
+    } 
+    
+    else {
         // Construct the automaton from the program
         let autom = construction::construct_from_prog(prog);
 
