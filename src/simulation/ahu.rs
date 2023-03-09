@@ -47,6 +47,8 @@ impl<'a> AhuSimulator<'a> {
         // Initialise the stack
         let stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
 
+        
+
         Self { autom, input, n, matrix, stack, }
     }
 
