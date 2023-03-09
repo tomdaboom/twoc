@@ -17,7 +17,6 @@ struct NaiveSimulator<'a> {
 
     // The input string
     input : Input,
-
 }
 
 impl<'a> NaiveSimulator<'a> {
