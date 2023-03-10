@@ -113,8 +113,8 @@ fn main() {
         let accepting = glueck_procedure(&autom, test_word);
 
         match accepting {
-            true  => print!("\n{:?} is accepted", test_word),
-            false => print!("\n{:?} is rejected", test_word),
+            true  => println!("\n{:?} is accepted", test_word),
+            false => println!("\n{:?} is rejected", test_word),
         }
     } 
     
