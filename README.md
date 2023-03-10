@@ -5,7 +5,7 @@ twoc is a programming language for [two-way one-counter automata](https://dl.acm
 
 ## Usage
 ### twoc
-1. Make sure that you have Rust installed on your machine with the Cargo build manager
+1. Make sure that you have Rust installed on your machine with the Cargo build manager (follow the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html))
 2. Type ```cargo run -- --file <FILENAME> --word <INPUT_STRING>``` into the terminal to run a twoc program on a specified input. Use the ```--verbose``` flag to see the different transformations the program makes to the program. 
 
 ### twop
