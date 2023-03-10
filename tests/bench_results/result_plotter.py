@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+from scipy.stats import linregress
 
 ns  = []
 ts  = []
@@ -14,6 +15,10 @@ with open(sys.argv[1], 'r') as file:
         dts.append(float(split[2]))
 
 dts[0] = 0
+
+linreg_model = linregress(ns, ts)
+
+print(linreg_model)
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
 ax[0].plot(ns, ts)
