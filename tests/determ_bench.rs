@@ -21,9 +21,9 @@ mod determ_bench {
     #[test]
     pub fn string_length_performance_test() {
         // Loop params
-        let start = 0;
-        let step = 100;
-        let tests = 200;
+        let start = 10000;
+        let step = 500;
+        let tests = 100;
 
         // Initialise last
         let mut last = 0.0f32;
@@ -71,8 +71,8 @@ mod determ_bench {
             let delta_t = time_taken - last;
 
             // Output and save time taken and difference between last time and this time
-            println!("n = {:?}, t = {:?}, Δt = {:?}", n, time_taken, delta_t);
-            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken, delta_t);
+            println!("n = {:?}, t = {:?}, Δt = {:?}", n*2, time_taken, delta_t);
+            let to_file = format!("{:?},{:?},{:?}\n", n*2, time_taken, delta_t);
             file.write_all(to_file.as_bytes()).expect("File write failed");
 
             last = time_taken;
