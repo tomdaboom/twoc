@@ -256,6 +256,22 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
             repeated_block
         },
 
+        SugarStmt::Goto(endmarker) => {
+            match endmarker {
+                super::ast::Endmarker::LEnd => {
+                    let move_l = vec![Stmt::Move(-1)];
+                    let cond = Cond::NotRead(Readable::LEnd());
+                    vec![Stmt::While(cond, move_l)]
+                },
+
+                super::ast::Endmarker::REnd => {
+                    let move_r = vec![Stmt::Move(1)];
+                    let cond = Cond::NotRead(Readable::REnd());
+                    vec![Stmt::While(cond, move_r)]
+                },
+            }
+        },
+
         SugarStmt::Countertest(_cond, _block) => vec![], /*{
             let mut converted : Vec<Stmt> = Vec::new();
 

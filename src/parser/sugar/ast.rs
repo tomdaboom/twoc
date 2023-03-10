@@ -31,6 +31,9 @@ pub enum Stmt {
     // repeat
     Repeat(i32, Vec<Stmt>),
 
+    // goto
+    Goto(Endmarker),
+
     // countertest
     Countertest(CounterTestCond, Vec<Stmt>),
 
@@ -157,6 +160,11 @@ impl Stmt {
                 }
             },
 
+            Stmt::Goto(endmarker) => {
+                out.push_str(&buffer);
+                out.push_str(&format!("goto({:?})\n", endmarker));
+            }
+
             Stmt::Comment() => {},
 
             //_ => panic!("Can't print this kind of statement yet!"),
@@ -173,6 +181,12 @@ pub enum Value {
     Lit(i32),
     Par(String),
     NegPar(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum Endmarker {
+    LEnd,
+    REnd,
 }
 
 #[derive(Debug, Clone)]

@@ -124,6 +124,14 @@ Stmt : ast::Stmt = {
             ast::Stmt::Repeat(repeat_times, repeat_body)
         },
 
+    // Goto statements
+    "goto" "(" <endmarker:r"(lend|rend)"> ")" ";"
+        => match endmarker {
+            "lend" => ast::Stmt::Goto(ast::Endmarker::LEnd),
+            "rend" => ast::Stmt::Goto(ast::Endmarker::REnd),
+            _      => ast::Stmt::Goto(ast::Endmarker::LEnd),
+        },
+
     // Comments
     r"//.*" => ast::Stmt::Comment(),
 }

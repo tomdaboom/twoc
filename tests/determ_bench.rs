@@ -22,8 +22,8 @@ mod determ_bench {
     pub fn string_length_performance_test() {
         // Loop params
         let start = 0;
-        let step = 100;
-        let tests = 200;
+        let step = 10;
+        let tests = 500;
 
         // Initialise last
         let mut last = 0.0f32;

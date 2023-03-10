@@ -1,0 +1,16 @@
+decr_on_zero = true;
+alphabet = [ '0', '1' ];
+
+twoc (string) {
+    move(1);
+
+    if (read == '0') {
+        goto(rend);
+    } else {
+        goto(lend);
+    }
+
+    if (read == lend) {
+        accept;
+    }
+}

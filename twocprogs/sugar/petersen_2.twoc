@@ -38,8 +38,6 @@ twoc (int N, int M) {
         }
     }
 
-    
-
     // reject if n<4
     c = N;
     repeat (4) {
@@ -54,5 +52,99 @@ twoc (int N, int M) {
         c--;
     }
 
-    //     
+    c = M;
+
+    // while !odd(c) do c = c div 2;
+
+    // goto lend
+    while (read != lend) { move(-1); }
+
+    while () {
+        // Check if c is odd
+
+
+        // goto index c on the tape
+        while (c != 0) {
+            move(1);
+            c--;
+        }
+
+        // move back to lend and update c
+        while (read != lend) {
+            move(-1);
+            if (read != lend) {
+                move(-1);
+                c++;
+            }
+        }
+    }        
+
+    // if (c>1) then reject
+    c--;
+    if (c != 0) { reject; }
+
+    c = M;
+
+    // c = c div 8;
+    
+    repeat (3) {
+        while (read != lend) { move(-1); }
+
+        while (c != 0) {
+            move(1);
+            c--;
+        }
+
+        while (read != lend) {
+            move(-1);
+            if (read != lend) {
+                move(-1);
+                c++;
+            }
+        }
+    }
+
+    while () {
+        // c = c+M div 2
+        c += M;
+        while (c != 0) {
+            move(1);
+            c--;
+        }
+
+        while (read != lend) {
+            move(-1);
+            if (read != lend) {
+                move(-1);
+                c++;
+            }
+        }
+
+        // while not odd(c) do c = c div 2;
+        
+        c += 2;
+
+        // while 2*c < m do do c = c *2;
+    }
+
+    // c = c div 2
+    while (read != lend) { move(-1); }
+
+    while (c != 0) {
+        move(1);
+        c--;
+    }
+
+    while (read != lend) {
+        move(-1);
+        if (read != lend) {
+            move(-1);
+            c++;
+        }
+    }
+
+    // if c + 3 = n then accept
+    c = N;
+    c -= 3;
+    if (c == 0) { accept; }
 }
