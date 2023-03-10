@@ -1,7 +1,7 @@
 # twoc/twop
 
 ## About twoc
-twoc is a programming language for [two-way one-counter automata](https://www.sciencedirect.com/science/article/pii/0304397582900871). Any program in twoc can be represented by an equivalent two-way one-counter automaton, and vice versa. Twoc was designed to aid others in studying these automata, and also comes equipped with a small Hoare-style proof system (twop) in order to help others demonstrate their power.
+twoc is a programming language for [two-way one-counter automata](https://www.sciencedirect.com/science/article/pii/0304397582900871). Any program in twoc can be represented by an equivalent two-way one-counter automaton, and vice versa. Twoc was designed to aid others in studying these automata, and at some point in the future will also comes equipped with a small Hoare-style proof system (twop) in order to help others demonstrate their power.
 
 ## Usage
 ### twoc
