@@ -2,13 +2,12 @@
 #[macro_use] extern crate lalrpop_util;
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
-/*
 #[cfg(test)]
 mod determ_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::construction; 
-    use twoc::simulation::ahu::ahu_procedure;
+    use twoc::simulation::glueck_nondeterm::glueck_procedure;
 
     // Generic test function that runs a program on a single word and compares the outputs
     fn generic_test(filename : &str, examples : &[(&str, bool)]) {
@@ -31,7 +30,7 @@ mod determ_tests {
 
         // Check that each of the words gives the correct answer
         for (word, expected) in examples {
-            let glueck_output = ahu_procedure(&autom, word);
+            let glueck_output = glueck_procedure(&autom, word);
             assert_eq!(glueck_output, *expected);
         }
     }
@@ -83,4 +82,3 @@ mod determ_tests {
         generic_test("./twocprogs/deterministic/loops_forever.twoc", &test_words);
     }
 }
-*/
