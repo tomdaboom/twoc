@@ -16,9 +16,8 @@ use twoc::parser::sugar::convert_sugar::convert_sugar;
 pub mod automaton;
 pub mod simulation;
 use twoc::automaton::{determ_construction, construction};
-use twoc::simulation::glueck::glueck_procedure;
-//use twoc::simulation::ahu::ahu_procedure;
-use twoc::simulation::naive_nondeterm::naive;
+use twoc::simulation::glueck;
+use twoc::simulation::glueck_nondeterm;
 
 // Clap import
 use clap::Parser;
@@ -110,7 +109,7 @@ fn main() {
         }
 
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = glueck_procedure(&autom, test_word);
+        let accepting = glueck::glueck_procedure(&autom, test_word);
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
@@ -129,7 +128,7 @@ fn main() {
         }
         
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = naive(&autom, test_word);
+        let accepting = glueck_nondeterm::glueck_procedure(&autom, test_word);
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
