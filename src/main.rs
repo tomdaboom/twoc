@@ -9,12 +9,9 @@ extern crate hashbrown;
 lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");
 
 // Import parser methods and types
-pub mod parser;
 use twoc::parser::sugar::convert_sugar::convert_sugar;
 
 // Import automaton methods and types
-pub mod automaton;
-pub mod simulation;
 use twoc::automaton::{determ_construction, construction};
 use twoc::simulation::glueck;
 use twoc::simulation::glueck_nondeterm;
