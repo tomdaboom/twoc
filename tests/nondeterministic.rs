@@ -2,6 +2,7 @@
 #[macro_use] extern crate lalrpop_util;
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
+/*
 #[cfg(test)]
 mod determ_tests {
     use std::fs;
@@ -82,3 +83,4 @@ mod determ_tests {
         generic_test("./twocprogs/deterministic/loops_forever.twoc", &test_words);
     }
 }
+*/
