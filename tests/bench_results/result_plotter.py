@@ -19,7 +19,7 @@ dts[0] = 0
 linreg_model = linregress(ns, ts)
 linear_pred  = [linreg_model.intercept + linreg_model.slope*i for i in ns]
 
-print(linreg_model)
+print(f"R^2 value = {linreg_model.rvalue**2}")
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
 ax[0].plot(ns, ts)
