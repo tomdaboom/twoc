@@ -19,10 +19,19 @@ dts[0] = 0
 linreg_model = linregress(ns, ts)
 linear_pred  = [linreg_model.intercept + linreg_model.slope*i for i in ns]
 
-print(f"R^2 value = {linreg_model.rvalue**2}")
+r_sq = linreg_model.rvalue**2
+
+print(f"r^2 value = {r_sq}")
 
 fig, ax = plt.subplots(1, 2, figsize=(15, 5))
-ax[0].plot(ns, ts)
-ax[0].plot(ns, linear_pred, 'r', label = f"R^2 value = {linreg_model.rvalue**2}")
+
+ax[0].set_xlabel("Input length")
+ax[0].set_ylabel("Simulation runtime (s)")
+
+ax[0].plot(ns, ts, 'b', label = f"Benchmark results")
+ax[0].plot(ns, linear_pred, 'r--', label = f"Linear regression (r^2 = {r_sq.round(3)})")
+
+ax[0].legend()
+
 ax[1].plot([ns[i] for i in range(len(ns)) if dts[i] < 5], [i for i in dts if i < 5])
 plt.show()
