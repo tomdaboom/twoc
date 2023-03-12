@@ -1,0 +1,9 @@
+cargo run -- -f ./twocprogs/deterministic/equal_zeros_ones.twoc -w 0101010100001111
+
+cargo run -- -f ./twocprogs/sugar/x_plus_y_is_z.twoc -w 000011222222
+
+cargo run -- -f ./twocprogs/nondeterministic/equal_or_double_zeros_ones.twoc -w 00001111
+
+cargo run -- -f ./twocprogs/nondeterministic/equal_or_double_zeros_ones.twoc -w 000011111111
+
+cargo run -- -f ./twocprogs/nondeterministic/equal_or_double_zeros_ones.twoc -w 001111
