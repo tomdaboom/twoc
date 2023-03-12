@@ -1,0 +1,9 @@
+decr_on_zero = false;
+alphabet = [ '0', '1', '2' ];
+
+twoc (int X, int Y, int Z) {
+    c  = X;
+    c += Y;
+    c -= Z;
+    if (c == 0) { accept; }
+}
