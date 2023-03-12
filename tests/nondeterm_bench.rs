@@ -3,15 +3,15 @@
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 
 #[cfg(test)]
-mod determ_bench {
+mod nondeterm_bench {
     use std::io::Write;
     use std::{fs, thread};
     use std::time::Instant;
 
     use crate::grammar_rules::TwocParser;
-    use twoc::automaton::determ_construction; 
-    use twoc::automaton::determ_autom::Autom;
-    use twoc::simulation::glueck::glueck_procedure;
+    use twoc::automaton::construction; 
+    use twoc::automaton::autom::Autom;
+    use twoc::simulation::glueck_nondeterm::glueck_procedure;
 
     // Function used by threads
     pub fn thread_function(autom : &Autom, word : String) {
@@ -50,7 +50,7 @@ mod determ_bench {
         prog.contract();
 
         // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+        let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
             // Generate a string of n 0s and n 1s
@@ -111,7 +111,7 @@ mod determ_bench {
         prog.contract();
 
         // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+        let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
             // Generate a string of n 0s and n 1s
