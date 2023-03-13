@@ -1,4 +1,4 @@
-decr_on_zero = true;
+decr_on_zero = false;
 alphabet = [ '0' ];
 
 twoc (int X) {
@@ -8,9 +8,12 @@ twoc (int X) {
     while (read != rend) {
         branch {
             move(1);
-            if (read == rend) { accept; }
+            if (read == rend) { reject; }
         } also {
-            c--;
+            c-=2;
+
+            goto(lend);
+            
             if (c == 0) { accept; }
         }
     }
