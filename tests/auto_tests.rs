@@ -44,7 +44,7 @@ mod auto_tests {
     #[test]
     fn evens() {
         // Construct the automaton from the program
-        let autom = load_autom("./twocprogs/deterministic/evens.twoc");
+        let autom = load_autom("./twocprogs/determ/evens.twoc");
 
         // Shitton of tests
         for i in 0..5000 {
@@ -72,7 +72,7 @@ mod auto_tests {
     #[test]
     fn equal_zeros_ones() {
         // Construct the automaton from the program
-        let autom = load_autom("./twocprogs/deterministic/equal_zeros_ones.twoc");
+        let autom = load_autom("./twocprogs/determ/equal_zeros_ones.twoc");
 
         // Shitton of tests
         for i in 0..5000 {

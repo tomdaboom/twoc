@@ -44,7 +44,7 @@ mod determ_tests {
             ("11110101101110011110011111111111", false),
         ];
 
-        generic_test("./twocprogs/deterministic/equal_zeros_ones.twoc", &test_words);
+        generic_test("./twocprogs/determ/equal_zeros_ones.twoc", &test_words);
     }
 
     #[test]
@@ -58,7 +58,7 @@ mod determ_tests {
             ("1001010101101010111111010101", false),
         ];
 
-        generic_test("./twocprogs/deterministic/zeros_then_ones.twoc", &test_words);
+        generic_test("./twocprogs/determ/zeros_then_ones.twoc", &test_words);
     }
 
     #[test]
@@ -70,7 +70,7 @@ mod determ_tests {
             ("xyxyxyxyxyzzzzzzzz", false),
         ];
 
-        generic_test("./twocprogs/deterministic/x_plus_y_is_z.twoc", &test_words);
+        generic_test("./twocprogs/determ/x_plus_y_is_z.twoc", &test_words);
     }
 
     #[test]
@@ -79,6 +79,6 @@ mod determ_tests {
             ("0", false),
         ];
 
-        generic_test("./twocprogs/deterministic/loops_forever.twoc", &test_words);
+        generic_test("./twocprogs/determ/loops_forever.twoc", &test_words);
     }
 }

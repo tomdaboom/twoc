@@ -36,7 +36,7 @@ mod determ_bench {
         let parser = TwocParser::new();
 
         // Load file
-        let test_prog = fs::read_to_string("./twocprogs/deterministic/equal_zeros_ones.twoc").expect("File not found");
+        let test_prog = fs::read_to_string("./twocprogs/determ/equal_zeros_ones.twoc").expect("File not found");
 
         // Parse the file
         let test = parser.parse(&test_prog);
@@ -97,7 +97,7 @@ mod determ_bench {
         let parser = TwocParser::new();
 
         // Load file
-        let test_prog = fs::read_to_string("./twocprogs/deterministic/very_long.twoc").expect("File not found");
+        let test_prog = fs::read_to_string("./twocprogs/determ/very_long.twoc").expect("File not found");
 
         // Parse the file
         let test = parser.parse(&test_prog);
