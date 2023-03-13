@@ -1,0 +1,18 @@
+decr_on_zero = true;
+alphabet = [ '0', '1'];
+
+twoc (int X) {
+    c = X;
+    goto(lend);
+
+    while (read != rend) {
+        branch {
+            move(1);
+            if (read == rend && c != 0) { accept; }
+        } also {
+            move(1);
+            c--;
+            if (c == 0) { accept; }
+        }
+    }
+}
