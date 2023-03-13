@@ -2,4 +2,4 @@
 /Cargo.lock
 
 /tests/bench_results/*
-! /tests/bench/result_plotter.py 
+! /tests/bench/result_plotter.py
