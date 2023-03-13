@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
-from scipy.stats import linregress
+from sklearn.metrics import r2_score
 
 #lists to store data
 ns  = []
@@ -19,13 +19,13 @@ with open(sys.argv[1], 'r') as file:
 dts[0] = 0
 
 #linear regression on (n, t)
-linreg_model = linregress(ns, ts)
-linear_pred  = [linreg_model.intercept + linreg_model.slope*i for i in ns]
-r_sq = linreg_model.rvalue**2
+linreg_model = np.poly1d(np.polyfit(ns, ts, 1))
+linear_pred  = [linreg_model(i) for i in ns]
+r_sq = r2_score(ts, linear_pred)
 print(f"r^2 value = {r_sq}")
 
 #poly regression on (n, dt)
-deg = 3
+deg = 10
 poly_model = np.poly1d(np.polyfit(ns, dts, deg))
 poly_pred  = [poly_model(i) for i in ns] 
 
