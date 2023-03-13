@@ -127,7 +127,7 @@ fn main() {
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
-            false => println!("\n{:?} isn't accepted", test_word),
+            false => println!("\n{:?} is rejected", test_word),
         }
     }
 }
