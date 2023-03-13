@@ -1,5 +1,5 @@
 decr_on_zero = true;
-alphabet = [ '0', '1'];
+alphabet = [ '0' ];
 
 twoc (int X) {
     c = X;
@@ -8,9 +8,8 @@ twoc (int X) {
     while (read != rend) {
         branch {
             move(1);
-            if (read == rend && c != 0) { accept; }
+            if (read == rend) { accept; }
         } also {
-            move(1);
             c--;
             if (c == 0) { accept; }
         }
