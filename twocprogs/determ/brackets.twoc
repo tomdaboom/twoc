@@ -1,0 +1,12 @@
+decr_on_zero = false;
+alphabet = [ 'x', 'y' ];
+
+twoc (string) {
+    while (read != rend) {
+        move(1);
+        if (read == 'x') { c++; }
+        else if (read == 'y') { c--; }
+    }
+
+    if (c == 0) { accept; }
+}
