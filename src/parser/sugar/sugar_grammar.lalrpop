@@ -183,6 +183,10 @@ AndCond : ast::Cond = {
 
 // Base conditionals
 BaseCond : ast::Cond = {
+    // Boolean literals
+    "true" => ast::Cond::T(),
+    "false" => ast::Cond::F(),
+
     // Check the counter
     "c" "==" "0" => ast::Cond::CheckZero(),
     "c" "!=" "0" => ast::Cond::CheckNotZero(),

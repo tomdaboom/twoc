@@ -229,6 +229,28 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 // Introduce the neccesary transitions to represent a conditional check
 fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, conditional : ast::Cond) {
     match conditional {
+        // Add an unconditional transition
+        ast::Cond::T() => {
+            // Introduce a new state
+            let new_state = autom.introduce();
+
+            // Add an unconditional transition from the current state to the new state
+            let transition = Transition::new_epsilon_trans(new_state);
+            autom.add_transition(*state, transition);
+
+            // Update the current state
+            *state = new_state;
+        },
+
+        // Don't add any transitions
+        ast::Cond::F() => {
+            // Introduce a new state
+            let new_state = autom.introduce();
+
+            // Update the current state without introducing any legal transitions
+            *state = new_state;
+        },
+
         // Add transitions to check that a character is on the tape
         ast::Cond::Read(char) => {
             // Introduce a new state
@@ -352,6 +374,14 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
         // Deal with nots
         ast::Cond::Not(stmt) => match *stmt {
+            // true => false
+            ast::Cond::T() =>
+                construct_conditional_transitions(autom, state, ast::Cond::F()),
+
+            // false => true
+            ast::Cond::F() =>
+                construct_conditional_transitions(autom, state, ast::Cond::T()),
+
             // ! (read == 'x') => read != 'x'
             ast::Cond::Read(char) 
                 => construct_conditional_transitions(autom, state, ast::Cond::NotRead(char)),

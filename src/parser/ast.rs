@@ -143,6 +143,9 @@ impl Stmt {
 // AST nodes for conditions
 #[derive(Debug, Clone)]
 pub enum Cond {
+    // true and false
+    T(), F(),
+
     // read == X
     Read(Readable),
 
@@ -169,6 +172,10 @@ impl Cond {
     // Check that a condition is true given a certain character at the readhead and a certain counter value 
     pub fn check(&self, read : Readable, counter : i32) -> bool {
         match self {
+            // True and false behave sensibly
+            Cond::T() => true,
+            Cond::F() => false,
+
             // Compare the character at the readhead to the character in the condition
             Cond::Read(char) => read == *char,
             Cond::NotRead(char) => read != *char,
@@ -191,6 +198,10 @@ impl Cond {
     // Print the condition to the terminal
     pub fn print(&self) {
         match self {
+            // Print true and false
+            Cond::T() => print!("true"),
+            Cond::F() => print!("false"),
+
             // Print read conditions
 
             Cond::Read(char) => {
