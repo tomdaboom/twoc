@@ -31,7 +31,7 @@ struct CliArgs {
     verbose : bool,
 }
 
-fn main() {
+fn main() -> Result<(), ()> {
     // Declare parser for Twoc rule
     let parser = grammar_rules::TwocParser::new();
 
@@ -53,7 +53,10 @@ fn main() {
     let test = parser.parse(&test_prog);
     let sugar_prog = match test {
         // Output any parse errors
-        Err(ref err) => panic!("Parse Error:\n{:?}", err),
+        Err(ref err) => {
+            println!("Parse Error:\n{:?}", err);
+            return Err(());
+        },
         Ok(prog) => prog,
     };
 
@@ -110,6 +113,8 @@ fn main() {
             true  => println!("\n{:?} is accepted", test_word),
             false => println!("\n{:?} is rejected", test_word),
         }
+
+        return Ok(());
     } 
     
     else {
@@ -129,5 +134,7 @@ fn main() {
             true  => println!("\n{:?} is accepted", test_word),
             false => println!("\n{:?} is rejected", test_word),
         }
+
+        return Ok(());
     }
 }
