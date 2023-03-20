@@ -28,6 +28,9 @@ pub enum Stmt {
     // branch
     Branch(Vec<Vec<Stmt>>),
 
+    // while-choose
+    WhileChoose(Vec<Stmt>),
+
     // repeat
     Repeat(i32, Vec<Stmt>),
 
@@ -132,7 +135,20 @@ impl Stmt {
                         out.push_str(&line);
                     }
                 }
-            }
+            },
+
+            // Print while-choose block
+            Stmt::WhileChoose(while_body) => {
+                // Print while
+                out.push_str(&buffer);
+                out.push_str(&format!("while (choose)\n"));
+
+                // Print each statement in the while block
+                for stmt in while_body.iter() {
+                    let line = stmt.print(offset + 2);
+                    out.push_str(&line);
+                }
+            },
 
             // Print repeat block
             Stmt::Repeat(k, block) => {

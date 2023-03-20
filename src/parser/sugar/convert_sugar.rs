@@ -238,6 +238,16 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
             vec![Stmt::Branch(converted_branches)]
         },
 
+        SugarStmt::WhileChoose(while_block) => {
+            // Recursively convert while block
+            let mut converted_while = Vec::new();
+            for stmt in while_block {
+                converted_while.append(&mut convert_statement(stmt, parmap));
+            }
+
+            vec![Stmt::WhileChoose(converted_while)]
+        },
+
         SugarStmt::Repeat(k, block) => {
             // Recursively convert the block's contents
             let mut converted_block = Vec::new();

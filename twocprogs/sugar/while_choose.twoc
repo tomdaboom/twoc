@@ -1,0 +1,11 @@
+decr_on_zero = true;
+alphabet = [ '0', '1' ];
+
+twoc (string) {
+    while (choose) {
+        if (read == '0') { c++; }
+        move(1);
+    }
+
+    if (c != 0) { accept; }
+}

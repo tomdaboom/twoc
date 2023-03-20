@@ -42,8 +42,9 @@ impl Program {
     fn no_branches(prog : Vec<ast::Stmt>) -> bool {
         for stmt in prog {
             match stmt {
-                // Return false if we find a branch statement
-                ast::Stmt::Branch(_) => return false,
+                // Return false if we find a branch or a while-choose statement
+                ast::Stmt::Branch(_)      => return false,
+                ast::Stmt::WhileChoose(_) => return false,
 
                 // Recursively check each of the branches of an if statement
                 ast::Stmt::If(_, if_branch, else_branch) => { 
