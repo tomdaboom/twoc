@@ -195,6 +195,33 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = final_state;
         },
 
+        // Recursively construct a WhileChoose statement
+        ast::Stmt::WhileChoose(while_body) => {
+            // Variables to keep track of state in the while block and after breaking out
+            let mut while_state = autom.introduce();
+            let break_state = autom.introduce();
+            
+            // Construct the transition to enter the while statement
+            let entry_transition = Transition::new_epsilon_trans(while_state);
+            autom.add_transition(*state, entry_transition);
+
+            // Construct the statements in the while block
+            for while_stmt in while_body {
+                construct_stmt(autom, &mut while_state, while_stmt);
+            }
+
+            // Add an epsilon transition back to the start state
+            let restart_transition = Transition::new_epsilon_trans(*state);
+            autom.add_transition(while_state, restart_transition);
+
+            // Construct the condition for breaking out of the while statement
+            let exit_transition = Transition::new_epsilon_trans(break_state);
+            autom.add_transition(*state, exit_transition);
+
+            // Update the current state to the state reached after breaking out of the loop
+            *state = break_state;  
+        }
+
         //_ => panic!("Can't construct this type of statement yet!"),
     }
 }

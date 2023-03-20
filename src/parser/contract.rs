@@ -97,6 +97,23 @@ pub fn contract(program : &Vec<ast::Stmt>) -> Vec<ast::Stmt> {
                 basic_block = Vec::new();
             }
 
+            ast::Stmt::WhileChoose(while_block) => {
+                // Contract the current basic block
+                if !basic_block.is_empty() {
+                    contracted.append(&mut contract_basic_block(&basic_block));
+                }
+
+                // Recurse on the while block
+                let while_block_contr = contract(&while_block);
+
+                // Reform while statement and push
+                let while_stmt_contr = ast::Stmt::WhileChoose(while_block_contr);
+                contracted.push(while_stmt_contr);
+
+                // Clear basic block
+                basic_block = Vec::new();
+            },
+
             // Panic if you see a basic block
             ast::Stmt::BasicBlock(_ , _) => panic!("Basic block in uncontracted ast!"),
         }

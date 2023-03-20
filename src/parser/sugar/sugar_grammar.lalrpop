@@ -110,6 +110,10 @@ Stmt : ast::Stmt = {
     "while" "(" <cond:Cond> ")" "{" <while_body:StmtList> "}"
         => ast::Stmt::While(cond, while_body),
 
+    // while-choose statements
+    "while" "(" "choose" ")" "{" <while_body:StmtList> "}"
+        => ast::Stmt::WhileChoose(while_body),
+
     // Branch statements
     "branch" "{" <branch_body:StmtList> "}" <mut alsos:AlsoBody+>
         => {

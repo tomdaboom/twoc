@@ -120,6 +120,6 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             *state = break_state;  
         },
 
-        _ => panic!("Branch statement in deterministic program!"),
+        _ => panic!("Branch or while-choose statement in deterministic program!"),
     }
 }

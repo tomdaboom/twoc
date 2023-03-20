@@ -24,6 +24,9 @@ pub enum Stmt {
 
     // branch
     Branch(Vec<Vec<Stmt>>),
+
+    // while-choose
+    WhileChoose(Vec<Stmt>),
 }
 
 impl Stmt {
@@ -117,8 +120,19 @@ impl Stmt {
                         out.push_str(&line);
                     }
                 }
-            }
-            
+            },
+
+            Stmt::WhileChoose(while_body) => {
+                // Print while
+                out.push_str(&buffer);
+                out.push_str(&format!("while (choose)\n"));
+
+                // Print each statement in the while block
+                for stmt in while_body.iter() {
+                    let line = stmt.print(offset + 2);
+                    out.push_str(&line);
+                }
+            },
         }
 
         // Return
