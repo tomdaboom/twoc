@@ -39,7 +39,10 @@ fn main() -> Result<(), ()> {
     let args = CliArgs::parse();
 
     let file_path = &args.file;
-    let test_word = &args.word;
+    let test_word =  match args.word.as_str() {
+        "//EMPTY//" => "",
+        _ => &args.word,
+    };
     let verbose = args.verbose;
 
     if verbose { 
