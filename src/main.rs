@@ -39,7 +39,7 @@ fn main() -> Result<(), ()> {
     let args = CliArgs::parse();
 
     let file_path = &args.file;
-    let test_word =  match args.word.as_str() {
+    let test_word = match args.word.as_str() {
         "//EMPTY//" => "",
         _ => &args.word,
     };
@@ -72,9 +72,10 @@ fn main() -> Result<(), ()> {
     // Desugar the program
     let mut prog = convert_sugar(sugar_prog);
 
-    // Panic if the input string isn't consistent with the parsed alphabet
+    // Crash if the input string isn't consistent with the parsed alphabet
     if !prog.check_if_input_in_alphabet(&test_word) {
-        panic!("{:?} contains characters that aren't in the program's alphabet!", test_word);
+        println!("{:?} contains characters that aren't in the program's alphabet!", test_word);
+        return Err(());
     }
 
     if verbose {
