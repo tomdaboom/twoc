@@ -38,17 +38,38 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         // Contracted ASTs will break ahu!!!!!!
         ast::Stmt::BasicBlock(move_by, incr_by) => {
             // Make a new state
-            let new_state = autom.introduce();
+            let mut new_state = autom.introduce();
 
-            // Create a new transition that executes the basic block
-            let transition = Transition::new_basic_block_trans(
+            // Create a new transition that executes the move instruction
+            let move_transition = Transition::new_basic_block_trans(
                 new_state, 
                 move_by, 
-                incr_by
+                0
             );
 
             // Add the transition to the automaton
-            autom.add_transition(*state, transition);
+            autom.add_transition(*state, move_transition);
+
+            // Add transitions to increment/decrement the counter
+            
+            // Variable to store the last state introduced to the automaton in the for loop
+            let mut last_state;
+
+            for _ in 0..incr_by.abs() {
+                // Update last_state and introduce a new state to the automaton
+                last_state = new_state;
+                new_state = autom.introduce();
+
+                // Create a transition that changes the counter
+                let incr_transition = Transition::new_basic_block_trans(
+                    new_state, 
+                    0, 
+                    if incr_by > 0 {1} else {-1}
+                );
+
+                // Add the transition to the automaton
+                autom.add_transition(last_state, incr_transition);
+            } 
 
             // Update the current state to the new state
             *state = new_state;

@@ -1,4 +1,4 @@
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 
 use crate::automaton::autom::Autom;
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next_nondeterm, get_transitions};
@@ -45,7 +45,7 @@ struct GlueckSimulator<'a> {
     input : Input,
 
     // Stack of past configurations
-    past_configs : Vec<StrippedConfig>,
+    past_configs : HashSet<StrippedConfig>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -55,7 +55,7 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
-            past_configs : Vec::new(),
+            past_configs : HashSet::new(),
         }
     }
 
@@ -70,7 +70,7 @@ impl<'a> GlueckSimulator<'a> {
         }
 
         // Record config in past configs stack
-        self.past_configs.push(stripped_config);
+        self.past_configs.insert(stripped_config);
 
         // Check if we've seen this configuration before
         if let Some(delta_configs) = self.config_table.get(&stripped_config) {
@@ -186,7 +186,7 @@ impl<'a> GlueckSimulator<'a> {
         self.config_table.insert(stripped_config, new_delta_configs);
 
         // Return
-        self.past_configs.pop();
+        self.past_configs.remove(&stripped_config);
         outs
     }
 }
