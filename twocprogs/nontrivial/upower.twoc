@@ -4,14 +4,15 @@ alphabet = [ 'a' ];
 twoc (string) {
     // UPOWER(k = 2) (from https://arxiv.org/abs/1311.0849)
     
-    // accept if w = a^2
+    // reject if w = epsilon
+    move(1);
+    if (read == rend) { reject; }
+    
+    // accept if w = a^1 or w = a^2
     repeat (2) {
         move(1);
-        if (read == rend) { reject; }
+        if (read == rend) { accept; }
     }
-
-    move(1);
-    if (read == rend) { accept; }
 
     // Loop
     while (true) {
