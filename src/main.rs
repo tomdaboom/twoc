@@ -50,7 +50,13 @@ fn main() -> Result<(), ()> {
     }
     
     // Load file
-    let test_prog = fs::read_to_string(file_path).expect("File not found");
+    let test_prog = match fs::read_to_string(file_path) {
+        Ok(str) => str,
+        Err(_) => {
+            println!("Couldn't find {:?}!", file_path);
+            return Err(());
+        },
+    };
 
     // Parse the file
     let test = parser.parse(&test_prog);
