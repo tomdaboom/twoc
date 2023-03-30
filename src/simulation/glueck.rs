@@ -1,4 +1,4 @@
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 
 use crate::automaton::determ_autom::Autom;
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next, get_transition};
@@ -21,8 +21,6 @@ pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Run the simulator to find the terminator of this config
     let final_config = simulator.simulate(start_config);
 
-    //println!("\n{:?}", final_config);
-
     // Return based on the final config
     match autom.check_if_halting(final_config.state) {
         None => false,
@@ -42,7 +40,7 @@ struct GlueckSimulator<'a> {
     input : Input,
 
     // Stack of past configurations
-    past_configs : Vec<StrippedConfig>,
+    past_configs : HashSet<StrippedConfig>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -52,12 +50,14 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
-            past_configs : Vec::new(),
+            past_configs : HashSet::new(),
         }
     }
 
     // Find the terminator of a given configuration
-    pub fn simulate(&mut self, config : Config) -> Config {    
+    pub fn simulate(&mut self, config : Config) -> Config {
+        //println!("{:?}", config);
+
         let stripped_config = strip_config(config);
 
         // Check for infinite loops
@@ -67,7 +67,7 @@ impl<'a> GlueckSimulator<'a> {
         }
 
         // Record config in past configs stack
-        self.past_configs.push(stripped_config);
+        self.past_configs.insert(stripped_config);
 
         // Check if we've seen this configuration before
         if let Some(delta_config) = self.config_table.get(&stripped_config) {
@@ -97,7 +97,7 @@ impl<'a> GlueckSimulator<'a> {
         };  
 
         // Variable to hold the value the procedure should output
-        let out : Config;
+        let out;
 
         // Check if this transition is decrementing
         // i.e. pop(config)
@@ -109,6 +109,9 @@ impl<'a> GlueckSimulator<'a> {
         // Check if this transition is incrementing
         // i.e. push(config)
         else if trans.incr_by > 0 {  
+            // Record the current value of the counter
+            //let start_counter_val = config.counter;
+
             // Find the next configuration
             let next_config = match next(
                 config, 
@@ -124,11 +127,16 @@ impl<'a> GlueckSimulator<'a> {
             let next_terminator = self.simulate(next_config);
 
             // Find the legal transition off of the next terminator if one exists
-            let next_terminator_trans = match get_transition(self.autom, next_terminator, self.input.clone()) {
+            let next_terminator_trans = match get_transition(
+                self.autom, 
+                next_terminator, 
+                self.input.clone()
+            ) {
                 None => return next_terminator,
                 Some(t) => t,
             };  
 
+            
             // Find the configuration following the last terminator
             let follow = match next(
                 next_terminator, 
@@ -142,6 +150,15 @@ impl<'a> GlueckSimulator<'a> {
 
             // Recurse
             out = self.simulate(follow);
+
+            /*
+            if out.counter != start_counter_val {
+                println!("Counter not the same");
+            }
+            */
+
+            //print!("push: {:?}, push_to : {:?}\nnext_term: {:?}\nfollow: {:?}", config, next_config, next_terminator, follow);
+            //println!("\nout: {:?}\n", out);
         } 
         
         // op(config)
@@ -166,7 +183,7 @@ impl<'a> GlueckSimulator<'a> {
         self.config_table.insert(stripped_config, map_config);
 
         // Return
-        self.past_configs.pop();
+        self.past_configs.remove(&stripped_config);
         out
     }
 }
