@@ -1,0 +1,10 @@
+decr_on_zero = false;
+alphabet = [ 'x' ];
+
+twoc (string) {
+    c += 4;
+
+    while (choose) { c--; }
+
+    if (c == 0) { accept; } 
+}
