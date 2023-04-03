@@ -141,7 +141,6 @@ Stmt : ast::Stmt = {
 }
 
 // Rule to parse else statements
-// TODO: extend for else-if statements
 ElseBody : Vec<ast::Stmt> = {
     "else" "{" <else_body:StmtList> "}" => else_body,
 }
