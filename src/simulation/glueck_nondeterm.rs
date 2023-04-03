@@ -21,8 +21,6 @@ pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Run the simulator to find the terminator of this config
     let final_configs = simulator.simulate(start_config);
 
-    //println!("\n{:?}", final_config);
-
     for final_config in final_configs {
         // Return based on the final config
         if let Some(a) = autom.check_if_halting(final_config.state) {
@@ -64,7 +62,7 @@ impl<'a> GlueckSimulator<'a> {
         let stripped_config = strip_config(config);
 
         // Check for infinite loops
-        // If we loop infinitely, return the starting config
+        // If we loop infinitely, return nothing
         if self.past_configs.contains(&stripped_config) {
             return vec![];
         }
@@ -98,8 +96,9 @@ impl<'a> GlueckSimulator<'a> {
 
         // Find the legal transition from this config if one exists
         let transes = get_transitions(self.autom, config, self.input.clone());
-
-        if transes.len() == 0 { return vec![config]; }  
+        if transes.len() == 0 { 
+            return vec![config]; 
+        }  
 
         // Variable to hold the value the procedure should output
         let mut outs = Vec::new();
@@ -172,7 +171,7 @@ impl<'a> GlueckSimulator<'a> {
                 };
 
                 // Recurse
-                out = self.simulate(next_config);
+                out.append(&mut self.simulate(next_config));
             }
 
             outs.append(&mut out);
