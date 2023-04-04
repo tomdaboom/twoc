@@ -32,3 +32,5 @@ If you wish to study the codebase, I recommend that you clone the repo to your m
 
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) (this will give you type annotations for the code, as well as lots of other useful language sevrer features for Rust)
 - [LALRPOP Highlighting](https://marketplace.visualstudio.com/items?itemName=mnxn.lalrpop-highlight) (this will give you syntax highlighting for the .lalrpop grammars in ```twoc/src/parser```)
+
+I also reccommend that you use Java's syntax highlighting for the programs in ```twoc/twocprogs```. In VSCode, you can turn this on by modifying the ```files.associations``` field in settings (```Ctrl + ,```). Set ```Item``` to ```*.twoc```, and set ```Value``` to ```java```.
