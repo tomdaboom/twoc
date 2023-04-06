@@ -4,6 +4,19 @@ use twoc::parser::sugar::program;
 
 grammar;
 
+// Token declarations
+match {
+    // Skip comments + whitespace
+    // BLATENTLY STOLEN FROM https://lalrpop.github.io/lalrpop/lexer_tutorial/001_lexer_gen.html
+    r"\s*" => { }, // The default whitespace skipping is disabled if an `ignore pattern` is specified
+    r"//[^\n\r]*[\n\r]*" => { }, // Skip `// comments`
+    r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/" => { },  // Skip `/* comments */`
+
+    r"(lend|rend)", // "(lend|rend)" should match before r"[a-zA-Z]+" 
+} 
+
+else { _ }
+
 // Top-level rule of the grammar
 pub Twoc : program::Program = {
     <zero_decr:ZeroDecr> 
@@ -45,9 +58,9 @@ Params : Vec<String> = {
 
 // Rule to parse list of named integer parameters
 ParList : Vec<String> = {
-    "int" <p:r"[A-Z]+"> => vec![p.to_string()],
+    "int" <p:r"[a-zA-Z]+"> => vec![p.to_string()],
 
-    "int" <p:r"[A-Z]+"> "," <mut ps:ParList> => {
+    "int" <p:r"[a-zA-Z]+"> "," <mut ps:ParList> => {
         ps.push(p.to_string());
         ps
     },
@@ -81,10 +94,10 @@ Stmt : ast::Stmt = {
         => ast::Stmt::Incr(ast::Value::Lit(-1 * i32::from_str(s).unwrap())),
 
     // increments and decrements with inputs
-    "c" "+=" <p:r"[A-Z]+"> ";"
+    "c" "+=" <p:r"[a-zA-Z]+"> ";"
         => ast::Stmt::Incr(ast::Value::Par(p.to_string())),
 
-    "c" "-=" <p:r"[A-Z]+"> ";"
+    "c" "-=" <p:r"[a-zA-Z]+"> ";"
         => ast::Stmt::Incr(ast::Value::NegPar(p.to_string())),
 
     // assignments
@@ -92,7 +105,7 @@ Stmt : ast::Stmt = {
         => ast::Stmt::Asgn(ast::Value::Lit(i32::from_str(s).unwrap().abs())),
 
     // assignments to inputs
-    "c" "=" <p:r"[A-Z]+"> ";"
+    "c" "=" <p:r"[a-zA-Z]+"> ";"
         => ast::Stmt::Asgn(ast::Value::Par(p.to_string())),
 
     // if and if-else statements    
