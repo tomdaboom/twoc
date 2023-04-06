@@ -12,7 +12,8 @@ match {
     r"//[^\n\r]*[\n\r]*" => { }, // Skip `// comments`
     r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/" => { },  // Skip `/* comments */`
 
-    r"(lend|rend)", // "(lend|rend)" should match before r"[a-zA-Z]+" 
+    // "(lend|rend)" should match before r"[a-zA-Z]+" 
+    r"(lend|rend)", 
 } 
 
 else { _ }
@@ -150,7 +151,7 @@ Stmt : ast::Stmt = {
         },
 
     // Comments
-    r"//.*" => ast::Stmt::Comment(),
+    //"//.*" => ast::Stmt::Comment(),
 }
 
 // Rule to parse else statements
