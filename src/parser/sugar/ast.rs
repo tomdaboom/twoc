@@ -41,7 +41,7 @@ pub enum Stmt {
     Countertest(CounterTestCond, Vec<Stmt>),
 
     // comment (placeholder that gets nuked as soon as the program gets desugared)
-    Comment(),
+    //Comment(),
 }
 
 impl Stmt {
@@ -181,7 +181,7 @@ impl Stmt {
                 out.push_str(&format!("goto({:?})\n", endmarker));
             }
 
-            Stmt::Comment() => {},
+            //Stmt::Comment() => {},
 
             //_ => panic!("Can't print this kind of statement yet!"),
             

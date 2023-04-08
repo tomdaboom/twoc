@@ -1,9 +1,9 @@
 decr_on_zero = false;
 alphabet = [ 'a' ];
 
-twoc (string) {
     // UPOWER(k = 2) (from https://arxiv.org/abs/1311.0849)
-    
+
+twoc (string) {
     // reject if w = epsilon
     move(1);
     if (read == rend) { reject; }

@@ -323,6 +323,6 @@ fn convert_statement(sugar : SugarStmt, parmap : &HashMap<String, char>) -> Vec<
         // Comments should do nothing 
         // in fact, they probably shouldn't be in the AST in the first place, 
         // but I'm too lazy to write my own lexer
-        SugarStmt::Comment() => Vec::new(),
+        //SugarStmt::Comment() => Vec::new(),
     }
 }
