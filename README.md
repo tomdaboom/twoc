@@ -28,9 +28,9 @@ twoc is a programming language for [two-way one-counter automata](https://www.sc
 
 - ```twoc/src/proofs``` contains all of the code used to embed and check Hoare-logic proofs concerning these automata
 
-If you wish to study the codebase, I recommend that you clone the repo to your machine and do so using VSCode. I'd also recommend you install the following extensions:
+If you wish to study the codebase, I recommend that you do so with VSCode after cloning the repo to your machine. I'd also recommend you install the following VSCode extensions:
 
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) (this will give you type annotations for the code, as well as lots of other useful language sevrer features for Rust)
 - [LALRPOP Highlighting](https://marketplace.visualstudio.com/items?itemName=mnxn.lalrpop-highlight) (this will give you syntax highlighting for the .lalrpop grammars in ```twoc/src/parser```)
 
-I also reccommend that you use Java's syntax highlighting for the programs in ```twoc/twocprogs```. In VSCode, you can turn this on by modifying the ```files.associations``` field in settings (```Ctrl + ,```). Set ```Item``` to ```*.twoc```, and set ```Value``` to ```java```.
+I also reccommend that you use Java's syntax highlighting for the programs in ```twoc/twocprogs```. In VSCode, you can turn this on by modifying the ```files.associations``` field in settings (```Ctrl + ,```). Add a new attribute with ```Item``` set to ```*.twoc``` and ```Value``` set to ```java```.
