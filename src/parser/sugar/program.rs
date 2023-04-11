@@ -4,10 +4,19 @@ use std::iter::zip;
 use crate::parser::sugar::ast;
 
 pub struct Program {
+    // The actual program itself
     pub stmts  : Vec<ast::Stmt>,
+
+    // The input alphabet
     pub alpha  : HashSet<char>,
+
+    // Any parameters in our program
     pub pars   : Vec<String>,
+
+    // A symbol table mapping input parameters to input characters 
     pub parmap : HashMap<String, char>,
+
+    // Whether or not c-- is a valid instruction when c == 0
     pub decr_zero : bool,
 }
 
