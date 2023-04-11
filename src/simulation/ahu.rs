@@ -32,6 +32,12 @@ struct AhuSimulator<'a> {
     // The dynamic programming matrix
     matrix : Array2D<HashSet<StateCounterState>>,
 
+    // The outputs of delta_pop
+    deltapop : Array2D<Vec<StateCounterState>>,
+
+    // The outputs of delta_push
+    deltapush : Array2D<Vec<StateCounterState>>,
+
     // The stack used by the algorithm
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
 }
@@ -47,9 +53,13 @@ impl<'a> AhuSimulator<'a> {
         // Initialise the stack
         let stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
 
-        
+        // Declare the deltapop array
+        let deltapop = Array2D::filled_with(Vec::new(), n as usize, n as usize);
 
-        Self { autom, input, n, matrix, stack, }
+        // Declare the deltapush array
+        let deltapush = Array2D::filled_with(Vec::new(), n as usize, n as usize);
+
+        Self { autom, input, n, matrix, deltapop, deltapush, stack }
     }
 
     pub fn delta_pop(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
@@ -189,7 +199,7 @@ impl<'a> AhuSimulator<'a> {
         println!("Step 2 completed");
 
         // Step 3   
-        /* 
+        /*
         for i in 0..n {
             for j in 0..n {
                 println!("{:?}", self.get_from_matrix(i, j));
@@ -201,6 +211,8 @@ impl<'a> AhuSimulator<'a> {
 
         for (p, dc, q) in self.get_from_matrix(0, n-1) {
             if let Some(true) = self.autom.check_if_halting(q) {
+                println!("{:?}", (p, dc.clone(), q));
+
                 if p == 0 && dc.len() == 1 && dc[0] == 0 { return true; }
             }
         }
