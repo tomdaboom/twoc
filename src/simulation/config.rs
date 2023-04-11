@@ -37,7 +37,7 @@ pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
 }
 
 // Given a config, a determ transition off of it and an input string, find the next config
-pub fn next(config : Config, transition : determ_autom::Transition, input : Input, decr_zero : bool) -> Option<Config> {
+pub fn next(config : Config, transition : determ_autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);

@@ -116,7 +116,7 @@ impl<'a> GlueckSimulator<'a> {
             let next_config = match next(
                 config, 
                 trans.clone(), 
-                self.input.clone(),
+                &self.input,
                 self.autom.decr_zero
             ) {
                 None => return config,
@@ -141,7 +141,7 @@ impl<'a> GlueckSimulator<'a> {
             let follow = match next(
                 next_terminator, 
                 next_terminator_trans,
-                self.input.clone(),
+                &self.input,
                 self.autom.decr_zero
             ) {
                 None => return next_terminator,
@@ -167,7 +167,7 @@ impl<'a> GlueckSimulator<'a> {
             let next_config = match next(
                 config, 
                 trans.clone(), 
-                self.input.clone(),
+                &self.input,
                 self.autom.decr_zero
             ) {
                 None => return config,
