@@ -14,7 +14,14 @@ pub type StrIndex = i32;
 type InverseTransition = Transition;
 
 pub fn rytter_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
-    false
+    // Convert the input into a list of Readables
+    let readable_input = Readable::from_input_str(input);
+
+    // Declare the RytterSimulator object
+    let mut simulator = RytterSimulator::new(autom, readable_input);
+
+    // Return the result of simulating
+    simulator.simulate()
 }
 
 struct RytterSimulator<'a> {
@@ -107,6 +114,7 @@ impl<'a> RytterSimulator<'a> {
             let (i, j) = self.queue.pop_front().unwrap();
 
             for (k, l) in self.below(i, j) {
+                println!("below(i, j) not empty");
                 if !self.conf_matrix.get(k, l).unwrap() {
                     self.conf_matrix.set(k, l, true).unwrap();
                     self.queue.push_back((k, l));
@@ -114,11 +122,31 @@ impl<'a> RytterSimulator<'a> {
             }
 
             // for each (k, i) in R such that (k, j) notin R do
+            for k in 0..self.num_configs {
+                let ki = *self.conf_matrix.get(k, i).unwrap();
+                let kj = *self.conf_matrix.get(k, j).unwrap();
+
+                if ki && !kj {
+                    self.conf_matrix.set(k, j, true).unwrap();
+                    self.queue.push_back((k, j));
+                }
+            }
 
             // for each (j, k) in R such that (i, k) notin R do
-        }
+            for k in 0..self.num_configs {
+                let jk = *self.conf_matrix.get(j, k).unwrap();
+                let ik = *self.conf_matrix.get(i, k).unwrap();
 
-        // FInd the start config
+                if jk && !ik {
+                    self.conf_matrix.set(i, k, true).unwrap();
+                    self.queue.push_back((i, k));
+                }
+            }
+        }
+        
+        println!("queue emptied");
+
+        // Find the start config
         let start_conf = self.get_index((0, 0, false));
 
         // Get the configs j such that (start_conf, j) in R
@@ -220,6 +248,9 @@ impl<'a> RytterSimulator<'a> {
                 None => continue,
             }
         }
+
+        print!("{:?}: {:?},  ", i_state, k_configs);
+        println!("{:?}", l_configs);
 
         // MATCH l AND k ACCORDING TO c==0?
         let mut out = Vec::new();
