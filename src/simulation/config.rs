@@ -56,7 +56,7 @@ pub fn next(config : Config, transition : determ_autom::Transition, input : &Inp
 }
 
 // Given a config, a nondeterm transition off of it and an input string, find the next config
-pub fn next_nondeterm(config : Config, transition : autom::Transition, input : Input, decr_zero : bool) -> Option<Config> {
+pub fn next_nondeterm(config : Config, transition : autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);

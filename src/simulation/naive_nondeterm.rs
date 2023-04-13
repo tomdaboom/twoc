@@ -49,7 +49,7 @@ impl<'a> NaiveSimulator<'a> {
                     let next_cfg = match next_nondeterm(
                         *cfg, 
                         *trans, 
-                        self.input.clone(),
+                        &self.input,
                         self.autom.decr_zero
                     ) {
                         None => continue,

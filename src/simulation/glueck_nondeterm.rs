@@ -120,7 +120,7 @@ impl<'a> GlueckSimulator<'a> {
                 let next_config = match next_nondeterm(
                     config, 
                     trans.clone(), 
-                    self.input.clone(),
+                    &self.input,
                     self.autom.decr_zero
                 ) {
                     None => continue,
@@ -141,7 +141,7 @@ impl<'a> GlueckSimulator<'a> {
                         match next_nondeterm(
                             next_terminator, 
                             next_terminator_trans,
-                            self.input.clone(),
+                            &self.input,
                             self.autom.decr_zero
                         ) {
                             None => continue,
@@ -163,7 +163,7 @@ impl<'a> GlueckSimulator<'a> {
                 let next_config = match next_nondeterm(
                     config, 
                     trans.clone(), 
-                    self.input.clone(),
+                    &self.input,
                     self.autom.decr_zero
                 ) {
                     None => continue,
