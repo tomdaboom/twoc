@@ -3,6 +3,42 @@ use crate::parser::{program::Program, ast};
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::{State, TransitionTrait};
 
+// New add_transition function for GenericAutom<Transition>
+impl Autom {
+    pub fn add_transition_pop_push(&mut self, source : State, trans : Transition) {
+        if trans.incr_by != 0 {
+            self.add_transition(source, trans);
+            return;
+        }
+
+        // Introduce intermediary state
+        let intermediary = self.introduce();
+
+        // Create push trans
+        let mut push_trans = trans.clone();
+        push_trans.incr_by = 1;
+        push_trans.goto = intermediary;
+
+        // Create pop trans
+        let mut pop_trans = trans.clone();
+        pop_trans.incr_by = -1;
+
+        // Find the source state in the adjacency list
+        let search_map = self.state_map.get_mut(&source);
+        
+        // Push the push transition to the adjacency list or panic
+        match search_map {
+            Some(trans_vec) => trans_vec.push(push_trans),
+
+            None => panic!("State {} doesn't exist in the automaton!", source),
+        }
+
+        // Find the intermediary state in the adjacency list
+        let trans_vec = self.state_map.get_mut(&intermediary).unwrap();
+        trans_vec.push(pop_trans);
+    }
+}
+
 // Turn a program into an automaton
 pub fn construct_from_prog(prog : Program) -> Autom {
     // Initialise the automaton
@@ -48,7 +84,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             );
 
             // Add the transition to the automaton
-            autom.add_transition(*state, move_transition);
+            autom.add_transition_pop_push(*state, move_transition);
 
             // Add transitions to increment/decrement the counter
             
@@ -68,7 +104,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
                 );
 
                 // Add the transition to the automaton
-                autom.add_transition(last_state, incr_transition);
+                autom.add_transition_pop_push(last_state, incr_transition);
             } 
 
             // Update the current state to the new state
@@ -92,7 +128,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
                 );
 
                 // Add the transition to the automaton
-                autom.add_transition(*state, transition);
+                autom.add_transition_pop_push(*state, transition);
 
                 // Update the current state to the new state
                 *state = new_state;
@@ -116,7 +152,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
                 );
 
                 // Add the transition to the automaton
-                autom.add_transition(*state, transition);
+                autom.add_transition_pop_push(*state, transition);
 
                 // Update the current state to the new state
                 *state = new_state;
@@ -153,8 +189,8 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
             // Add epsilon transitions from each of the blocks to the final state
             let transition = Transition::new_epsilon_trans(final_state);
-            autom.add_transition(true_state, transition);
-            autom.add_transition(false_state, transition);
+            autom.add_transition_pop_push(true_state, transition);
+            autom.add_transition_pop_push(false_state, transition);
 
             // Set the current state to the final state
             *state = final_state;
@@ -179,7 +215,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
             // Add an epsilon transition back to the start state
             let restart_transition = Transition::new_epsilon_trans(*state);
-            autom.add_transition(while_state, restart_transition);
+            autom.add_transition_pop_push(while_state, restart_transition);
 
             // Construct the condition for breaking out of the while statement
             construct_conditional_transitions(autom, &mut break_state, neg_cond);
@@ -199,7 +235,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
                 // Add an epsilon transition from current state to new start state
                 let start_transition = Transition::new_epsilon_trans(new_state);
-                autom.add_transition(*state, start_transition);
+                autom.add_transition_pop_push(*state, start_transition);
 
                 // Construct each of the statements in the branch
                 let mut branch_state = new_state;
@@ -209,7 +245,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
                 // Construct an epsilon transition from the final state of this branch to the common final state
                 let end_transition = Transition::new_epsilon_trans(final_state);
-                autom.add_transition(branch_state, end_transition);
+                autom.add_transition_pop_push(branch_state, end_transition);
             }
 
             // Update the current state to the common final state
@@ -224,7 +260,7 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
             
             // Construct the transition to enter the while statement
             let entry_transition = Transition::new_epsilon_trans(while_state);
-            autom.add_transition(*state, entry_transition);
+            autom.add_transition_pop_push(*state, entry_transition);
 
             // Construct the statements in the while block
             for while_stmt in while_body {
@@ -233,11 +269,11 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
 
             // Add an epsilon transition back to the start state
             let restart_transition = Transition::new_epsilon_trans(*state);
-            autom.add_transition(while_state, restart_transition);
+            autom.add_transition_pop_push(while_state, restart_transition);
 
             // Construct the condition for breaking out of the while statement
             let exit_transition = Transition::new_epsilon_trans(break_state);
-            autom.add_transition(*state, exit_transition);
+            autom.add_transition_pop_push(*state, exit_transition);
 
             // Update the current state to the state reached after breaking out of the loop
             *state = break_state;  
@@ -257,7 +293,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Add an unconditional transition from the current state to the new state
             let transition = Transition::new_epsilon_trans(new_state);
-            autom.add_transition(*state, transition);
+            autom.add_transition_pop_push(*state, transition);
 
             // Update the current state
             *state = new_state;
@@ -279,7 +315,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Construct a new transition from the current state that checks for the given character
             let transition = Transition::new_read_trans(new_state, char);
-            autom.add_transition(*state, transition);
+            autom.add_transition_pop_push(*state, transition);
 
             // Update the current state to the new state
             *state = new_state;
@@ -309,7 +345,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Add new transitions to the automaton
             for transition in transes {
-                autom.add_transition(*state, transition);
+                autom.add_transition_pop_push(*state, transition);
             }
 
             // Add transitions to check for the end markers
@@ -320,7 +356,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                     ast::Readable::LEnd()
                 );
                 
-                autom.add_transition(*state, transition);
+                autom.add_transition_pop_push(*state, transition);
             }
 
             if char != ast::Readable::REnd() {
@@ -329,7 +365,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
                     ast::Readable::REnd()
                 );
                 
-                autom.add_transition(*state, transition);
+                autom.add_transition_pop_push(*state, transition);
             }
 
             // Update the current state to the new state
@@ -343,7 +379,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Construct a new transition from the current state that checks if the counter is zero
             let transition = Transition::new_checkzero_trans(new_state, true);
-            autom.add_transition(*state, transition);
+            autom.add_transition_pop_push(*state, transition);
 
             // Update the current state to the new state
             *state = new_state;
@@ -356,7 +392,7 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Construct a new transition from the current state that checks if the counter isn't zero
             let transition = Transition::new_checkzero_trans(new_state, false);
-            autom.add_transition(*state, transition);
+            autom.add_transition_pop_push(*state, transition);
 
             // Update the current state to the new state
             *state = new_state;
@@ -386,8 +422,8 @@ fn construct_conditional_transitions(autom : &mut Autom, state : &mut State, con
 
             // Add epsilon transitions from each of the unique final states to the common final state
             let transition = Transition::new_epsilon_trans(final_state);
-            autom.add_transition(left_final_state, transition);
-            autom.add_transition(right_final_state, transition);
+            autom.add_transition_pop_push(left_final_state, transition);
+            autom.add_transition_pop_push(right_final_state, transition);
 
             // Update the current state to the common final state
             *state = final_state;
