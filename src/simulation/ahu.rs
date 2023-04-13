@@ -33,10 +33,10 @@ struct AhuSimulator<'a> {
     matrix : Array2D<HashSet<StateCounterState>>,
 
     // The outputs of delta_pop
-    deltapop : Array2D<Vec<StateCounterState>>,
+    //deltapop : Array2D<Vec<StateCounterState>>,
 
     // The outputs of delta_push
-    deltapush : Array2D<Vec<StateCounterState>>,
+    //deltapush : Array2D<Vec<StateCounterState>>,
 
     // The stack used by the algorithm
     stack : Vec<(StrIndex, StrIndex, StateCounterState)>,
@@ -54,12 +54,12 @@ impl<'a> AhuSimulator<'a> {
         let stack : Vec<(StrIndex, StrIndex, StateCounterState)> = Vec::new();
 
         // Declare the deltapop array
-        let deltapop = Array2D::filled_with(Vec::new(), n as usize, n as usize);
+        //let deltapop = Array2D::filled_with(Vec::new(), n as usize, n as usize);
 
         // Declare the deltapush array
-        let deltapush = Array2D::filled_with(Vec::new(), n as usize, n as usize);
+        //let deltapush = Array2D::filled_with(Vec::new(), n as usize, n as usize);
 
-        Self { autom, input, n, matrix, deltapop, deltapush, stack }
+        Self { autom, input, n, matrix, stack, }
     }
 
     pub fn delta_pop(&self, i : StrIndex, j : StrIndex) -> Vec<StateCounterState> {
@@ -107,7 +107,7 @@ impl<'a> AhuSimulator<'a> {
 
                 for trans in transitions {
                     // Check if the transition increments the counter
-                    let incrementing = trans.incr_by >= 0;
+                    let incrementing = trans.incr_by > 0;
                     
                     // Check if the counter moves from index i to index j
                     let new_index = (i + trans.move_by).max(0).min(self.n);
