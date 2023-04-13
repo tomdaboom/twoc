@@ -19,7 +19,7 @@ pub trait TransitionTrait {
 #[derive(Clone)]
 pub struct GenericAutom<Transition> {
     // Adjacency list of states to transitions off of that state
-    state_map : HashMap<State, Vec<Transition>>,
+    pub state_map : HashMap<State, Vec<Transition>>,
 
     // Counter to keep track of the number of states in the automaton
     pub state_total : State,
