@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables, unused_imports)]
+#![allow(dead_code, unused_imports)]
 
 use std::collections::{HashMap, VecDeque};
 
@@ -110,11 +110,25 @@ impl<'a> RytterSimulator<'a> {
 
     // Run the simulator
     pub fn simulate(&mut self) -> bool {
+        /*
+        for i in 0..self.num_configs {
+            for j in 0..self.num_configs {
+                let cfgs = self.below(i, j);
+                let mut states = Vec::new();
+                for (cfg1, cfg2) in cfgs {
+                    states.push((self.configs[cfg1].0, self.configs[cfg2].0));
+                }
+
+                println!("below({:?}, {:?}) = {:?}", self.configs[i], self.configs[j], states);
+            }
+        }
+        */
+
+
         while !self.queue.is_empty() {
             let (i, j) = self.queue.pop_front().unwrap();
 
             for (k, l) in self.below(i, j) {
-                println!("below(i, j) not empty");
                 if !self.conf_matrix.get(k, l).unwrap() {
                     self.conf_matrix.set(k, l, true).unwrap();
                     self.queue.push_back((k, l));
@@ -144,8 +158,6 @@ impl<'a> RytterSimulator<'a> {
             }
         }
         
-        println!("queue emptied");
-
         // Find the start config
         let start_conf = self.get_index((0, 0, false));
 
@@ -157,11 +169,13 @@ impl<'a> RytterSimulator<'a> {
             }    
         }
 
+        println!("{:?}", end_confs);
+
         // Accept if any of the end_confs are accepting
         for conf in end_confs {
             let (state, _, counter) = self.configs[conf];
             if let Some(true) = self.autom.check_if_halting(state) {
-                return true;
+                return counter;
             }
         }
 
@@ -183,17 +197,9 @@ impl<'a> RytterSimulator<'a> {
         let (i_state, i_index, i_counter_zero) = self.configs[i];
         let (j_state, j_index, j_counter_zero) = self.configs[j];
 
-        let i_conf = Config { 
-            state : i_state, 
-            read : i_index, 
-            counter : if i_counter_zero {0} else {1}
-        };
+        // If i and j have empty counters then we can't have pushed, so return empty
+        if !i_counter_zero || !j_counter_zero { return vec![]; }
 
-        let j_conf = Config { 
-            state : j_state, 
-            read : j_index, 
-            counter : if j_counter_zero {0} else {1}
-        };
 
         // FIND k CONFIGURATIONS
 
@@ -233,6 +239,12 @@ impl<'a> RytterSimulator<'a> {
 
         // FIND l CONFIGURATIONS
 
+        let j_conf = Config { 
+            state : j_state, 
+            read : j_index, 
+            counter : if j_counter_zero {0} else {1}
+        };
+
         // Get the legal transitions off of j that pop
         let j_transes = get_transitions(self.autom, j_conf, self.input.clone());
         let mut j_pop = Vec::new();
@@ -243,14 +255,11 @@ impl<'a> RytterSimulator<'a> {
         // Turn these into configurations
         let mut l_configs = Vec::new();
         for trans in j_pop {
-            match next_nondeterm(j_conf, trans, self.input.clone(), self.autom.decr_zero) {
+            match next_nondeterm(j_conf, trans, &self.input, self.autom.decr_zero) {
                 Some(conf) => l_configs.push(strip_config(conf)),
                 None => continue,
             }
         }
-
-        print!("{:?}: {:?},  ", i_state, k_configs);
-        println!("{:?}", l_configs);
 
         // MATCH l AND k ACCORDING TO c==0?
         let mut out = Vec::new();
