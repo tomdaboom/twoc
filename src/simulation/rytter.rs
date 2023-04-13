@@ -110,25 +110,22 @@ impl<'a> RytterSimulator<'a> {
 
     // Run the simulator
     pub fn simulate(&mut self) -> bool {
-        /*
-        for i in 0..self.num_configs {
-            for j in 0..self.num_configs {
-                let cfgs = self.below(i, j);
-                let mut states = Vec::new();
-                for (cfg1, cfg2) in cfgs {
-                    states.push((self.configs[cfg1].0, self.configs[cfg2].0));
-                }
+        let ix = self.get_index((6, 1, false));
+        let below_test = self.below(
+            ix, 
+            ix
+        );
 
-                println!("below({:?}, {:?}) = {:?}", self.configs[i], self.configs[j], states);
-            }
-        }
-        */
+        //println!("\nbelow_test: {:?}", below_test.into_iter().map(|(x, y)| (self.configs[x], self.configs[y])).collect::<Vec<(StrippedConfig, StrippedConfig)>>());
 
+        println!("\n\nAlg starts");
 
         while !self.queue.is_empty() {
             let (i, j) = self.queue.pop_front().unwrap();
 
             for (k, l) in self.below(i, j) {
+                //println!("below nonempty for configs {:?}, {:?}", self.configs[i], self.configs[j]);
+                
                 if !self.conf_matrix.get(k, l).unwrap() {
                     self.conf_matrix.set(k, l, true).unwrap();
                     self.queue.push_back((k, l));
@@ -169,13 +166,16 @@ impl<'a> RytterSimulator<'a> {
             }    
         }
 
-        println!("{:?}", end_confs);
+        println!("Final confs:");
+        for conf in end_confs.clone() {
+            println!("  {:?}", self.configs[conf]);
+        }
 
         // Accept if any of the end_confs are accepting
-        for conf in end_confs {
-            let (state, _, counter) = self.configs[conf];
+        for conf in &end_confs {
+            let (state, _, _counter) = self.configs[*conf];
             if let Some(true) = self.autom.check_if_halting(state) {
-                return counter;
+                return true;
             }
         }
 
@@ -183,6 +183,7 @@ impl<'a> RytterSimulator<'a> {
     }
 
     // Get the index of a given configuration
+    // TODO: Turn this into an O(1) numerical computation rather than a search
     fn get_index(&self, conf : StrippedConfig) -> usize {
         for i in 0..self.num_configs {
             if self.configs[i] == conf { return i; }
@@ -197,8 +198,8 @@ impl<'a> RytterSimulator<'a> {
         let (i_state, i_index, i_counter_zero) = self.configs[i];
         let (j_state, j_index, j_counter_zero) = self.configs[j];
 
-        // If i and j have empty counters then we can't have pushed, so return empty
-        if !i_counter_zero || !j_counter_zero { return vec![]; }
+        // If i has an empty counter then we can't have pushed to it, so return empty
+        if i_counter_zero { return vec![]; }
 
 
         // FIND k CONFIGURATIONS
@@ -214,7 +215,12 @@ impl<'a> RytterSimulator<'a> {
         let mut k_configs = Vec::new();
         for trans in i_push {
             let new_state = trans.goto;
-            let new_read = (i_index - trans.move_by).max(0).min(self.n-1);
+            let new_read = i_index - trans.move_by;//.max(0).min(self.n-1);
+
+            // Invalidate this transition if the readhead has to be in an illegal position for it to work
+            if new_read < 0 || new_read >= self.n {
+                continue;
+            }
 
             for counter_zero in [false, true] {
                 // Check that the read statement is correct
@@ -252,24 +258,32 @@ impl<'a> RytterSimulator<'a> {
             if trans.incr_by < 0 { j_pop.push(trans); }
         }
 
-        // Turn these into configurations
+        // Turn these into configurations (minus the counter condition, as this will be dictated by k_configs)
         let mut l_configs = Vec::new();
         for trans in j_pop {
             match next_nondeterm(j_conf, trans, &self.input, self.autom.decr_zero) {
-                Some(conf) => l_configs.push(strip_config(conf)),
+                Some(conf) => {
+                    let (state, read, _) = strip_config(conf);
+                    l_configs.push((state, read));
+                },
                 None => continue,
             }
         }
 
+        /*
+        if i_state == 6 && j_state == 6 {
+            println!("kconfs: {:?}", k_configs);
+            println!("lconfs: {:?}\n", l_configs);
+        }
+        */
+
         // MATCH l AND k ACCORDING TO c==0?
         let mut out = Vec::new();
         for k_conf in &k_configs {
-            for l_conf in &l_configs {
-                if k_conf.2 == l_conf.2 { 
-                    let k_index = self.get_index(*k_conf);
-                    let l_index = self.get_index(*l_conf);
-                    out.push((k_index, l_index));
-                }
+            for (l_state, l_index) in &l_configs {
+                let k_index = self.get_index(*k_conf);
+                let l_index = self.get_index((*l_state, *l_index, k_conf.2));
+                out.push((k_index, l_index));
             }
         }
 

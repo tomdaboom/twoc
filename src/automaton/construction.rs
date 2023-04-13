@@ -3,9 +3,11 @@ use crate::parser::{program::Program, ast};
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::{State, TransitionTrait};
 
-// New add_transition function for GenericAutom<Transition>
+// New add_transition function for GenericAutom<Transition> that ensures 
+// all transitions either decrement or increment the counter
 impl Autom {
     pub fn add_transition_pop_push(&mut self, source : State, trans : Transition) {
+        // If the function already pushes or pops, don't bother with an intermediary state
         if trans.incr_by != 0 {
             self.add_transition(source, trans);
             return;
@@ -20,8 +22,7 @@ impl Autom {
         push_trans.goto = intermediary;
 
         // Create pop trans
-        let mut pop_trans = trans.clone();
-        pop_trans.incr_by = -1;
+        let pop_trans = Transition::new_basic_block_trans(trans.goto, 0, -1);
 
         // Find the source state in the adjacency list
         let search_map = self.state_map.get_mut(&source);
@@ -57,7 +58,7 @@ pub fn construct_from_prog(prog : Program) -> Autom {
 
     // Add counter-emptying and right-moving transitions to all accept states
     autom.empty_accept_states();
-    autom.goto_rend_accept_states();
+    //autom.goto_rend_accept_states();
 
     // Return the constructed automaton
     autom
