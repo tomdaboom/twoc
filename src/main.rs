@@ -12,7 +12,8 @@ use twoc::parser::sugar::convert_sugar::convert_sugar;
 // Import automaton methods and types
 use twoc::automaton::{determ_construction, construction};
 use twoc::simulation::glueck;
-use twoc::simulation::glueck_nondeterm;
+//use twoc::simulation::glueck_nondeterm;
+use twoc::simulation::rytter;
 
 // Clap import
 use clap::Parser;
@@ -106,7 +107,7 @@ fn main() -> Result<(), ()> {
         prog.print();
     }
 
-    if prog.deterministic() {
+    if false{//prog.deterministic() {
         // Construct the automaton from the program
         let autom = determ_construction::construct_from_prog(prog);
 
@@ -138,7 +139,7 @@ fn main() -> Result<(), ()> {
         }
         
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = glueck_nondeterm::glueck_procedure(&autom, test_word);
+        let accepting = rytter::rytter_procedure(&autom, test_word);
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
