@@ -187,13 +187,38 @@ impl<'a> RytterSimulator<'a> {
     }
 
     // Get the index of a given configuration
-    // TODO: Turn this into an O(1) numerical computation rather than a search
     fn get_index(&self, conf : StrippedConfig) -> usize {
+        // Initialise configs list
+        /*
+        let mut configs = Vec::new();
+        for state in 0..autom.state_total {
+            for index in 0..n {
+                for counter in [true, false] {
+                    configs.push((state, index as i32, counter));
+                }
+            }
+        }
+        */
+
+        let (state, index, counter_zero) = conf;
+
+        let counter_offset = if counter_zero {0} else {1} as usize;
+        let index_offset = (index * 2) as usize;
+        let state_offset = ((state as i32) * self.n * 2) as usize;
+
+        let index = counter_offset + index_offset + state_offset;
+
+        if index > self.num_configs {
+            panic!("Config {:?} doesn't exist!", conf);
+        }
+
+        index
+
+        /*
         for i in 0..self.num_configs {
             if self.configs[i] == conf { return i; }
         }
-
-        panic!("Config {:?} doesn't exist!", conf)
+        */ 
     }
 
     // Find all the configurations below a given configuration
