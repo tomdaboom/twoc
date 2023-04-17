@@ -7,7 +7,7 @@ mod determ_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::construction; 
-    use twoc::simulation::glueck_nondeterm::glueck_procedure;
+    use twoc::simulation::rytter::rytter_procedure;
 
     // Generic test function that runs a program on a single word and compares the outputs
     fn generic_test(filename : &str, examples : &[(&str, bool)]) {
@@ -30,7 +30,7 @@ mod determ_tests {
 
         // Check that each of the words gives the correct answer
         for (word, expected) in examples {
-            let glueck_output = glueck_procedure(&autom, word);
+            let glueck_output = rytter_procedure(&autom, word);
             assert_eq!(glueck_output, *expected);
         }
     }
