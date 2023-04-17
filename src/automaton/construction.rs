@@ -7,7 +7,7 @@ use crate::automaton::generic_autom::{State, TransitionTrait};
 // all transitions either decrement or increment the counter
 impl Autom {
     pub fn add_transition_pop_push(&mut self, source : State, trans : Transition) {
-        // If the function already pushes or pops, don't bother with an intermediary state
+        // If the transition already pushes or pops, don't bother with an intermediary state
         if trans.incr_by != 0 {
             self.add_transition(source, trans);
             return;
