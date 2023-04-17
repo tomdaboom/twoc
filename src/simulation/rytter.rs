@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_imports)]
+#![allow(dead_code, unused_imports, unused_variables)]
 
 use std::collections::{HashMap, VecDeque};
 
@@ -110,15 +110,17 @@ impl<'a> RytterSimulator<'a> {
 
     // Run the simulator
     pub fn simulate(&mut self) -> bool {
-        let ix = self.get_index((6, 1, false));
+        /*
+        let ix = self.get_index((35, 7, true));
         let below_test = self.below(
             ix, 
             ix
         );
 
-        //println!("\nbelow_test: {:?}", below_test.into_iter().map(|(x, y)| (self.configs[x], self.configs[y])).collect::<Vec<(StrippedConfig, StrippedConfig)>>());
+        println!("\nbelow_test: {:?}", below_test.into_iter().map(|(x, y)| (self.configs[x], self.configs[y])).collect::<Vec<(StrippedConfig, StrippedConfig)>>());
 
         println!("\n\nAlg starts");
+        */
 
         while !self.queue.is_empty() {
             let (i, j) = self.queue.pop_front().unwrap();
@@ -156,7 +158,7 @@ impl<'a> RytterSimulator<'a> {
         }
         
         // Find the start config
-        let start_conf = self.get_index((0, 0, false));
+        let start_conf = self.get_index((0, 0, true));
 
         // Get the configs j such that (start_conf, j) in R
         let mut end_confs = Vec::new();
@@ -166,10 +168,12 @@ impl<'a> RytterSimulator<'a> {
             }    
         }
 
+        /*
         println!("Final confs:");
         for conf in end_confs.clone() {
             println!("  {:?}", self.configs[conf]);
         }
+        */
 
         // Accept if any of the end_confs are accepting
         for conf in &end_confs {
@@ -189,7 +193,7 @@ impl<'a> RytterSimulator<'a> {
             if self.configs[i] == conf { return i; }
         }
 
-        panic!("Config doesn't exist!")
+        panic!("Config {:?} doesn't exist!", conf)
     }
 
     // Find all the configurations below a given configuration
@@ -222,13 +226,13 @@ impl<'a> RytterSimulator<'a> {
                 continue;
             }
 
-            for counter_zero in [false, true] {
-                // Check that the read statement is correct
-                let read_correct = match trans.read_char {
-                    Some(c) => self.input[new_read as usize] == c,
-                    None => true,
-                };
+            // Check that the read statement is correct
+            let read_correct = match trans.read_char {
+                Some(c) => self.input[new_read as usize] == c,
+                None => true,
+            };
 
+            for counter_zero in [false, true] {
                 // Check that the counter condition is correct
                 let counter_correct = match trans.test_counter_zero {
                     Some(counter_shouldbe_zero) => counter_zero == counter_shouldbe_zero,
