@@ -34,7 +34,7 @@ impl Autom {
             None => panic!("State {} doesn't exist in the automaton!", source),
         }
 
-        // Find the intermediary state in the adjacency list
+        // Find the intermediary state in the adjacency list (we just added it so it has to exist)
         let trans_vec = self.state_map.get_mut(&intermediary).unwrap();
         trans_vec.push(pop_trans);
     }
