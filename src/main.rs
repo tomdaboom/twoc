@@ -12,7 +12,7 @@ use twoc::parser::sugar::convert_sugar::convert_sugar;
 // Import automaton methods and types
 use twoc::automaton::{determ_construction, construction};
 use twoc::simulation::glueck;
-//use twoc::simulation::glueck_nondeterm;
+use twoc::simulation::glueck_nondeterm;
 use twoc::simulation::rytter;
 
 // Clap import
@@ -30,6 +30,9 @@ struct CliArgs {
 
     #[arg(short, long, default_value_t = false)]
     verbose : bool,
+
+    #[arg(long, default_value_t = false)]
+    use_glueck_nondeterm : bool,
 }
 
 fn main() -> Result<(), ()> {
@@ -45,9 +48,14 @@ fn main() -> Result<(), ()> {
         _ => &args.word,
     };
     let verbose = args.verbose;
+    let use_glueck_nondeterm = args.use_glueck_nondeterm;
+
+    if use_glueck_nondeterm {
+        println!("Warning: using the --use-glueck-nondeterm flag might lead to incorrect results on some nondeterministic programs!");
+    }
 
     if verbose { 
-        println!("Parsing {:?}\n", file_path); 
+        println!("\nParsing {:?}\n", file_path); 
     }
     
     // Load file
@@ -107,7 +115,7 @@ fn main() -> Result<(), ()> {
         prog.print();
     }
 
-    if false{//prog.deterministic() {
+    if prog.deterministic() {
         // Construct the automaton from the program
         let autom = determ_construction::construct_from_prog(prog);
 
@@ -139,7 +147,10 @@ fn main() -> Result<(), ()> {
         }
         
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = rytter::rytter_procedure(&autom, test_word);
+        let accepting = match use_glueck_nondeterm {
+            true  => glueck_nondeterm::glueck_procedure(&autom, test_word),
+            false => rytter::rytter_procedure(&autom, test_word),
+        };
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
