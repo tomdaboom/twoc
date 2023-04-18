@@ -14,11 +14,11 @@ mod nondeterm_bench {
     use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::construction; 
     use twoc::automaton::autom::Autom;
-    use twoc::simulation::glueck_nondeterm::glueck_procedure;
+    use twoc::simulation::rytter::rytter_procedure;
 
     // Function used by threads
     pub fn thread_function(autom : &Autom, word : String) {
-        glueck_procedure(&autom, &word);
+        rytter_procedure(&autom, &word);
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod nondeterm_bench {
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/string_length_performance_test.txt";
+        let path = "./tests/bench_results/nondeterm_torture_boogaloo.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
@@ -93,7 +93,7 @@ mod nondeterm_bench {
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/quadratic_performance_test.txt";
+        let path = "./tests/bench_results/quadratic_performance_test_rytter.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
@@ -147,14 +147,14 @@ mod nondeterm_bench {
     pub fn awful_performnce_test() {
         // Loop params
         let start = 0;
-        let step = 10;
+        let step = 1;
         let tests = 1000;
 
         // Initialise last
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/nondeterm_torture.txt";
+        let path = "./tests/bench_results/nondeterm_torture_rytter.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
@@ -181,18 +181,14 @@ mod nondeterm_bench {
         let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
-            // Generate a string of n 0s and n 1s
+            // Generate a string of n 0s
             let test_word = "0".repeat(n);
 
             // Start timing
             let now = Instant::now();
 
             // Run test with a massive stack
-            thread::scope(|s| {
-                thread::Builder::new().stack_size(0xFFFF * n)
-                .spawn_scoped(s, || thread_function(&autom, test_word))
-                .unwrap();
-            });
+            thread_function(&autom, test_word);
 
             // Stop timing and record delta t
             let time_taken = now.elapsed().as_secs_f32();

@@ -2,7 +2,7 @@ decr_on_zero = false;
 alphabet = [ 'x' ];
 
 twoc (string) {
-    c += 4;
+    c += 10;
 
     while (choose) { c--; }
 
