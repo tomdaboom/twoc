@@ -39,7 +39,7 @@ struct GlueckSimulator<'a> {
     // Input being simulated on
     input : Input,
 
-    // Stack of past configurations
+    // Past configurations
     past_configs : HashSet<StrippedConfig>,
 }
 
