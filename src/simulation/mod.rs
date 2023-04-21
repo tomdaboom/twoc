@@ -9,3 +9,5 @@ pub mod glueck_nondeterm;
 pub mod naive_nondeterm;
 
 pub mod rytter;
+
+pub mod rytter_matrix;
