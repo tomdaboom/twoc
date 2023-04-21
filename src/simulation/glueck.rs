@@ -30,14 +30,14 @@ pub fn glueck_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
 
 // Struct to hold variables for the Glueck procedure
 struct GlueckSimulator<'a> {
-    // Table that stores the previously computed terminators
-    config_table : HashMap<StrippedConfig, DeltaConfig>,
-
     // Automaton being simulated
     autom : &'a Autom,
 
     // Input being simulated on
     input : Input,
+
+    // Table that stores the previously computed terminators
+    config_table : HashMap<StrippedConfig, DeltaConfig>,
 
     // Past configurations
     past_configs : HashSet<StrippedConfig>,
