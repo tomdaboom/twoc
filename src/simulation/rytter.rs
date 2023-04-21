@@ -1,9 +1,5 @@
-#![allow(dead_code, unused_imports, unused_variables)]
-
 use std::collections::VecDeque;
 use hashbrown::HashMap;
-
-use array2d::Array2D;
 
 use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
@@ -14,6 +10,9 @@ pub type StrIndex = i32;
 
 type InverseTransition = Transition;
 
+// Check if a string is accepted by a nondeterministic automaton using the Rytter procedure
+// This should run in O(|input|^3)
+// See https://www.sciencedirect.com/science/article/pii/S0019995885800243?via%3Dihub for more info
 pub fn rytter_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
     // Convert the input into a list of Readables
     let readable_input = Readable::from_input_str(input);
@@ -26,21 +25,28 @@ pub fn rytter_procedure<'a>(autom : &'a Autom, input : &str) -> bool {
 }
 
 struct RytterSimulator<'a> {
+    // The automaton being simulated
     autom : &'a Autom,
 
+    // The input being simulated on
     input : Input,
 
+    // The size of the input
     n : StrIndex,
 
+    // All the possible configurations of autom on input
     configs : Vec<StrippedConfig>,
 
+    // How many configs there are in total
     num_configs : usize,
 
+    // The queue of config pairs being considered
     queue : VecDeque<(usize, usize)>,
 
-    //conf_matrix : Array2D<bool>,
+    // The boolean matrix R (represented as a pair of hashmaps)
     conf_matrix : (HashMap<usize, Vec<usize>>, HashMap<usize, Vec<usize>>),
 
+    // The inverse of the automaton's adjacency list
     inverse_state_map : HashMap<State, Vec<Transition>>
 }
 
@@ -101,6 +107,7 @@ impl<'a> RytterSimulator<'a> {
             }
         }
         
+        // Return
         Self { 
             autom, 
             input, 
@@ -115,52 +122,30 @@ impl<'a> RytterSimulator<'a> {
 
     // Run the simulator
     pub fn simulate(&mut self) -> bool {
-        /*
-        let ix = self.get_index((35, 7, true));
-        let below_test = self.below(
-            ix, 
-            ix
-        );
-
-        println!("\nbelow_test: {:?}", below_test.into_iter().map(|(x, y)| (self.configs[x], self.configs[y])).collect::<Vec<(StrippedConfig, StrippedConfig)>>());
-
-        println!("\n\nAlg starts");
-        */
-
         while !self.queue.is_empty() {
+            // Take an element from the queue
             let (i, j) = self.queue.pop_front().unwrap();
 
-            for (k, l) in self.below(i, j) {
-                //println!("below nonempty for configs {:?}, {:?}", self.configs[i], self.configs[j]);
-                
+
+            // 2: For each (k, l) in below(i, j), set to true in R and add to the queue
+            for (k, l) in self.below(i, j) {                
                 if !self.get_matrix(k, l) {
-                    self.set_matrix_true(k, l); //self.conf_matrix.set(k, l, true).unwrap();
+                    self.set_matrix_true(k, l);
                     self.queue.push_back((k, l));
                 }
             }
 
-            // for each (k, i) in R such that (k, j) notin R do
-            /*
-            for k in 0..self.num_configs {
-                //let ki = *self.conf_matrix.get(k, i).unwrap();
-                //let kj = *self.conf_matrix.get(k, j).unwrap();
 
-                let ki = self.get_matrix(k, i);
-                let kj = self.get_matrix(k, j);
-
-                if ki && !kj {
-                    self.conf_matrix.set(k, j, true).unwrap();
-                    self.queue.push_back((k, j));
-                }
-            }
-            */
-
+            // 3: For (k, i) in R such that (k, j) not in R, set (k, j) to true in R and add to the queue
+            // Get (k, i)s from the matrix
             let kis = self.conf_matrix.1.get(&i).unwrap();
+
+            // Find the (k, j) notin R and set them to true
+
             let mut set_to_true_j = Vec::new();
+            
             for k in kis {
-                let vec = self.conf_matrix.0.get(&k).unwrap();
-                if !vec.contains(&j) {
-                    //self.set_matrix_true(*k, j);
+                if !self.get_matrix(*k, j) {
                     set_to_true_j.push(*k);
                     self.queue.push_back((*k, j));
                 }
@@ -170,28 +155,11 @@ impl<'a> RytterSimulator<'a> {
                 self.set_matrix_true(k, j);
             }
             
-
-            // for each (j, k) in R such that (i, k) notin R do
-            /*
-            for k in 0..self.num_configs {
-                //let jk = *self.conf_matrix.get(j, k).unwrap();
-                //let ik = *self.conf_matrix.get(i, k).unwrap();
-
-                let jk = self.get_matrix(j, k);
-                let ik = self.get_matrix(i, k);
-
-                if jk && !ik {
-                    self.conf_matrix.set(i, k, true).unwrap();
-                    self.queue.push_back((i, k));
-                }
-            }
-            */
-
+            // 3: For each (j, k) in R such that (i, k) not in R, set (i, k) to true in R and add to the queue
             let jks = self.conf_matrix.0.get(&j).unwrap();
             let mut set_to_true_i = Vec::new();
             for k in jks {
                 if !self.get_matrix(i, *k) {
-                    //self.set_matrix_true(i, *k);
                     set_to_true_i.push(*k);
                     self.queue.push_back((i, *k));
                 }
@@ -202,26 +170,9 @@ impl<'a> RytterSimulator<'a> {
             }
         }
         
-        // Find the start config
+        // Find the start config and the configs coming from it
         let start_conf = self.get_index((0, 0, true));
-
-        // Get the configs j such that (start_conf, j) in R
-        /*
-        let mut end_confs = Vec::new();
-        for i in 0..self.num_configs {
-            if *self.conf_matrix.get(start_conf, i).unwrap() { 
-                end_confs.push(i); 
-            }    
-        }
-        */
         let end_confs = self.conf_matrix.0.get(&start_conf).unwrap();
-
-        /*
-        println!("Final confs:");
-        for conf in end_confs.clone() {
-            println!("  {:?}", self.configs[conf]);
-        }
-        */
 
         // Accept if any of the end_confs are accepting
         for conf in end_confs {
@@ -254,12 +205,6 @@ impl<'a> RytterSimulator<'a> {
 
         // Return
         index
-
-        /* O(n) search implementation
-        for i in 0..self.num_configs {
-            if self.configs[i] == conf { return i; }
-        }
-        */ 
     }
 
     // Get conf_matrix[i, j]
@@ -353,13 +298,6 @@ impl<'a> RytterSimulator<'a> {
                 None => continue,
             }
         }
-
-        /*
-        if i_state == 6 && j_state == 6 {
-            println!("kconfs: {:?}", k_configs);
-            println!("lconfs: {:?}\n", l_configs);
-        }
-        */
 
         // MATCH l AND k ACCORDING TO c==0?
         let mut out = Vec::new();
