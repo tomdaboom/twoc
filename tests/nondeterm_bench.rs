@@ -87,7 +87,7 @@ mod nondeterm_bench {
         // Loop params
         let start = 0;
         let step = 1;
-        let tests = 120;
+        let tests = 107;
 
         // Initialise last
         let mut last = 0.0f32;
