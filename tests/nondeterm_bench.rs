@@ -85,15 +85,15 @@ mod nondeterm_bench {
     #[test]
     pub fn quadratic_performance_test() {
         // Loop params
-        let start = 10000;
-        let step = 500;
-        let tests = 100;
+        let start = 0;
+        let step = 1;
+        let tests = 120;
 
         // Initialise last
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/quadratic_performance_test_rytter.txt";
+        let path = "./tests/bench_results/quadratic_performance_test_rytter_hashmaps_2_2.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
@@ -154,7 +154,7 @@ mod nondeterm_bench {
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/nondeterm_torture_rytter.txt";
+        let path = "./tests/bench_results/nondeterm_torture_rytter_hashmap.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
