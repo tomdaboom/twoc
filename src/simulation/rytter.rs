@@ -1,6 +1,7 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
+use hashbrown::HashMap;
 
 use array2d::Array2D;
 
@@ -37,7 +38,8 @@ struct RytterSimulator<'a> {
 
     queue : VecDeque<(usize, usize)>,
 
-    conf_matrix : Array2D<bool>,
+    //conf_matrix : Array2D<bool>,
+    conf_matrix : (HashMap<usize, Vec<usize>>, HashMap<usize, Vec<usize>>),
 
     inverse_state_map : HashMap<State, Vec<Transition>>
 }
@@ -63,13 +65,16 @@ impl<'a> RytterSimulator<'a> {
         let mut queue = VecDeque::new();
 
         // Initialise config matrix
-        let mut conf_matrix = Array2D::filled_with(false, num_configs, num_configs);
+        //let mut conf_matrix = Array2D::filled_with(false, num_configs, num_configs);
+        let mut conf_matrix = (HashMap::new(), HashMap::new());
 
         // Fill the queue and matrix appropriately
         for cfg in 0..num_configs {
             queue.push_back((cfg, cfg));
 
-            conf_matrix.set(cfg, cfg, true).unwrap();
+            //conf_matrix.set(cfg, cfg, true).unwrap();
+            conf_matrix.0.insert(cfg, vec![cfg]);
+            conf_matrix.1.insert(cfg, vec![cfg]);
         }
 
         // Construct inverse state map
@@ -128,32 +133,72 @@ impl<'a> RytterSimulator<'a> {
             for (k, l) in self.below(i, j) {
                 //println!("below nonempty for configs {:?}, {:?}", self.configs[i], self.configs[j]);
                 
-                if !self.conf_matrix.get(k, l).unwrap() {
-                    self.conf_matrix.set(k, l, true).unwrap();
+                if !self.get_matrix(k, l) {
+                    self.set_matrix_true(k, l); //self.conf_matrix.set(k, l, true).unwrap();
                     self.queue.push_back((k, l));
                 }
             }
 
             // for each (k, i) in R such that (k, j) notin R do
+            /*
             for k in 0..self.num_configs {
-                let ki = *self.conf_matrix.get(k, i).unwrap();
-                let kj = *self.conf_matrix.get(k, j).unwrap();
+                //let ki = *self.conf_matrix.get(k, i).unwrap();
+                //let kj = *self.conf_matrix.get(k, j).unwrap();
+
+                let ki = self.get_matrix(k, i);
+                let kj = self.get_matrix(k, j);
 
                 if ki && !kj {
                     self.conf_matrix.set(k, j, true).unwrap();
                     self.queue.push_back((k, j));
                 }
             }
+            */
+
+            let kis = self.conf_matrix.1.get(&i).unwrap();
+            let mut set_to_true_j = Vec::new();
+            for k in kis {
+                let vec = self.conf_matrix.0.get(&k).unwrap();
+                if !vec.contains(&j) {
+                    //self.set_matrix_true(*k, j);
+                    set_to_true_j.push(*k);
+                    self.queue.push_back((*k, j));
+                }
+            }
+
+            for k in set_to_true_j {
+                self.set_matrix_true(k, j);
+            }
+            
 
             // for each (j, k) in R such that (i, k) notin R do
+            /*
             for k in 0..self.num_configs {
-                let jk = *self.conf_matrix.get(j, k).unwrap();
-                let ik = *self.conf_matrix.get(i, k).unwrap();
+                //let jk = *self.conf_matrix.get(j, k).unwrap();
+                //let ik = *self.conf_matrix.get(i, k).unwrap();
+
+                let jk = self.get_matrix(j, k);
+                let ik = self.get_matrix(i, k);
 
                 if jk && !ik {
                     self.conf_matrix.set(i, k, true).unwrap();
                     self.queue.push_back((i, k));
                 }
+            }
+            */
+
+            let jks = self.conf_matrix.0.get(&j).unwrap();
+            let mut set_to_true_i = Vec::new();
+            for k in jks {
+                if !self.get_matrix(i, *k) {
+                    //self.set_matrix_true(i, *k);
+                    set_to_true_i.push(*k);
+                    self.queue.push_back((i, *k));
+                }
+            }
+
+            for k in set_to_true_i {
+                self.set_matrix_true(i, k);
             }
         }
         
@@ -161,12 +206,15 @@ impl<'a> RytterSimulator<'a> {
         let start_conf = self.get_index((0, 0, true));
 
         // Get the configs j such that (start_conf, j) in R
+        /*
         let mut end_confs = Vec::new();
         for i in 0..self.num_configs {
             if *self.conf_matrix.get(start_conf, i).unwrap() { 
                 end_confs.push(i); 
             }    
         }
+        */
+        let end_confs = self.conf_matrix.0.get(&start_conf).unwrap();
 
         /*
         println!("Final confs:");
@@ -176,7 +224,7 @@ impl<'a> RytterSimulator<'a> {
         */
 
         // Accept if any of the end_confs are accepting
-        for conf in &end_confs {
+        for conf in end_confs {
             let (state, _, _counter) = self.configs[*conf];
             if let Some(true) = self.autom.check_if_halting(state) {
                 return true;
@@ -212,6 +260,20 @@ impl<'a> RytterSimulator<'a> {
             if self.configs[i] == conf { return i; }
         }
         */ 
+    }
+
+    // Get conf_matrix[i, j]
+    fn get_matrix(&self, i : usize, j : usize) -> bool {
+        let vec = self.conf_matrix.0.get(&i).unwrap();
+        vec.contains(&j)
+    }
+
+    // Insert (i, j) into conf_matrix
+    fn set_matrix_true(&mut self, i : usize, j : usize) {
+        let vec0 = self.conf_matrix.0.get_mut(&i).unwrap();
+        let vec1 = self.conf_matrix.1.get_mut(&j).unwrap();
+        vec0.push(j);
+        vec1.push(i);
     }
 
     // Find all the configurations below a given configuration
