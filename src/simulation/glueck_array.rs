@@ -1,4 +1,4 @@
-use hashbrown::HashMap;
+//use hashbrown::HashMap;
 //use hashbrown::HashSet;
 
 use crate::automaton::determ_autom::Autom;
@@ -38,7 +38,10 @@ struct GlueckSimulator<'a> {
     input : Input,
 
     // Table that stores the previously computed terminators
-    config_table : HashMap<StrippedConfig, DeltaConfig>,
+    config_table : Vec<Option<DeltaConfig>>,
+
+    // Number of configurations in total
+    num_configs : usize,
 
     // Past configurations
     past_configs : Vec<StrippedConfig>,
@@ -47,10 +50,18 @@ struct GlueckSimulator<'a> {
 impl<'a> GlueckSimulator<'a> {
     // Constructor
     pub fn new(autom : &'a Autom, input : Input) -> Self {
+        let mut config_table = Vec::new();
+
+        let num_configs = (autom.state_total as usize) * input.len() * 2;
+        for _ in 0..num_configs { 
+            config_table.push(None); 
+        }
+        
         Self { 
-            config_table : HashMap::new(), 
+            config_table, 
             autom,
             input,
+            num_configs,
             past_configs : Vec::new(),
         }
     }
@@ -60,6 +71,7 @@ impl<'a> GlueckSimulator<'a> {
         //println!("{:?}", config);
 
         let stripped_config = strip_config(config);
+        let cfg_index = self.get_index(stripped_config);
 
         // Check for infinite loops
         // If we loop infinitely, return the starting config
@@ -71,7 +83,7 @@ impl<'a> GlueckSimulator<'a> {
         self.past_configs.push(stripped_config);
 
         // Check if we've seen this configuration before
-        if let Some(delta_config) = self.config_table.get(&stripped_config) {
+        if let Some(delta_config) = self.config_table[cfg_index] {
             // Calculate the new config and return
             self.past_configs.pop();
             return Config {
@@ -186,10 +198,31 @@ impl<'a> GlueckSimulator<'a> {
 
         // Memoize
         let map_config = make_delta_config(config, out);
-        self.config_table.insert(stripped_config, map_config);
+        self.config_table[cfg_index] = Some(map_config);
 
         // Return
         self.past_configs.pop();
         out
+    }
+
+    fn get_index(&self, config : StrippedConfig) -> usize {
+        // Get the state, index and counter
+        let (state, index, counter_zero) = config;
+
+        // Compute the relevant offsets based on these values
+        let counter_offset = if counter_zero {0} else {1} as usize;
+        let index_offset = (index * 2) as usize;
+        let state_offset = (state * (self.input.len() as u16) * 2) as usize;
+
+        // The index is the sum of the offsets
+        let index = counter_offset + index_offset + state_offset;
+
+        // Panic if this config is too big
+        if index > self.num_configs {
+            panic!("Config {:?} doesn't exist!", config);
+        }
+
+        // Return
+        index
     }
 }
