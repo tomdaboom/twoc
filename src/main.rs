@@ -109,7 +109,7 @@ fn main() -> Result<(), ()> {
     // Contract AST
     prog.contract();
 
-    if verbose {
+    if false{//verbose {
         // Print contracted AST
         println!("\nContracted AST:");
         prog.print();
