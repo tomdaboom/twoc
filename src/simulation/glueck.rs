@@ -1,4 +1,5 @@
-use hashbrown::{HashMap, HashSet};
+use hashbrown::HashMap;
+//use hashbrown::HashSet;
 
 use crate::automaton::determ_autom::Autom;
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next, get_transition};
@@ -40,7 +41,7 @@ struct GlueckSimulator<'a> {
     config_table : HashMap<StrippedConfig, DeltaConfig>,
 
     // Past configurations
-    past_configs : HashSet<StrippedConfig>,
+    past_configs : Vec<StrippedConfig>,
 }
 
 impl<'a> GlueckSimulator<'a> {
@@ -50,7 +51,7 @@ impl<'a> GlueckSimulator<'a> {
             config_table : HashMap::new(), 
             autom,
             input,
-            past_configs : HashSet::new(),
+            past_configs : Vec::new(),
         }
     }
 
@@ -67,11 +68,12 @@ impl<'a> GlueckSimulator<'a> {
         }
 
         // Record config in past configs stack
-        self.past_configs.insert(stripped_config);
+        self.past_configs.push(stripped_config);
 
         // Check if we've seen this configuration before
         if let Some(delta_config) = self.config_table.get(&stripped_config) {
             // Calculate the new config and return
+            self.past_configs.pop();
             return Config {
                 state : delta_config.state,
                 read : delta_config.read,
@@ -83,6 +85,7 @@ impl<'a> GlueckSimulator<'a> {
         if let Some(accepting) = self.autom.check_if_halting(config.state) {
             // Return if we are in a reject state or in an accept state with an empty counter
             if !accepting || (accepting && config.counter == 0) { 
+                self.past_configs.pop();
                 return config; 
             } 
         }
@@ -90,7 +93,10 @@ impl<'a> GlueckSimulator<'a> {
         // Find the legal transition from this config if one exists
         let trans = match get_transition(self.autom, config, self.input.clone()) {
             // If no such transition exists, then the automaton halts and rejects on this config
-            None => return config,
+            None => {
+                self.past_configs.pop(); 
+                return config;
+            },
 
             // If such a transition exists, save it in trans
             Some(t) => t,
@@ -183,7 +189,7 @@ impl<'a> GlueckSimulator<'a> {
         self.config_table.insert(stripped_config, map_config);
 
         // Return
-        self.past_configs.remove(&stripped_config);
+        self.past_configs.pop();
         out
     }
 }
