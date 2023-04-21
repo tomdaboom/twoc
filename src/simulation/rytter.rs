@@ -8,8 +8,6 @@ use crate::parser::ast::{Readable, Input};
 
 pub type StrIndex = i32;
 
-type InverseTransition = Transition;
-
 // Check if a string is accepted by a nondeterministic automaton using the Rytter procedure
 // This should run in O(|input|^3)
 // See https://www.sciencedirect.com/science/article/pii/S0019995885800243?via%3Dihub for more info
@@ -83,25 +81,32 @@ impl<'a> RytterSimulator<'a> {
             conf_matrix.1.insert(cfg, vec![cfg]);
         }
 
-        // Construct inverse state map
+        // Construct the inverse state map
 
+        // Initialise the inverse state map with the correct keys
         let mut inverse_state_map = HashMap::new();
         for state in 0..autom.state_total {
             inverse_state_map.insert(state, Vec::new());
         }
 
+        // Populate the inverse state map
         for from_state in 0..autom.state_total {
             for trans in autom.get_transitions(from_state) {
                 let to_state = trans.goto;
 
-                let inverse_trans = InverseTransition {
-                    goto : from_state,
+                // Create the inverse transition
+                let inverse_trans = Transition {
+                    // swap to_state and from_state
+                    goto : from_state, 
+
+                    // leave everything else alone
                     incr_by : trans.incr_by,
                     move_by : trans.move_by,
                     read_char : trans.read_char,
                     test_counter_zero : trans.test_counter_zero,
                 };
 
+                // Put this transition into the map
                 let search_map = inverse_state_map.get_mut(&to_state).unwrap();
                 search_map.push(inverse_trans);
             }
