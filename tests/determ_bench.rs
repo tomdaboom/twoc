@@ -83,14 +83,14 @@ mod determ_bench {
     pub fn quadratic_performance_test() {
         // Loop params
         let start = 0;
-        let step = 500;
+        let step = 10;
         let tests = 200;
 
         // Initialise last
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/quadratic_performance_test.txt";
+        let path = "./tests/bench_results/quadratic_performance_test_smol.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
@@ -114,8 +114,6 @@ mod determ_bench {
         let autom = determ_construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
-            if n == 0 { continue; }
-
             // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n);
 
