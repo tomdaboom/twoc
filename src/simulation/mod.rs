@@ -4,6 +4,8 @@ pub mod glueck;
 
 pub mod glueck_nondeterm;
 
+pub mod glueck_array;
+
 //pub mod ahu;
 
 pub mod naive_nondeterm;
