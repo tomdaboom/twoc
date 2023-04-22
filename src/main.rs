@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 // IMPORTS
 use std::fs;
 
@@ -11,9 +13,7 @@ use twoc::parser::sugar::convert_sugar::convert_sugar;
 
 // Import automaton methods and types
 use twoc::automaton::{determ_construction, construction};
-use twoc::simulation::glueck;
-use twoc::simulation::glueck_nondeterm;
-use twoc::simulation::rytter;
+use twoc::simulation::{glueck, glueck_nondeterm, glueck_array, rytter};
 
 // Clap import
 use clap::Parser;
@@ -126,7 +126,7 @@ fn main() -> Result<(), ()> {
         }
 
         // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = glueck::glueck_procedure(&autom, test_word);
+        let accepting = glueck_array::glueck_procedure(&autom, test_word);
 
         match accepting {
             true  => println!("\n{:?} is accepted", test_word),
