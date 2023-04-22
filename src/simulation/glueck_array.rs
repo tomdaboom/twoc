@@ -212,7 +212,7 @@ impl<'a> GlueckSimulator<'a> {
         // Compute the relevant offsets based on these values
         let counter_offset = if counter_zero {0} else {1} as usize;
         let index_offset = (index * 2) as usize;
-        let state_offset = (state * (self.input.len() as u16) * 2) as usize;
+        let state_offset = (state as usize) * (self.input.len() as usize) * 2;
 
         // The index is the sum of the offsets
         let index = counter_offset + index_offset + state_offset;
