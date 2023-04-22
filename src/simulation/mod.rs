@@ -10,6 +10,8 @@ pub mod glueck_array;
 
 pub mod naive_nondeterm;
 
+pub mod naive_determ;
+
 pub mod rytter;
 
 pub mod rytter_matrix;
