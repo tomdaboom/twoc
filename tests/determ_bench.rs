@@ -11,7 +11,7 @@ mod determ_bench {
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
     use twoc::automaton::determ_autom::Autom;
-    use twoc::simulation::glueck::glueck_procedure;
+    use twoc::simulation::glueck_array::glueck_procedure;
 
     // Function used by threads
     pub fn thread_function(autom : &Autom, word : String) {
@@ -83,14 +83,14 @@ mod determ_bench {
     pub fn quadratic_performance_test() {
         // Loop params
         let start = 0;
-        let step = 10;
-        let tests = 200;
+        let step = 20;
+        let tests = 500;
 
         // Initialise last
         let mut last = 0.0f32;
 
         // Create output file
-        let path = "./tests/bench_results/quadratic_performance_test_smol.txt";
+        let path = "./tests/bench_results/qpt_glueck_array_2.txt";
         let mut file = fs::File::create(path).expect("File creation failed");
 
         // Declare parser for Twoc rule
