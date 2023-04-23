@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 // Import grammar
 #[macro_use] extern crate lalrpop_util;
 lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
@@ -6,20 +8,18 @@ lalrpop_mod!(pub sugar_grammar, "/parser/sugar/sugar_grammar.rs");
 #[cfg(test)]
 mod nondeterm_bench {
     use std::io::Write;
-    use std::{fs, thread};
+    //use std::{fs, thread};
+    use std::fs;
     use std::time::Instant;
 
     use crate::grammar_rules::TwocParser;
     use crate::sugar_grammar::TwocParser as SugarTwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::construction; 
-    use twoc::automaton::autom::Autom;
-    use twoc::simulation::rytter::rytter_procedure;
+    //use twoc::automaton::autom::Autom;
+    use twoc::simulation::rytter;
+    use twoc::simulation::rytter_matrix;
 
-    // Function used by threads
-    pub fn thread_function(autom : &Autom, word : String) {
-        rytter_procedure(&autom, &word);
-    }
 
     #[test]
     pub fn string_length_performance_test() {
@@ -63,11 +63,11 @@ mod nondeterm_bench {
             let now = Instant::now();
 
             // Run test with a massive stack
-            thread::scope(|s| {
-                thread::Builder::new().stack_size(0xFFFF * n)
-                .spawn_scoped(s, || thread_function(&autom, test_word))
-                .unwrap();
-            });
+            //thread::scope(|s| {
+            //    thread::Builder::new().stack_size(0xFFFF * n)
+            //    .spawn_scoped(s, || thread_function(&autom, test_word))
+             //   .unwrap();
+            //});
 
             // Stop timing and record delta t
             let time_taken = now.elapsed().as_secs_f32();
@@ -87,14 +87,18 @@ mod nondeterm_bench {
         // Loop params
         let start = 0;
         let step = 1;
-        let tests = 107;
+        let tests = 100;
 
         // Initialise last
-        let mut last = 0.0f32;
+        let mut last_hashmap = 0.0f32;
+        let mut last_matrix = 0.0f32;
 
-        // Create output file
-        let path = "./tests/bench_results/quadratic_performance_test_rytter_hashmaps_2_2.txt";
-        let mut file = fs::File::create(path).expect("File creation failed");
+        // Create output files
+        let path1 = "./tests/bench_results/qpt_2204_rytter.csv";
+        let mut file1 = fs::File::create(path1).expect("File creation failed");
+
+        let path2 = "./tests/bench_results/qpt_2204_rytter_matrix.csv";
+        let mut file2 = fs::File::create(path2).expect("File creation failed");
 
         // Declare parser for Twoc rule
         let parser = TwocParser::new();
@@ -120,26 +124,28 @@ mod nondeterm_bench {
             // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n);
 
-            // Start timing
+            // HASHMAP TEST
             let now = Instant::now();
+            rytter::rytter_procedure(&autom, &test_word);
+            let time_taken_hashmap = now.elapsed().as_secs_f32();
+            let delta_t_hashmap = time_taken_hashmap - last_hashmap;
 
-            // Run test with a massive stack
-            thread::scope(|s| {
-                thread::Builder::new().stack_size(0xFFFF * n)
-                .spawn_scoped(s, || thread_function(&autom, test_word))
-                .unwrap();
-            });
 
-            // Stop timing and record delta t
-            let time_taken = now.elapsed().as_secs_f32();
-            let delta_t = time_taken - last;
+            // MATRIX TEST
+            let now = Instant::now();
+            rytter_matrix::rytter_procedure(&autom, &test_word);
+            let time_taken_matrix = now.elapsed().as_secs_f32();
+            let delta_t_matrix = time_taken_matrix - last_matrix;
 
             // Output and save time taken and difference between last time and this time
-            println!("n = {:?}, t = {:?}, Δt = {:?}", n, time_taken, delta_t);
-            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken, delta_t);
-            file.write_all(to_file.as_bytes()).expect("File write failed");
+            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken_hashmap, delta_t_hashmap);
+            file1.write_all(to_file.as_bytes()).expect("File write failed");
 
-            last = time_taken;
+            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken_matrix, delta_t_matrix);
+            file2.write_all(to_file.as_bytes()).expect("File write failed");
+
+            last_hashmap = time_taken_hashmap;
+            last_matrix = time_taken_matrix;
         }
     }
 
@@ -188,7 +194,7 @@ mod nondeterm_bench {
             let now = Instant::now();
 
             // Run test with a massive stack
-            thread_function(&autom, test_word);
+            //thread_function(&autom, test_word);
 
             // Stop timing and record delta t
             let time_taken = now.elapsed().as_secs_f32();

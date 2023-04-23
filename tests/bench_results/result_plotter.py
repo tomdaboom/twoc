@@ -48,6 +48,7 @@ ax[0].plot(ns, ts_pred, 'r--', label = f"Regression (r^2 = {r_sq.round(3)})")
 ax[0].set_xlabel("Input length")
 ax[0].set_ylabel("Simulation runtime (s)")
 ax[0].legend()
+ax[0].grid()
 
 
 ax[1].plot([ns[i] for i in range(len(ns)) if dts[i] < 5], [i for i in dts if i < 5], 'b', label = f"Benchmark derivative")
@@ -55,5 +56,6 @@ ax[1].plot(ns, dts_pred, 'r--', label = f"Regression (r^2 = {dr_sq.round(3)})")
 ax[1].set_xlabel("Input length")
 ax[1].set_ylabel("dt/dn (s)")
 ax[1].legend()
+ax[1].grid()
 
 plt.show()
