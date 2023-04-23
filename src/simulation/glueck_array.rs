@@ -168,15 +168,6 @@ impl<'a> GlueckSimulator<'a> {
 
             // Recurse
             out = self.simulate(follow);
-
-            /*
-            if out.counter != start_counter_val {
-                println!("Counter not the same");
-            }
-            */
-
-            //print!("push: {:?}, push_to : {:?}\nnext_term: {:?}\nfollow: {:?}", config, next_config, next_terminator, follow);
-            //println!("\nout: {:?}\n", out);
         } 
         
         // op(config)
