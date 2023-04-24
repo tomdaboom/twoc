@@ -1,6 +1,6 @@
 use hashbrown::{HashMap, HashSet};
 
-use crate::automaton::autom::Autom;
+use crate::automaton::determ_autom::Autom;
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next_nondeterm, get_transitions};
 use crate::parser::ast::{Readable, Input};
 

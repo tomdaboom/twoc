@@ -1,6 +1,6 @@
 use crate::automaton::generic_autom::State;
 use crate::automaton::determ_autom;
-use crate::automaton::autom;
+//use crate::automaton::autom;
 use crate::parser::ast::Input;
 
 // Configuration of an automaton (i.e. all the information required to keep track of a computation)
@@ -56,7 +56,7 @@ pub fn next(config : Config, transition : determ_autom::Transition, input : &Inp
 }
 
 // Given a config, a nondeterm transition off of it and an input string, find the next config
-pub fn next_nondeterm(config : Config, transition : autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
+pub fn next_nondeterm(config : Config, transition : determ_autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);
@@ -128,7 +128,7 @@ pub fn get_transition(autom : &determ_autom::Autom, config : Config, input : Inp
 }
 
 // Get all the legal nondeterministic transitions off of a given config
-pub fn get_transitions(autom : &autom::Autom, config : Config, input : Input) -> Vec<autom::Transition> {
+pub fn get_transitions(autom : &determ_autom::Autom, config : Config, input : Input) -> Vec<determ_autom::Transition> {
     // Get transitions from the automaton
     let transitions = autom.get_transitions(config.state);
 
@@ -136,25 +136,21 @@ pub fn get_transitions(autom : &autom::Autom, config : Config, input : Input) ->
     let mut legal_transitions = Vec::new();
 
     for trans in transitions {
-        // Compute whether or not the counter is zero and what character is at the read index
-        let counter_zero = config.counter == 0;
-        let read_char = input[config.read as usize];
+        match trans.condition {
+            // If this transition has a condition, 
+            // check that it's true before adding it to legal transitions
+            Some(ref cond) => {
+                // Find the character under the readhead
+                let read_char = input[config.read as usize];
+                
+                // Check the condition and push
+                if cond.check(read_char, config.counter) {
+                    legal_transitions.push(trans);
+                }
+            },
 
-        // Work out if the counter check passes
-        let counter_check_passes = match trans.test_counter_zero {
-            None => true,
-            Some(check_counter_zero) => counter_zero == check_counter_zero,
-        };
-
-        // Work out if the read check passes
-        let read_check_passes = match trans.read_char {
-            None => true,
-            Some(char) => char == read_char,
-        };
-
-        // Include the transition if both pass
-        if counter_check_passes && read_check_passes {
-            legal_transitions.push(trans);
+            // Otherwise, add to legal transitions
+            None => legal_transitions.push(trans), 
         }
     }
 

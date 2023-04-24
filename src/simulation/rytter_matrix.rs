@@ -3,7 +3,7 @@
 use std::collections::{VecDeque, HashMap};
 use array2d::Array2D;
 
-use crate::automaton::autom::{Autom, Transition};
+use crate::automaton::determ_autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
 use crate::simulation::config::{Config, StrippedConfig, get_transitions, strip_config, next_nondeterm};
 use crate::parser::ast::{Readable, Input};
@@ -82,11 +82,15 @@ impl<'a> RytterSimulator<'a> {
                 let to_state = trans.goto;
 
                 let inverse_trans = InverseTransition {
-                    goto : from_state,
+                    // swap to_state and from_state
+                    goto : from_state, 
+
+                    // leave everything else alone
                     incr_by : trans.incr_by,
                     move_by : trans.move_by,
-                    read_char : trans.read_char,
-                    test_counter_zero : trans.test_counter_zero,
+                    condition : trans.condition,
+                    //read_char : trans.read_char,
+                    //test_counter_zero : trans.test_counter_zero,
                 };
 
                 let search_map = inverse_state_map.get_mut(&to_state).unwrap();
@@ -223,23 +227,18 @@ impl<'a> RytterSimulator<'a> {
                 continue;
             }
 
-            // Check that the read statement is correct
-            let read_correct = match trans.read_char {
-                Some(c) => self.input[new_read as usize] == c,
-                None => true,
-            };
-
             for counter_zero in [false, true] {
-                // Check that the counter condition is correct
-                let counter_correct = match trans.test_counter_zero {
-                    Some(counter_shouldbe_zero) => counter_zero == counter_shouldbe_zero,
-                    None => true,
+                match &trans.condition {
+                    // Push if there's no condition to test
+                    None => k_configs.push((new_state, new_read, counter_zero)),
+    
+                    // Push iff the condition passes on the current read and counter values
+                    Some(cond) => { 
+                        if cond.check(self.input[new_read as usize], if counter_zero {0} else {1}) {
+                            k_configs.push((new_state, new_read, counter_zero));
+                        }
+                    }, 
                 };
-
-                // Include the config iff trans is legal
-                if read_correct && counter_correct {
-                    k_configs.push((new_state, new_read, counter_zero));
-                }
             }
         }
 
