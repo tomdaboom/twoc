@@ -48,7 +48,7 @@ impl<'a> NaiveSimulator<'a> {
                 for trans in &transes {
                     let next_cfg = match next_nondeterm(
                         *cfg, 
-                        *trans, 
+                        trans.clone(), 
                         &self.input,
                         self.autom.decr_zero
                     ) {
