@@ -121,6 +121,8 @@ mod nondeterm_bench {
         let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
+            println!("n = {:?}", n);
+
             // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n);
 
@@ -150,18 +152,22 @@ mod nondeterm_bench {
     }
 
     #[test]
-    pub fn awful_performnce_test() {
+    pub fn awful_performance_test() {
         // Loop params
         let start = 0;
         let step = 1;
-        let tests = 1000;
+        let tests = 100;
 
         // Initialise last
-        let mut last = 0.0f32;
+        let mut last_hashmap = 0.0f32;
+        let mut last_matrix = 0.0f32;
 
-        // Create output file
-        let path = "./tests/bench_results/nondeterm_torture_rytter_hashmap.txt";
-        let mut file = fs::File::create(path).expect("File creation failed");
+        // Create output files
+        let path1 = "./tests/bench_results/awful_2204_rytter.csv";
+        let mut file1 = fs::File::create(path1).expect("File creation failed");
+
+        let path2 = "./tests/bench_results/awful_2204_rytter_matrix.csv";
+        let mut file2 = fs::File::create(path2).expect("File creation failed");
 
         // Declare parser for Twoc rule
         let parser = SugarTwocParser::new();
@@ -178,7 +184,7 @@ mod nondeterm_bench {
         };
 
         // Desugar
-        let mut prog = convert_sugar(sugar_prog);
+        let mut prog = convert_sugar(sugar_prog); 
 
         // Contract the AST
         prog.contract();
@@ -187,25 +193,33 @@ mod nondeterm_bench {
         let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
-            // Generate a string of n 0s
+            println!("n = {:?}", n);
+
+            // Generate a string of n 0s and n 1s
             let test_word = "0".repeat(n);
 
-            // Start timing
+            // HASHMAP TEST
             let now = Instant::now();
+            rytter::rytter_procedure(&autom, &test_word);
+            let time_taken_hashmap = now.elapsed().as_secs_f32();
+            let delta_t_hashmap = time_taken_hashmap - last_hashmap;
 
-            // Run test with a massive stack
-            //thread_function(&autom, test_word);
 
-            // Stop timing and record delta t
-            let time_taken = now.elapsed().as_secs_f32();
-            let delta_t = time_taken - last;
+            // MATRIX TEST
+            let now = Instant::now();
+            rytter_matrix::rytter_procedure(&autom, &test_word);
+            let time_taken_matrix = now.elapsed().as_secs_f32();
+            let delta_t_matrix = time_taken_matrix - last_matrix;
 
             // Output and save time taken and difference between last time and this time
-            println!("n = {:?}, t = {:?}, Δt = {:?}", n, time_taken, delta_t);
-            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken, delta_t);
-            file.write_all(to_file.as_bytes()).expect("File write failed");
+            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken_hashmap, delta_t_hashmap);
+            file1.write_all(to_file.as_bytes()).expect("File write failed");
 
-            last = time_taken;
+            let to_file = format!("{:?},{:?},{:?}\n", n, time_taken_matrix, delta_t_matrix);
+            file2.write_all(to_file.as_bytes()).expect("File write failed");
+
+            last_hashmap = time_taken_hashmap;
+            last_matrix = time_taken_matrix;
         }
     }
 }

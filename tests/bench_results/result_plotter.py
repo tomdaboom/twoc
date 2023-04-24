@@ -20,6 +20,8 @@ dts[0] = 0
 
 if sys.argv[1] == 'lin':
     deg = 1
+elif sys.argv[1] == 'squ':
+    deg = 2
 elif sys.argv[1] == 'cub':
     deg = 3
 else:
@@ -29,6 +31,7 @@ else:
 t_model = np.poly1d(np.polyfit(ns, ts, deg))
 ts_pred  = t_model(ns)
 r_sq = r2_score(ts, ts_pred)
+print(f"t model: {t_model}\n")
 print(f"t: r^2 value = {r_sq}")
 
 # regression on (n, dt)
@@ -51,7 +54,7 @@ ax[0].legend()
 ax[0].grid()
 
 
-ax[1].plot([ns[i] for i in range(len(ns)) if dts[i] < 5], [i for i in dts if i < 5], 'b', label = f"Benchmark derivative")
+ax[1].plot(ns, dts, 'b', label = f"Benchmark derivative")
 ax[1].plot(ns, dts_pred, 'r--', label = f"Regression (r^2 = {dr_sq.round(3)})")
 ax[1].set_xlabel("Input length")
 ax[1].set_ylabel("dt/dn (s)")
