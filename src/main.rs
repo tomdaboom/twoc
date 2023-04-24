@@ -51,7 +51,7 @@ fn main() -> Result<(), ()> {
     let use_glueck_nondeterm = args.use_glueck_nondeterm;
 
     if use_glueck_nondeterm {
-        println!("Warning: using the --use-glueck-nondeterm flag might lead to incorrect results on some nondeterministic programs!");
+        println!("Warning: using the --use-glueck-nondeterm flag might lead to incorrect results on some programs!");
     }
 
     if verbose { 
