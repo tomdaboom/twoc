@@ -115,16 +115,19 @@ fn main() -> Result<(), ()> {
         prog.print();
     }
 
-    if prog.deterministic() {
-        // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+    // Check whether or not the program is deterministic
+    let determ = prog.deterministic();
 
-        // Print the automaton
-        if verbose {
-            println!("\nAutomaton:");
-            autom.print();
-        }
+    // Construct the automaton from the program
+    let autom = determ_construction::construct_from_prog(prog);
 
+    // Print the automaton
+    if verbose {
+        println!("\nAutomaton:");
+        autom.print();
+    }
+
+    if determ {
         // Test that the automaton accepts an example word via the glueck procedure
         let accepting = glueck_array::glueck_procedure(&autom, test_word);
 
@@ -137,15 +140,6 @@ fn main() -> Result<(), ()> {
     } 
     
     else {
-        // Construct the automaton from the program
-        let autom = construction::construct_from_prog(prog);
-
-        if verbose {
-            // Print the automaton
-            println!("\nAutomaton:");
-            autom.print();
-        }
-        
         // Test that the automaton accepts an example word via the glueck procedure
         let accepting = match use_glueck_nondeterm {
             true  => glueck_nondeterm::glueck_procedure(&autom, test_word),
