@@ -1,4 +1,4 @@
-use crate::automaton::determ_autom::Autom;
+use crate::automaton::autom::Autom;
 use crate::simulation::config::{Config, get_transition, next};
 use crate::parser::ast::{Readable, Input};
 

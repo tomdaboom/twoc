@@ -1,6 +1,6 @@
 use crate::parser::{program::Program, ast};
 
-use crate::automaton::determ_autom::{Autom, Transition};
+use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::{State, TransitionTrait};
 
 // New add_transition function for GenericAutom<Transition> that ensures 

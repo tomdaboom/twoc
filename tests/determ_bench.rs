@@ -10,7 +10,7 @@ mod determ_bench {
 
     use crate::grammar_rules::TwocParser;
     use twoc::automaton::determ_construction; 
-    use twoc::automaton::determ_autom::Autom;
+    use twoc::automaton::autom::Autom;
     use twoc::simulation::glueck::glueck_procedure;
     use twoc::simulation::naive_determ::naive;
 

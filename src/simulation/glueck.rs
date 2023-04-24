@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 //use hashbrown::HashSet;
 
-use crate::automaton::determ_autom::Autom;
+use crate::automaton::autom::Autom;
 use crate::simulation::config::{Config, DeltaConfig, StrippedConfig, strip_config, make_delta_config, next, get_transition};
 use crate::parser::ast::{Readable, Input};
 

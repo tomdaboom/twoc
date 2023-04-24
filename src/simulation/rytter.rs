@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use hashbrown::HashMap;
 
-use crate::automaton::determ_autom::{Autom, Transition};
+use crate::automaton::autom::{Autom, Transition};
 use crate::automaton::generic_autom::State;
 use crate::simulation::config::{Config, StrippedConfig, get_transitions, strip_config, next_nondeterm};
 use crate::parser::ast::{Readable, Input};

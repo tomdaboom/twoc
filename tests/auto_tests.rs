@@ -8,7 +8,7 @@ mod auto_tests {
 
     use crate::grammar_rules::TwocParser;
 
-    type DetermTransition = twoc::automaton::determ_autom::Transition;
+    type DetermTransition = twoc::automaton::autom::Transition;
     use twoc::automaton::generic_autom::GenericAutom;
 
     use twoc::parser::sugar::convert_sugar::convert_sugar;

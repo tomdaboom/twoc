@@ -1,5 +1,5 @@
 use crate::automaton::generic_autom::State;
-use crate::automaton::determ_autom;
+use crate::automaton::autom;
 //use crate::automaton::autom;
 use crate::parser::ast::Input;
 
@@ -37,7 +37,7 @@ pub fn make_delta_config(from : Config, to : Config) -> DeltaConfig {
 }
 
 // Given a config, a determ transition off of it and an input string, find the next config
-pub fn next(config : Config, transition : determ_autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
+pub fn next(config : Config, transition : autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);
@@ -56,7 +56,7 @@ pub fn next(config : Config, transition : determ_autom::Transition, input : &Inp
 }
 
 // Given a config, a nondeterm transition off of it and an input string, find the next config
-pub fn next_nondeterm(config : Config, transition : determ_autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
+pub fn next_nondeterm(config : Config, transition : autom::Transition, input : &Input, decr_zero : bool) -> Option<Config> {
     // Find the new readhead position
     let mut new_read = config.read + transition.move_by;
     new_read = new_read.max(0).min(input.len() as i32 - 1);
@@ -76,7 +76,7 @@ pub fn next_nondeterm(config : Config, transition : determ_autom::Transition, in
 
 // Get the legal nondeterministic transition off of an automaton if one exists
 // Get the transition that the automaton can take from the given configuration, if one exists
-pub fn get_transition(autom : &determ_autom::Autom, config : Config, input : Input) -> Option<determ_autom::Transition> {
+pub fn get_transition(autom : &autom::Autom, config : Config, input : Input) -> Option<autom::Transition> {
     // Get transitions from the automaton
     let transitions = autom.get_transitions(config.state);
 
@@ -128,7 +128,7 @@ pub fn get_transition(autom : &determ_autom::Autom, config : Config, input : Inp
 }
 
 // Get all the legal nondeterministic transitions off of a given config
-pub fn get_transitions(autom : &determ_autom::Autom, config : Config, input : Input) -> Vec<determ_autom::Transition> {
+pub fn get_transitions(autom : &autom::Autom, config : Config, input : Input) -> Vec<autom::Transition> {
     // Get transitions from the automaton
     let transitions = autom.get_transitions(config.state);
 
