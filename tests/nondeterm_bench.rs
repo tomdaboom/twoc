@@ -15,7 +15,7 @@ mod nondeterm_bench {
     use crate::grammar_rules::TwocParser;
     use crate::sugar_grammar::TwocParser as SugarTwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
-    use twoc::automaton::determ_construction; 
+    use twoc::automaton::construction; 
     //use twoc::automaton::autom::Autom;
     use twoc::simulation::rytter;
     use twoc::simulation::rytter_matrix;
@@ -53,7 +53,7 @@ mod nondeterm_bench {
         prog.contract();
 
         // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+        let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
             // Generate a string of n 0s and n 1s
@@ -118,7 +118,7 @@ mod nondeterm_bench {
         prog.contract();
 
         // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+        let autom = construction::construct_from_prog(prog);
 
         for n in (start..(start + step*tests + 1)).step_by(step) {
             // Generate a string of n 0s and n 1s

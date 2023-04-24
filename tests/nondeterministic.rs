@@ -6,7 +6,7 @@ lalrpop_mod!(pub grammar_rules, "/parser/grammar_rules.rs");
 mod determ_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
-    use twoc::automaton::determ_construction; 
+    use twoc::automaton::construction; 
     use twoc::simulation::rytter::rytter_procedure;
 
     // Generic test function that runs a program on a single word and compares the outputs
@@ -19,14 +19,17 @@ mod determ_tests {
 
         // Parse the file
         let test = parser.parse(&test_prog);
-        let prog = match test {
+        let mut prog = match test {
             // Output any parse errors
             Err(ref err) => panic!("Parse Error:\n{:?}", err),
             Ok(prog) => prog,
         };
 
+        // Contract the program
+        prog.contract();
+
         // Construct the automaton from the program
-        let autom = determ_construction::construct_from_prog(prog);
+        let autom = construction::construct_from_prog(prog);
 
         // Check that each of the words gives the correct answer
         for (word, expected) in examples {
