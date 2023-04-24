@@ -9,11 +9,11 @@ twoc (int X) {
         branch {
             move(1);
             if (read == rend) { reject; }
-        } also {
+        } 
+        
+        also {
             c-=2;
-
             goto(lend);
-            
             if (c == 0) { accept; }
         }
     }
