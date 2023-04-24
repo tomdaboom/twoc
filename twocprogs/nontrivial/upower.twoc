@@ -1,7 +1,7 @@
 decr_on_zero = false;
 alphabet = [ 'a' ];
 
-    // UPOWER(k = 2) (from https://arxiv.org/abs/1311.0849)
+// UPOWER(k = 2) (from https://link.springer.com/chapter/10.1007/978-3-642-38536-0_32)
 
 twoc (string) {
     // reject if w = epsilon
