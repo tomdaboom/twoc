@@ -1,0 +1,22 @@
+decr_on_zero = true;
+alphabet = [ '0' ];
+
+twoc (int X) {
+    branch { 
+        c = X; 
+    } 
+    also {
+        c = X;
+        c += X; 
+    }
+
+    while (choose) {
+        if (c != 0) { 
+            c -= 2;
+        }
+    }
+
+    if (c == 0) {
+        accept;
+    }
+}
