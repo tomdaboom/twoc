@@ -5,7 +5,7 @@
 lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");
 
 #[cfg(test)]
-mod determ_tests {
+mod nondeterm_tests {
     use std::fs;
     use crate::grammar_rules::TwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
