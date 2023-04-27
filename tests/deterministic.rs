@@ -45,6 +45,7 @@ mod determ_tests {
     #[test]
     pub fn equal_zeros_ones() {
         let test_words = [
+            ("", true),
             ("0011", true), 
             ("11001", false),
             ("0101101010", true),
@@ -60,6 +61,7 @@ mod determ_tests {
     #[test]
     pub fn zeros_then_ones() {
         let test_words = [
+            ("", true),
             ("00000000001111111111", true), 
             ("00001111", true),
             ("0001111", false),
@@ -74,6 +76,7 @@ mod determ_tests {
     #[test]
     pub fn x_plus_y_is_z() {
         let test_words = [
+            ("", true),
             ("xxxyyyyyzzzzzzzz", true),
             ("xzyxzzyyzxzyzxzyzzyxzyzxzz", true), 
             ("xyyzzzz", false),
@@ -87,8 +90,25 @@ mod determ_tests {
     }
 
     #[test]
+    pub fn x_plus_y_is_z_sugar() {
+        let test_words = [
+            ("", true),
+            ("xxxyyyyyzzzzzzzz", true),
+            ("xxxxxxxxxxxxxxxxyyyyyyyyyyzzzzzzzzzzzzzzzzzzzzzzzzzz", true),
+            ("yyyyyyyyyyyyyyyyyyzzzzzzzzzzzzzzzzzz", true),
+            ("xxxxxxyyyyyyyyyyyyyzzzzzzzzzzzzzzzzzzz", true),
+            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzzz", false),
+            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzxzz", false),
+            ("zzzzxyyzxyzxyzxyzzxyzxyzxyzxyzzzxzz", false),
+        ];
+
+        generic_test("./twocprogs/sugar/x_plus_y_is_z.twoc", &test_words);
+    }
+
+    #[test]
     pub fn loops_forever() {
         let test_words = [
+            ("", false),
             ("0", false),
             ("00", false),
             ("0000000", false),
@@ -99,5 +119,31 @@ mod determ_tests {
         ];
 
         generic_test("./twocprogs/determ/loops_forever.twoc", &test_words);
+    }
+
+    #[test]
+    pub fn upower() {
+        let test_words = [
+            ("0", true),
+            ("00", true),
+            ("000", false),
+            ("0000", true),
+            ("00000", false),
+            ("000000", false),
+            ("0000000", false),
+            ("00000000", true),
+            ("0000000000", false),
+            ("0000000000000000", true),
+            ("00000000000000000", false),
+            ("000000000000000000", false),
+            ("0000000000000000000", false),
+            ("00000000000000000000", false),
+            ("000000000000000000000", false),
+            ("00000000000000000000000000000000", true),
+            ("0000000000000000000000000000000000", false),
+            ("0000000000000000000000000000", false),
+        ];
+
+        generic_test("./twocprogs/nontrivial/upower.twoc", &test_words);
     }
 }
