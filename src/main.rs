@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-
 // IMPORTS
 use std::fs;
 
@@ -13,7 +11,7 @@ use twoc::parser::sugar::convert_sugar::convert_sugar;
 
 // Import automaton methods and types
 use twoc::automaton::{determ_construction, construction};
-use twoc::simulation::{glueck, glueck_nondeterm, glueck_array, rytter};
+use twoc::simulation::{glueck_nondeterm, glueck_array, rytter, rytter_matrix};
 
 // Clap import
 use clap::Parser;
@@ -33,6 +31,9 @@ struct CliArgs {
 
     #[arg(long, default_value_t = false)]
     use_glueck_nondeterm : bool,
+
+    #[arg(long, default_value_t = false)]
+    use_rytter_matrix : bool,
 }
 
 fn main() -> Result<(), ()> {
@@ -49,6 +50,7 @@ fn main() -> Result<(), ()> {
     };
     let verbose = args.verbose;
     let use_glueck_nondeterm = args.use_glueck_nondeterm;
+    let use_rytter_matrix = args.use_rytter_matrix;
 
     if use_glueck_nondeterm {
         println!("Warning: using the --use-glueck-nondeterm flag might lead to incorrect results on some programs!");
@@ -147,10 +149,18 @@ fn main() -> Result<(), ()> {
             autom.print();
         }
 
-        // Test that the automaton accepts an example word via the glueck procedure
-        let accepting = match use_glueck_nondeterm {
-            true  => glueck_nondeterm::glueck_procedure(&autom, test_word),
-            false => rytter::rytter_procedure(&autom, test_word),
+        // Test that the automaton accepts an example word via the chosen procedure
+        let accepting = match (use_glueck_nondeterm, use_rytter_matrix) {
+            (true, true)   => { 
+                println!("--use-glueck-nondeterm and --use-rytter-matrix are mutually exclusive!"); 
+                return Err(()); 
+            },
+
+            (false, true)  => rytter_matrix::rytter_procedure(&autom, test_word),
+
+            (true, false)  => glueck_nondeterm::glueck_procedure(&autom, test_word),
+
+            (false, false) => rytter::rytter_procedure(&autom, test_word),
         };
 
         match accepting {
