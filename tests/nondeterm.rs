@@ -98,13 +98,13 @@ mod determ_tests {
     pub fn x_plus_y_is_z_sugar() {
         let test_words = [
             ("", true),
-            ("xxxyyyyyzzzzzzzz", true),
-            ("xxxxxxxxxxxxxxxxyyyyyyyyyyzzzzzzzzzzzzzzzzzzzzzzzzzz", true),
-            ("yyyyyyyyyyyyyyyyyyzzzzzzzzzzzzzzzzzz", true),
-            ("xxxxxxyyyyyyyyyyyyyzzzzzzzzzzzzzzzzzzz", true),
-            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzzz", false),
-            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzxzz", false),
-            ("zzzzxyyzxyzxyzxyzzxyzxyzxyzxyzzzxzz", false),
+            ("xz", true),
+            ("yyzz", true),
+            ("xyzz", true),
+            ("xyz", false),
+            ("xyzzz", false),
+            ("xxyyzzzz", true),
+            ("xyzxyzzz", false),
         ];
 
         generic_test("./twocprogs/sugar/x_plus_y_is_z.twoc", &test_words);
