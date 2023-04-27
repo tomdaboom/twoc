@@ -7,7 +7,7 @@ twoc is a programming language for [two-way one-counter automata](https://www.sc
 ## Usage
 
 1. Make sure that you have Rust installed on your machine with the Cargo build manager (follow the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html))
-2. Type ```cargo run -- --file <FILENAME> --word <INPUT_STRING>``` into the terminal to run a twoc program on a specified input. Use the ```--verbose``` flag to see the different transformations the program makes to the program.
+2. Type ```cargo run -- --file <FILENAME> --word <INPUT_STRING>``` into the terminal to run a twoc program on a specified input. Use the ```--verbose``` flag to see the different transformations the program makes to the program. Use the ```--use-glueck-nondeterm``` and ```--use-rytter-matrix``` flags to change which algorithms are used to simulate the program (if the program is nondeterministic).  
 
 ## The codebase
 
@@ -26,7 +26,7 @@ twoc is a programming language for [two-way one-counter automata](https://www.sc
 
 - ```twoc/src/simulation``` contains all of the code used to check if a certain input string is accepted/rejected by a given automaton
 
-- ```twoc/src/proofs``` contains all of the code used to embed and check Hoare-logic proofs concerning these automata
+- ```twoc/src/proofs``` *will* contain all of the code used to embed and check Hoare-logic proofs concerning these automata
 
 If you wish to study the codebase, I recommend that you do so with VSCode after cloning the repo to your machine. I'd also recommend you install the following VSCode extensions:
 
