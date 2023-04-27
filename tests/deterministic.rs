@@ -8,7 +8,7 @@ mod determ_tests {
     use crate::grammar_rules::TwocParser;
     use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::determ_construction::construct_from_prog; 
-    
+
     use twoc::simulation::glueck_array::glueck_procedure;
     // use twoc::simulation::glueck::glueck_procedure;
 
@@ -126,6 +126,7 @@ mod determ_tests {
     #[test]
     pub fn upower() {
         let test_words = [
+            ("", false),
             ("0", true),
             ("00", true),
             ("000", false),
