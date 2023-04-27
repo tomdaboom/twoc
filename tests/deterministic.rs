@@ -49,6 +49,9 @@ mod determ_tests {
             ("11001", false),
             ("0101101010", true),
             ("11110101101110011110011111111111", false),
+            ("1111111111111111000000000000000011111111111111110000000000000000", true),
+            ("11111111111111110000000000000000111111111111111100000000000000000", false),
+            (("111111111111111100000000100000000111111111111111100000000000000000", true)),
         ];
 
         generic_test("./twocprogs/determ/equal_zeros_ones.twoc", &test_words);
@@ -75,6 +78,9 @@ mod determ_tests {
             ("xzyxzzyyzxzyzxzyzzyxzyzxzz", true), 
             ("xyyzzzz", false),
             ("xyxyxyxyxyzzzzzzzz", false),
+            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzzz", true),
+            ("zzzzxyzxyzxyzxyzxyzxyzxyzxyzzzxzz", false),
+            ("zzzzxyyzxyzxyzxyzzxyzxyzxyzxyzzzxzz", false),
         ];
 
         generic_test("./twocprogs/determ/x_plus_y_is_z.twoc", &test_words);
@@ -84,6 +90,12 @@ mod determ_tests {
     pub fn loops_forever() {
         let test_words = [
             ("0", false),
+            ("00", false),
+            ("0000000", false),
+            ("0000000000000000000000000000000", false),
+            ("00000000000000000000000000000000", false),
+            ("00000000000000000000000000000000000000000000000000000", false),
+            ("00000000000000000000000000000000000000000000", false),
         ];
 
         generic_test("./twocprogs/determ/loops_forever.twoc", &test_words);
