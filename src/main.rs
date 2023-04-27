@@ -36,7 +36,7 @@ struct CliArgs {
     use_rytter_matrix : bool,
 }
 
-fn main() -> Result<(), ()> {
+fn main() -> Result<(), String> {
     // Declare parser for Twoc rule
     let parser = grammar_rules::TwocParser::new();
 
@@ -63,20 +63,15 @@ fn main() -> Result<(), ()> {
     // Load file
     let test_prog = match fs::read_to_string(file_path) {
         Ok(str) => str,
-        Err(_) => {
-            println!("Couldn't find {:?}!", file_path);
-            return Err(());
-        },
+        Err(_) => return Err(format!("Couldn't find {:?}!", file_path)),
     };
 
     // Parse the file
     let test = parser.parse(&test_prog);
     let sugar_prog = match test {
         // Output any parse errors
-        Err(ref err) => {
-            println!("Parse Error:\n{:?}", err);
-            return Err(());
-        },
+        Err(ref err) 
+            => return Err(format!("Parsing failed with the following error message:\n{:?}", err)),
         Ok(prog) => prog,
     };
 
@@ -91,8 +86,7 @@ fn main() -> Result<(), ()> {
 
     // Crash if the input string isn't consistent with the parsed alphabet
     if !prog.check_if_input_in_alphabet(&test_word) {
-        println!("{:?} contains characters that aren't in the program's alphabet!", test_word);
-        return Err(());
+        return Err(format!("{:?} contains characters that aren't in the program's alphabet!", test_word));
     }
 
     if verbose {
@@ -151,10 +145,7 @@ fn main() -> Result<(), ()> {
 
         // Test that the automaton accepts an example word via the chosen procedure
         let accepting = match (use_glueck_nondeterm, use_rytter_matrix) {
-            (true, true)   => { 
-                println!("--use-glueck-nondeterm and --use-rytter-matrix are mutually exclusive!"); 
-                return Err(()); 
-            },
+            (true, true)   => return Err("--use-glueck-nondeterm and --use-rytter-matrix are mutually exclusive!".to_string()),
 
             (false, true)  => rytter_matrix::rytter_procedure(&autom, test_word),
 
