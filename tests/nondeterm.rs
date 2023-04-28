@@ -249,11 +249,10 @@ mod nondeterm_tests {
     pub fn while_choose() {
         let test_words = [
             ("1", true),
-            //("10", true),
-            //("100", true),
-            //("10000000", true),
-            //("01", true),
-        /*
+            ("10", true),
+            ("100", true),
+            ("10000000", true),
+            ("00001", true),
             ("010", true),
             ("0010", true),
             ("011000", true),
@@ -263,9 +262,7 @@ mod nondeterm_tests {
             ("000000100", true),
             ("0001000000", true),
             ("000000110000", true),
-        */
 
-        /* 
             ("", false),
             ("0", false),
             ("00", false),
@@ -277,7 +274,6 @@ mod nondeterm_tests {
             ("00000000", false),
             ("000000000", false),
             ("0000000000", false),
-        */
         ];
 
         generic_test("./twocprogs/nondeterm/while_choose.twoc", &test_words);
