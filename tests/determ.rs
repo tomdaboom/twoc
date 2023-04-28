@@ -9,8 +9,9 @@ mod determ_tests {
     use twoc::parser::sugar::convert_sugar::convert_sugar;
     use twoc::automaton::determ_construction::construct_from_prog; 
 
+    // Swap these two lines to change algorithms
     use twoc::simulation::glueck_array::glueck_procedure;
-    // use twoc::simulation::glueck::glueck_procedure;
+    //use twoc::simulation::glueck::glueck_procedure;
 
     // Generic test function that runs a program on a single word and compares the outputs
     fn generic_test(filename : &str, examples : &[(&str, bool)]) {
