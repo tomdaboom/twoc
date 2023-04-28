@@ -73,17 +73,21 @@ fn construct_stmt(autom : &mut Autom, state : &mut State, stmt : ast::Stmt) {
         // Add a new state/transition for a basic block
         ast::Stmt::BasicBlock(move_by, incr_by) => {
             // Make a new state
-            let mut new_state = autom.introduce();
+            let mut new_state = *state;
 
-            // Create a new transition that executes the move instruction
-            let move_transition = Transition::new_basic_block_trans(
-                new_state, 
-                move_by, 
-                0
-            );
+            if move_by != 0 {
+                new_state = autom.introduce();
 
-            // Add the transition to the automaton
-            autom.add_transition_pop_push(*state, move_transition);
+                // Create a new transition that executes the move instruction
+                let move_transition = Transition::new_basic_block_trans(
+                    new_state, 
+                    move_by, 
+                    0
+                );
+
+                // Add the transition to the automaton
+                autom.add_transition_pop_push(*state, move_transition);
+            }
 
             // Add transitions to increment/decrement the counter
             

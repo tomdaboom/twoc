@@ -240,10 +240,13 @@ impl<'a> RytterSimulator<'a> {
         // FIND k CONFIGURATIONS
 
         // Get the transitions onto i that push
+        // If we can decrement on zero, also include the transitions that decrement
         let i_transes = self.inverse_state_map.get(&i_state).unwrap();
         let mut i_push = Vec::new();
         for trans in i_transes {            
-            if trans.incr_by > 0 { i_push.push(trans); }
+            if (trans.incr_by > 0) || (trans.incr_by < 0 && self.autom.decr_zero) { 
+                i_push.push(trans); 
+            }
         }
 
         // Turn these into configurations
@@ -258,6 +261,11 @@ impl<'a> RytterSimulator<'a> {
             }
 
             for counter_zero in [false, true] {
+                // Exclude this transition if we can decr on 0, the trans decrements, and we don't have a zero counter
+                if self.autom.decr_zero && !counter_zero && trans.incr_by < 0 { 
+                    continue; 
+                } 
+
                 match &trans.condition {
                     // Push if there's no condition to test
                     None => k_configs.push((new_state, new_read, counter_zero)),
