@@ -104,7 +104,7 @@ mod determ_tests {
             ("zzzzxyyzxyzxyzxyzzxyzxyzxyzxyzzzxzz", false),
         ];
 
-        generic_test("./twocprogs/sugar/x_plus_y_is_z.twoc", &test_words);
+        generic_test("./twocprogs/determ/x_plus_y_is_z_sugar.twoc", &test_words);
     }
 
     #[test]
@@ -148,6 +148,6 @@ mod determ_tests {
             ("0000000000000000000000000000000000000000000000000000000000000000", true),
         ];
 
-        generic_test("./twocprogs/nontrivial/upower.twoc", &test_words);
+        generic_test("./twocprogs/determ/upower.twoc", &test_words);
     }
 }

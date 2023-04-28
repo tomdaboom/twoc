@@ -3,15 +3,16 @@ alphabet = [ '0', '1' ];
 
 twoc (string) {
     branch {
-        while (read == lend || c != 0) {
+        while (true) {
             move(1);
             c++;
         }
-    } also {
-        move(1);
-        if (read == '1') {
-            move(1);
+    } 
+    
+    also { 
+        while (choose) {
             if (read == '1') { accept; }
+            move(1);
         }
     }
 }

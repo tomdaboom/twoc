@@ -3,7 +3,8 @@ alphabet = [ '0', '1' ];
 
 twoc (string) {
     while (choose) {
-        if (read == '0') { c++; }
+        if (read == '1') { c++; }
+        if (read == '0') { c--; }
         move(1);
     }
 
