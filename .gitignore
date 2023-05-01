@@ -3,3 +3,4 @@
 
 /tests/bench_results/*
 ! /tests/bench_results/result_plotter.py
+! /tests/bench_results/result_comparer.py
