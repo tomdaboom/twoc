@@ -1,3 +1,5 @@
+// A (deprecated) parser for programs containing no syntactic sugar or macros
+
 use std::str::FromStr;
 use twoc::parser::ast;
 use twoc::parser::program;

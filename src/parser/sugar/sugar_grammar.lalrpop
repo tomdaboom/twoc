@@ -1,3 +1,5 @@
+// An LR(1) parser for twoc programs containing syntactic sugar
+
 use std::str::FromStr;
 use twoc::parser::sugar::ast;
 use twoc::parser::sugar::program;

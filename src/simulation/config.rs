@@ -1,3 +1,5 @@
+// Types corresponding to automaton configurations
+
 use crate::automaton::generic_autom::State;
 use crate::automaton::autom;
 //use crate::automaton::autom;

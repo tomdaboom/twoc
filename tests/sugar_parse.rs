@@ -1,3 +1,5 @@
+// Deprecated tests of the desugaring process
+
 // Import grammar
 #[macro_use] extern crate lalrpop_util;
 lalrpop_mod!(pub grammar_rules, "/parser/sugar/sugar_grammar.rs");

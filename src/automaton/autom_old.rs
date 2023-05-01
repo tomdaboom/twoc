@@ -1,3 +1,5 @@
+// Deprecated nondeterministic autom structure
+
 use crate::parser::ast::Readable;
 use crate::automaton::generic_autom::{State, TransitionTrait, GenericAutom};
 

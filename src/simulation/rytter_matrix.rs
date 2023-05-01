@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_imports, unused_variables)]
+// Rytter's algorithm using a matrix to store the set R
 
 use std::collections::{VecDeque, HashMap};
 use array2d::Array2D;

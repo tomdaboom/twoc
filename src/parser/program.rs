@@ -1,3 +1,5 @@
+// A struct for desugared programs
+
 use std::collections::HashSet;
 
 use crate::parser::{ast, contract::contract};

@@ -1,3 +1,5 @@
+// Deprecated construction algorithm for 2nc
+
 use crate::parser::{program::Program, ast};
 
 use crate::automaton::autom::{Autom, Transition};

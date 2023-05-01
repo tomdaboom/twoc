@@ -1,3 +1,5 @@
+// A struct + methods to store sugared programs
+
 use std::collections::{HashSet, HashMap};
 use std::iter::zip;
 

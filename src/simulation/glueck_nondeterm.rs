@@ -1,3 +1,5 @@
+// Glueck's 2nc simulation algorithm using a hashmap to store terminators
+
 use hashbrown::{HashMap, HashSet};
 
 use crate::automaton::autom::Autom;

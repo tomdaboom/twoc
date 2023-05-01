@@ -1,3 +1,5 @@
+// Naive 2dc simulation algorithm
+
 use crate::automaton::autom::Autom;
 use crate::simulation::config::{Config, get_transition, next};
 use crate::parser::ast::{Readable, Input};

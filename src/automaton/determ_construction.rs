@@ -1,3 +1,5 @@
+// Construction algorithm for deterministic programs
+
 use crate::parser::{program::Program, ast};
 
 use crate::automaton::autom::{Autom, Transition};

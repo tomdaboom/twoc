@@ -1,3 +1,5 @@
+// Nondeterministic benchmarking stuff
+
 #![allow(unused_variables, unused_imports)]
 
 // Import grammar

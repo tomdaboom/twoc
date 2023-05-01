@@ -1,3 +1,5 @@
+// The function that removes syntactic sugar and macros from a sugary program
+
 use std::collections::HashMap;
 use crate::parser::ast::{Cond, Readable};
 //use crate::parser::sugar::ast::CounterTestCond;

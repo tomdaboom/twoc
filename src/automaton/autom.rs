@@ -1,3 +1,5 @@
+// Struct to store constructed 2nc
+
 use crate::parser::ast::Cond;
 use crate::automaton::generic_autom::{State, TransitionTrait, GenericAutom};
 

@@ -1,3 +1,5 @@
+// The AST containing syntactic sugar
+
 pub type Cond = crate::parser::ast::Cond;
 pub type Readable = crate::parser::ast::Readable;
 

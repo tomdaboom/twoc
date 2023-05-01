@@ -1,3 +1,5 @@
+// Construction algorithm for nondeterministic programs
+
 use crate::parser::{program::Program, ast};
 
 use crate::automaton::autom::{Autom, Transition};

@@ -1,3 +1,5 @@
+// Nondeterministic test bracket
+
 #![allow(unused_imports)]
 
 // Import grammar

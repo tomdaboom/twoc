@@ -1,3 +1,5 @@
+// Struct for automata with generic transition type
+
 use std::collections::{HashMap, HashSet};
 
 // States in the automaton are integers

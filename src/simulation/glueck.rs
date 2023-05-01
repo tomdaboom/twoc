@@ -1,3 +1,5 @@
+// Glueck's 2dc simulation algorithm using a hashmap to store terminators
+
 use hashbrown::HashMap;
 //use hashbrown::HashSet;
 

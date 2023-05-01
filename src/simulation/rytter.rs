@@ -1,3 +1,5 @@
+// Rytter's algorithm using a hashmap to store R
+
 use std::collections::VecDeque;
 use hashbrown::HashMap;
 

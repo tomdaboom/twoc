@@ -1,3 +1,5 @@
+// Naive 2nc simulation algorithm
+
 use crate::automaton::autom::Autom;
 use crate::simulation::config::{Config, get_transitions, next_nondeterm};
 use crate::parser::ast::{Readable, Input};

@@ -1,3 +1,5 @@
+// The contraction operation
+
 use crate::parser::ast;
 
 // Function to contract sequences of moves and increments in a sequence of statements
