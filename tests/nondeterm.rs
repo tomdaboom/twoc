@@ -45,7 +45,6 @@ mod nondeterm_tests {
 
         // Check that each of the words gives the correct answer
         for (word, expected) in examples {
-            //let output = rytter::rytter_procedure(&autom, word);
             let output = rytter::rytter_procedure(&autom, word);
             assert_eq!(output, *expected);
         }
