@@ -125,6 +125,25 @@ mod determ_tests {
     }
 
     #[test]
+    pub fn even_sugar() {
+        let test_words = [
+            ("", true),
+            ("0", false),
+            ("00", true),
+            ("000", false),
+            ("0000", true),
+            ("00000", false),
+            ("000000", true),
+            ("0000000", false),
+            ("00000000", true),
+            ("000000000", false),
+            ("0000000000", true),
+        ];
+
+        generic_test("./twocprogs/determ/evens_sugar.twoc", &test_words);
+    }
+
+    #[test]
     pub fn upower() {
         let test_words = [
             ("", false),
