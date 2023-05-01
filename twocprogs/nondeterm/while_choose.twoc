@@ -1,10 +1,14 @@
-decr_on_zero = true;
+decr_on_zero = false;
 alphabet = [ '0', '1' ];
 
 twoc (string) {
     while (choose) {
         if (read == '1') { c++; }
-        if (read == '0') { c--; }
+
+        if (read == '0') { 
+            if (c != 0) { c--; } 
+        }
+
         move(1);
     }
 

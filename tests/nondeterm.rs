@@ -266,15 +266,15 @@ mod nondeterm_tests {
 
             ("", false),
             ("0", false),
-            //("00", false),
-            //("000", false),
-            //("0000", false),
-            //("00000", false),
-            //("000000", false),
-            //("0000000", false),
-            //("00000000", false),
-            //("000000000", false),
-            //("0000000000", false),
+            ("00", false),
+            ("000", false),
+            ("0000", false),
+            ("00000", false),
+            ("000000", false),
+            ("0000000", false),
+            ("00000000", false),
+            ("000000000", false),
+            ("0000000000", false),
         ];
 
         generic_test("./twocprogs/nondeterm/while_choose.twoc", &test_words);
