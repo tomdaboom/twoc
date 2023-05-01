@@ -24,9 +24,16 @@ twoc is a programming language for [two-way one-counter automata](https://www.sc
   - a struct to represent the automata themselves
   - the algorithm used to convert twoc syntax trees to automata
 
-- ```twoc/src/simulation``` contains all of the code used to check if a certain input string is accepted/rejected by a given automaton
+- ```twoc/src/simulation``` contains all of the code used to check if a certain input string is accepted/rejected by a given automaton. In here you'll find:
+  - structs and other types to represent automata configurations
+  - simulation algorithms for deterministic automata
+  - simulation algorithms for nondeterministic automata
 
-- ```twoc/src/proofs``` *will* contain all of the code used to embed and check Hoare-logic proofs concerning these automata
+- ```twoc/src/proofs``` *will* contain all of the code used to embed and check Hoare-logic proofs concerning these automata.
+
+```twoc/twocprogs``` contains several example twoc programs (separated by determinism/nondeterminism).
+
+```twoc/tests``` contains tests and benchmarks.
 
 If you wish to study the codebase, I recommend that you do so with VSCode after cloning the repo to your machine. I'd also recommend you install the following VSCode extensions:
 
